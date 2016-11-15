@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<SplitPane dividerPositions="0.488" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="419.0" minWidth="-Infinity" prefHeight="668.0" prefWidth="837.0" stylesheets="/Views/main.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MainController">
+    <items>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="563.0" prefWidth="367.0">
+            <children>
+                <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#loadVideo" text="Choose video file: " />
+                <Label fx:id="label1" layoutX="172.0" layoutY="16.0" />
+                <Pane fx:id="pane" layoutX="-2.0" layoutY="69.0" prefHeight="337.0" prefWidth="370.0" />
+            </children></AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="647.0" prefWidth="438.0">
+         <children>
+            <Pane fx:id="pane2" layoutX="42.0" layoutY="89.0" prefHeight="364.0" prefWidth="341.0" />
+         </children></AnchorPane>
+    </items>
+</SplitPane>

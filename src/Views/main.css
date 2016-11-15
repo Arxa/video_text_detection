@@ -1,0 +1,10 @@
+.root
+{
+    -fx-background-color: cadetblue;
+}
+
+.label
+{
+    -fx-font-style: normal;
+    -fx-font-size: 20px;
+}
