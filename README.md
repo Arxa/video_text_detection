@@ -12,6 +12,27 @@
 <p>An integration of various technologies are being used for this project, including: </p>
 <h4>Desktop Application</h4>
 
+<ul>
+  <li>
+      <b>IDE</b>
+      <ul>
+        <li>
+            InteliJ IDEA
+        </li>
+      </ul>    
+  </li>
+  
+  <li>
+      <b>Programming language</b>
+      <ul>
+        <li>
+            Java (JavaFX)
+        </li>
+      </ul>    
+  </li>
+  
+</ul>
+
 
        
 
