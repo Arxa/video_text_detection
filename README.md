@@ -1,6 +1,6 @@
 # Bachelor_Thesis
 
-<h1>(In progress)</h1>
+<h1><i>(In progress)</i></h1>
 
 <h1>Title: Text extraction from complex video scenes</h1>
 
