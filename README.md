@@ -11,9 +11,6 @@
 <h3>Technologies</h3>
 <p>An integration of various technologies are being used for this project, including: </p>
 <h4>Desktop Application</h4>
-<ul>
-  <li>
-    <h4>Desktop Application</h4>
         <ul>
           <li>
               <ul>
@@ -43,9 +40,8 @@
                 </li>
               </ul>
           </li>
-        </ul>    
-  </li>
-</ul
+        </ul>
+
 
 
 
