@@ -1,10 +1,9 @@
-# Bachelor_Thesis
 <a href="http://www.teicm.gr/index.php?lang=en" target="_blank"> <img src="tei.png" width="500" height="400" align="middle"> </a>
 <br>
 <br>
 <center><h1>Technological and Educational Institute <br>of Central Macedonia
-School of Technological Applications<br>
-Department of Engineering Informatics
+<br>School of Technological Applications<br>
+Department of Engineering Informatics<br>
 </h1></center>
 
 
