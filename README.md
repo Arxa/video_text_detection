@@ -3,9 +3,9 @@
 <br>
 <br>
 <center><h1>Technological and Educational Institute <br>of Central Macedonia
-School of Technological Applications
+School of Technological Applications<br>
 Department of Engineering Informatics
-<h1><center>
+</h1></center>
 
 
 
