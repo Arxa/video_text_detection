@@ -43,7 +43,7 @@
 </ul>
 
 
-<h3>Desktop Application</h3>
+<h3>Web Application</h3>
 
 (In progress)
        
