@@ -54,7 +54,7 @@ public class FrameProcessor
                 iv2.fitHeightProperty().bind(pane3.heightProperty());
                 iv2.fitWidthProperty().bind(pane3.widthProperty());
 
-                //HarrisCorner.startAlgorithm(frame1, frame2, pane4, pane3);
+                //HarrisCorner.startAlgorithm(frame1, frame2, pane2, pane3);
             }
             else
             {
@@ -68,35 +68,27 @@ public class FrameProcessor
     }
 
     // TODO Handle the Exceptions
-    public static void grabFrame(Pane pane)
+    public static void grabFrames()
     {
         System.loadLibrary( Core.NATIVE_LIBRARY_NAME );
-        Mat frame0 = new Mat();
+        Mat frame1 = new Mat();
+        Mat frame2 = new Mat();
         if (cap != null)
         {
-            for (int i=0; i<100; i++)
+            while (true)
             {
-                cap.read(frame0);
+                if (cap.read(frame1) && cap.read(frame2))
+                {
+                    HarrisCorner.startAlgorithm(frame1, frame2);
+                }
+                else
+                {
+                    break;
+                }
             }
         }
-        else
-        {
-            return;
-        }
-
-
-        // Converting Mat object to Image
-        MatOfByte byteMat = new MatOfByte();
-        Imgcodecs.imencode(".bmp", frame0, byteMat);
-        Image image = new Image(new ByteArrayInputStream(byteMat.toArray()));
-
-        ImageView iv = new ImageView(image);
-        pane.getChildren().add(iv);
-        iv.fitHeightProperty().bind(pane.heightProperty());
-        iv.fitWidthProperty().bind(pane.widthProperty());
-
-        HarrisCorner.startAlgorithm(frame0, frame0, pane, pane);
     }
+
 
     public static VideoCapture getCap() {
         return cap;

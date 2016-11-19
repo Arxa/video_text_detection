@@ -41,7 +41,7 @@ public class MainController
 
     public void grabFrame(ActionEvent actionEvent)
     {
-        FrameProcessor.grabFrame(pane4);
+        FrameProcessor.grabFrames();
     }
 
     public void initializeFrames(ActionEvent actionEvent)
