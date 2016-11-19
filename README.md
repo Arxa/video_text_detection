@@ -31,6 +31,15 @@
       </ul>    
   </li>
   
+  <li>
+      <b>Libraries</b>
+      <ul>
+        <li>
+            OpenCV
+        </li>
+      </ul>    
+  </li>
+  
 </ul>
 
 
