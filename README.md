@@ -2,10 +2,10 @@
 <a href="http://www.teicm.gr/index.php?lang=en" target="_blank"> <img src="tei.png" width="500" height="400" align="middle"> </a>
 <br>
 <br>
-<h1>Technological and Educational Instituteof Central Macedonia<br>
+<center><h1>Technological and Educational Institute <br>of Central Macedonia
 School of Technological Applications
 Department of Engineering Informatics
-<h1>
+<h1><center>
 
 
 
