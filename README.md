@@ -13,7 +13,7 @@ Department of Engineering Informatics<br>
 <h1>Thesis Title: <i>Text extraction from complex video scenes</i></h1>
 
 
-<h2><i>(Thesis is currently ongoing)</i></h2>
+<h2 color="red"><i>(Thesis is currently ongoing)</i></h2>
 
 <h2>Description</h2>
 <p>My Bachelor Thesis aims in the developement of a desktop application tool for extacting dynamically display texts from different kinds of videos, including for example News, Cartoons or Animations. Smart and efficient algorithms are an essential part of this project, in order to provide the user, a solid envorment which operates as fast as possible.</p>
