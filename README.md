@@ -13,31 +13,39 @@
 <h4>Desktop Application</h4>
 <ul>
   <li>
-      <b>IDE</b>
-      <ul>
-        <li>
-            InteliJ IDEA
-        </li>
-      </ul>
+    <h4>Desktop Application</h4>
+        <ul>
+          <li>
+              <ul>
+                <li>
+                    <b>IDE</b>
+                    <ul>
+                      <li>
+                          InteliJ IDEA
+                      </li>
+                    </ul>
+                </li>
+                <li>
+                    <b>Programming Languages</b>
+                    <ul>
+                      <li>
+                          Java (JavaFX)
+                      </li>
+                    </ul>
+                </li>
+                <li>
+                    <b>Libraries</b>
+                    <ul>
+                      <li>
+                          OpenCV
+                      </li>
+                    </ul>
+                </li>
+              </ul>
+          </li>
+        </ul>    
   </li>
-  <li>
-      <b>Programming Languages</b>
-      <ul>
-        <li>
-            Java (JavaFX)
-        </li>
-      </ul>
-  </li>
-  <li>
-      <b>Libraries</b>
-      <ul>
-        <li>
-            OpenCV
-        </li>
-      </ul>
-  </li>
-</ul>
-
+</ul
 
 
 
