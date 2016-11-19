@@ -1,5 +1,5 @@
 # Bachelor_Thesis
-<a href="http://www.teicm.gr/index.php?lang=en" target="_blank"> <img src="http://teiserron.gr/images/logo-teicm/teicm_en.png> </a>
+<a href="http://www.teicm.gr/index.php?lang=en" target="_blank"> <img src="tei.png> </a>
 <h1><i>(In progress)</i></h1>
 
 <h1>Title: Text extraction from complex video scenes</h1>
