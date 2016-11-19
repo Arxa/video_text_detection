@@ -1,5 +1,14 @@
 # Bachelor_Thesis
 <a href="http://www.teicm.gr/index.php?lang=en" target="_blank"> <img src="tei.png" width="500" height="400" align="middle"> </a>
+<br>
+<br>
+<h1>Technological and Educational Instituteof Central Macedonia<br>
+School of Technological Applications
+Department of Engineering Informatics
+<h1>
+
+
+
 <h1><i>(In progress)</i></h1>
 
 <h1>Title: Text extraction from complex video scenes</h1>
