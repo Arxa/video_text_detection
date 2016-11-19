@@ -2,7 +2,7 @@
 
 <h1>(In progress)</h1>
 
-<h2>Text extraction from complex video scenes</h2>
+<h2>Title: Text extraction from complex video scenes</h2>
 
 
 <h3>Description</h3>
@@ -24,7 +24,15 @@
       <b>Programming Languages</b>
       <ul>
         <li>
-            Java
+            Java (JavaFX)
+        </li>
+      </ul>
+  </li>
+  <li>
+      <b>Libraries</b>
+      <ul>
+        <li>
+            OpenCV
         </li>
       </ul>
   </li>
