@@ -6,10 +6,10 @@ package Models;
 
 public class Corner
 {
-    private static int i;
-    private static int j;
-    private static int value;
-    private static boolean hasPixelsAround;
+    private int i;
+    private int j;
+    private int value;
+    private boolean hasPixelsAround;
 
     public Corner(){
     }

@@ -1,24 +1,10 @@
 package Controllers;
 
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.videoio.VideoCapture;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
 
 public class MainController
 {
@@ -34,19 +20,35 @@ public class MainController
     public MainController() {
     }
 
-    public void loadVideo(ActionEvent actionEvent)
+    public void playLocalVideo(ActionEvent actionEvent)
     {
-        VideoPlayer.loadLocalVideo(label1, pane);
+        Player.playLocalVideo(label1, pane);
     }
 
-    public void grabFrame(ActionEvent actionEvent)
+    public void grabVideoFileFrames(ActionEvent actionEvent)
     {
-        FrameProcessor.grabFrames();
+        FrameProcessor.grabVideoFileFrames();
     }
 
-    public void initializeFrames(ActionEvent actionEvent)
+    public void playVideoWithCorners(ActionEvent actionEvent)
     {
-        FrameProcessor.getInitialFrames(pane2, pane3);
+        Task<Void> task = new Task<Void>()
+        {
+            @Override protected Void call() throws Exception
+            {
+                Visualizer.paintCorners(PixelProcessor.getFrameCornersList());
+                System.out.println("Painting done.");
+                return null;
+            }
+        };
+        Thread th = new Thread(task);
+        th.setDaemon(true);
+        th.start();
+    }
+
+    public void showVideoWithCorners(ActionEvent actionEvent)
+    {
+        Player.playFramesWithCorners(PixelProcessor.getFrameCornersList(), pane2);
     }
 }
 
