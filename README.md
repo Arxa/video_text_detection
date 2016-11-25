@@ -1,9 +1,8 @@
 <a href="http://www.teicm.gr/index.php?lang=en" target="_blank"> <img src="tei.png" width="500" height="400" align="middle"> </a>
 <br>
 <br>
-<center><h1>Technological and Educational Institute <br>of Central Macedonia, 
-<br>School of Technological Applications, <br>
-Department of Engineering Informatics<br>
+<center><h1>School of Technological Applications
+Department of Engineering Informatics
 </h1></center>
 
 <br>
@@ -16,27 +15,17 @@ Department of Engineering Informatics<br>
 <h2><i>(Thesis is currently ongoing)</i></h2>
 <br>
 <h2>Description</h2>
-<p>My Bachelor Thesis aims in the developement of a desktop application tool for extacting dynamically display texts from different kinds of videos, including for example News, Cartoons or Animations. Smart and efficient algorithms are an essential part of this project, in order to provide the user, a solid envorment which operates as fast as possible.</p>
+<p>My Bachelor Thesis aims in the development of a desktop application tool for extracting dynamically, display texts from different kinds of video sources, including for example: News, Cartoons or Animations. For doing so, research is needed for creating efficient and  effective image/video processing algorithms. Alongside, implementing high quality code techniques and a professional way project's development is essential.</p>
 
 <h2>Technologies</h2>
-<p>An integration of various technologies are being used for this project, including: </p>
-<h3>Desktop Application</h3>
 
 <ul>
-  <li>
-      <b>IDE</b>
-      <ul>
-        <li>
-            InteliJ IDEA
-        </li>
-      </ul>    
-  </li>
   
   <li>
       <b>Programming language</b>
       <ul>
         <li>
-            Java (JavaFX)
+            Java 
         </li>
       </ul>    
   </li>
@@ -45,7 +34,34 @@ Department of Engineering Informatics<br>
       <b>Libraries</b>
       <ul>
         <li>
+            JavaFX
+        </li>
+        <li>
             OpenCV
+        </li>
+      </ul>    
+  </li>
+  
+  <li>
+      <b>Frameworks</b>
+      <ul>
+        <li>
+            JUnit
+        </li>
+        <li>
+            TestFX
+        </li>
+      </ul>    
+  </li>
+  
+  <li>
+      <b>Tools</b>
+      <ul>
+        <li>
+            InteliJ IDEA
+        </li>
+        <li>
+            Maven
         </li>
       </ul>    
   </li>
@@ -53,10 +69,6 @@ Department of Engineering Informatics<br>
 </ul>
 
 
-<h3>Web Application</h3>
-
-(In progress)
-       
 
 
 
