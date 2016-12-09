@@ -5,6 +5,8 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 
+import java.util.ArrayList;
+
 /**
  * Created by arxa on 16/11/2016.
  */
@@ -18,6 +20,7 @@ public class FrameProcessor
     public static void grabVideoFileFrames()
     {
         System.loadLibrary( Core.NATIVE_LIBRARY_NAME );
+        PixelProcessor.initializeList();
         cap = new VideoCapture();
         cap.open(Player.getFilename().toString());
 
@@ -27,12 +30,12 @@ public class FrameProcessor
             {
                 @Override protected Void call() throws Exception
                 {
-                    while (true) // Grabbing and passing the video frames by chained pairs
+                    while (true) // Grabbing and passing the video frames by one
                     {
                         frame = new Mat();
                         if (cap.read(frame))
                         {
-                            PixelProcessor.findMatchedCorners(frame);
+                            PixelProcessor.findHarrisCorners(frame);
                             System.out.println("finding corners. . .");
                         }
                         else return null;

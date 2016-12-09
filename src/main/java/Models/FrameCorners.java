@@ -48,4 +48,5 @@ public class FrameCorners
     public List<Corner> getQualifiedMovingCorners() {
         return qualifiedMovingCorners;
     }
+
 }

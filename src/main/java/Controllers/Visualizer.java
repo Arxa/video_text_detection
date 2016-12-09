@@ -17,25 +17,32 @@ import java.util.List;
 
 public class Visualizer
 {
-    public static void paintCorners(List<FrameCorners> frameCornersList)
+    public static void paintCorners(List<Corner> cornerList, Mat frame, String type)
     {
-        double[] data = {0.0, 0.0, 230.0}; // RED
+        double[] data  = new double[3];
+        if (type.equals("stable")){ // RED
+            data[0] = 0.0;
+            data[1] = 0.0;
+            data[2] = 255.0;
+        }
+        else{ // BLUE
+            data[0] = 255.0;
+            data[1] = 128.0;
+            data[2] = 0.0;
+        }
 
-        for (FrameCorners f : frameCornersList)
+        frame.convertTo(frame, CvType.CV_64FC3);
+        for (Corner c : cornerList)
         {
-            f.getFrame().convertTo(f.getFrame(), CvType.CV_64FC3);
-            for (Corner c : f.getCornersList())
+            outerloop: // Painting a 6x6 area around our Pixel with red, therefore creating a red box for each pixel.
+            for (int i = c.getI()-3 ; i < c.getI()+3; i++)
             {
-                outerloop: // Painting a 6x6 area around our Pixel with red, therefore creating a red box for each pixel.
-                for (int i = c.getI()-3 ; i < c.getI()+3; i++)
+                for (int j = c.getJ()-3; j < c.getJ()+3; j++)
                 {
-                    for (int j = c.getJ()-3; j < c.getJ()+3; j++)
-                    {
-                        if ( (i < 0 || i > f.getFrame().height()-1) || (j < 0 || j > f.getFrame().width()-1) ) {
-                            break outerloop;
-                        }
-                        f.getFrame().put(i,j,data);
+                    if ( (i < 0 || i > frame.height()-1) || (j < 0 || j > frame.width()-1) ) {
+                        break outerloop;
                     }
+                    frame.put(i,j,data);
                 }
             }
         }
@@ -43,7 +50,7 @@ public class Visualizer
 
     public static void paintTextArea(List<Corner> textCornersList, Mat frame)
     {
-        double[] data = {0.0, 204.0, 0.0}; // GREEN
+        double[] data = {0.0, 255.0, 0.0}; // GREEN
         frame.convertTo(frame,CvType.CV_64FC3);
         if (textCornersList.isEmpty()){
             return;

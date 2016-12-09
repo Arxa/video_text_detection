@@ -1,5 +1,7 @@
 package Models;
 
+import cern.colt.list.IntArrayList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,12 +11,13 @@ import java.util.List;
 
 public class Corner
 {
-    private Integer i;
-    private Integer j;
-    private Integer value;
+    private int i;
+    private int j;
+    private int value;
     private boolean hasPixelsAround;
-    private List<Integer> horDiffList; // Horizontal Difference List
-    private List<Integer> verDiffList; // Vertical Difference List
+    private IntArrayList horDiffList; // Horizontal Difference List
+    private IntArrayList verDiffList; // Vertical Difference List
+    private double cornerDensityProbability;
 
     public Corner(){
     }
@@ -24,9 +27,10 @@ public class Corner
         i = i1;
         j = j1;
         value = value1;
-        hasPixelsAround = false;
-        horDiffList = new ArrayList<>();
-        verDiffList = new ArrayList<>();
+        //hasPixelsAround = false;
+        horDiffList = new IntArrayList();
+        verDiffList = new IntArrayList();
+        //cornerDensityProbability = 0.0;
     }
 
     public Corner(int i1, int j1)
@@ -34,6 +38,30 @@ public class Corner
         i = i1;
         j = j1;
     }
+
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Corner)) {
+            return false;
+        }
+        Corner that = (Corner) other;
+        // Custom equality check here.
+        return this.i == that.getI()
+                && this.j == that.getJ() && this.value == that.getValue();
+    }
+
+    /*@Override
+    public int hashCode() {
+        int hashCode = 1;
+
+        hashCode = hashCode * 37 + this.i;
+        hashCode = hashCode * 37 + this.j.hashCode();
+        hashCode = hashCode * 37 + this.value.hashCode();
+
+        return hashCode;
+    }*/
+
 
     public void setHasPixelsAround(boolean has)
     {
@@ -45,15 +73,15 @@ public class Corner
         return "Corner{"+i+","+j+"}"+" : "+value;
     }
 
-    public Integer getI() {
+    public int getI() {
         return i;
     }
 
-    public Integer getJ() {
+    public int getJ() {
         return j;
     }
 
-    public Integer getValue() {
+    public int getValue() {
         return value;
     }
 
@@ -61,11 +89,21 @@ public class Corner
         return hasPixelsAround;
     }
 
-    public List<Integer> getHorDiffList() {
+    public IntArrayList getHorDiffList() {
         return horDiffList;
     }
 
-    public List<Integer> getVerDiffList() {
+    public IntArrayList getVerDiffList() {
         return verDiffList;
     }
+
+    public double getCornerDensityProbability() {
+        return cornerDensityProbability;
+    }
+
+    public void setCornerDensityProbability(double cornerDensityProbability) {
+        this.cornerDensityProbability = cornerDensityProbability;
+    }
 }
+
+

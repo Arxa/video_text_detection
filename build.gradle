@@ -11,5 +11,9 @@ repositories{
 dependencies{
     compile files('C:\\opencv\\opencv\\build\\java\\opencv-310.jar')
     compile group: 'com.google.guava', name: 'guava', version: '19.0'
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    compile group: 'colt', name: 'colt', version: '1.2.0'
+    compile group: 'net.sf.ehcache', name: 'ehcache', version: '2.10.3'
+    compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.21'
 }
 

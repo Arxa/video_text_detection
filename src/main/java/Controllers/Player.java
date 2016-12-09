@@ -13,6 +13,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import net.sf.ehcache.Status;
 import org.opencv.core.CvType;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -21,6 +22,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.List;
 
+import static Controllers.PixelProcessor.getFromCache;
+
 /**
  * Created by arxa on 16/11/2016.
  */
@@ -28,11 +31,12 @@ import java.util.List;
 public class Player
 {
     private static Stage stage;
-    private static FileChooser fileChooser = new FileChooser();
+    private static FileChooser fileChooser;
     private static File filename;
 
     public static void playLocalVideo(Label label1, Pane pane)
     {
+        FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose video file");
         filename = fileChooser.showOpenDialog(stage);
 
@@ -60,22 +64,23 @@ public class Player
         }
     }
 
-    public static void playFramesWithCorners(List<FrameCorners> frameCornersList, Pane pane2)
+    public static void playFramesWithCorners(Pane pane2)
     {
         Task task = new Task<Void>()
         {
             @Override
             public Void call() throws Exception
             {
-                for (FrameCorners f : frameCornersList)
+                for (int i=0; i < MainController.getCache().getSize(); i++)
                 {
+                    int finalI = i;
                     Platform.runLater(() -> {
                         Platform.setImplicitExit(false);
                         System.out.println("Showing image");
 
                         // Converting Mat to Image
                         MatOfByte byteMat1 = new MatOfByte();
-                        Imgcodecs.imencode(".bmp", f.getFrame(), byteMat1);
+                        Imgcodecs.imencode(".bmp", getFromCache(finalI).getFrame(), byteMat1);
                         Image image1 = new Image(new ByteArrayInputStream(byteMat1.toArray()));
                         ImageView iv1 = new ImageView(image1);
                         // Show frame on Scene
@@ -86,6 +91,13 @@ public class Player
                     Thread.sleep(2000);
                 }
                 return null;
+            }
+
+            @Override protected void succeeded() {
+                if (MainController.getCm().getStatus() == Status.STATUS_ALIVE){
+                    MainController.getCm().shutdown();
+                }
+                super.succeeded();
             }
         };
         Thread th = new Thread(task);
