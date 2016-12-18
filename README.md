@@ -15,7 +15,7 @@ Department of Engineering Informatics
 <h2><i>(***Thesis is currently ongoing***)</i></h2>
 <br>
 <h2>Description</h2>
-<p>My Bachelor Thesis aims in the development of a desktop application tool for extracting dynamically, display texts from different kinds of video sources, including for example: News, Cartoons or Animations. For doing so, research is needed for creating efficient and  effective image/video processing algorithms. Alongside, implementing high quality code techniques in a professional project development environment is essential.</p>
+<p>My Thesis objective is the development of a desktop application for extracting dynamically, display texts from various video sources, including for example: News, Cartoons and Animations. For doing so, I am researching for efficient and effective image/video processing algorithms. Alongside, I am implementing high quality code techniques in a professional project development environment.</p>
 
 <h2>Technologies</h2>
 
