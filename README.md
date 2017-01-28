@@ -1,23 +1,34 @@
+```diff
++ [This Project is currently on-going]
+```
+<br>
 <a href="http://www.teicm.gr/index.php?lang=en" target="_blank"> <img src="tei.png" width="500" height="400" align="middle"> </a>
 <br>
 <br>
-<center><h1>School of Technological Applications<br>
+<h1>Faculty of Applied Technology<br>
 Department of Engineering Informatics
-</h1></center>
+</h1>
+
+
+
 
 <br>
 
+<h2>Thesis Title</h2>
+<i>"Text Extraction from Complex Video Scenes"</i>
 
+<br><br>
 
-<h1>Thesis Title: <i>Text extraction from complex video scenes</i></h1>
+<h2>Thesis Supervisor</h2>
+<i>Dr. Athanasios Nikolaidis, nikolaid@teiser.gr</i>
 
-<br>
-<h2><i>(***Thesis is currently ongoing***)</i></h2>
+<br><br>
+
 <br>
 <h2>Description</h2>
 <p>My Thesis objective is the development of a desktop application for extracting dynamically, display texts from various video sources, including for example: News, Cartoons and Animations. For doing so, I am researching for efficient and effective image/video processing algorithms. Alongside, I am implementing high quality code techniques in a professional project development environment.</p>
-
-<h2>Technologies</h2>
+<br>
+<h2>Technologies used:</h2>
 
 <ul>
   
@@ -38,6 +49,12 @@ Department of Engineering Informatics
         </li>
         <li>
             OpenCV
+        </li>
+        <li>
+            Guava
+        </li>
+        <li>
+            Colt
         </li>
       </ul>    
   </li>
@@ -62,6 +79,9 @@ Department of Engineering Informatics
         </li>
         <li>
             Maven
+        </li>
+        <li>
+            Gradle
         </li>
       </ul>    
   </li>
