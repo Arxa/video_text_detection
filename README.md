@@ -17,14 +17,14 @@ Department of Engineering Informatics
 <h2>Thesis Title</h2>
 <i>"Text Extraction from Complex Video Scenes"</i>
 
-<br><br>
+<br>
 
 <h2>Thesis Supervisor</h2>
 <i>Dr. Athanasios Nikolaidis, nikolaid@teiser.gr</i>
 
-<br><br>
-
 <br>
+
+
 <h2>Description</h2>
 <p>My Thesis objective is the development of a desktop application for extracting dynamically, display texts from various video sources, including for example: News, Cartoons and Animations. For doing so, I am researching for efficient and effective image/video processing algorithms. Alongside, I am implementing high quality code techniques in a professional project development environment.</p>
 <br>
