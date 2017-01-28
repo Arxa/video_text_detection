@@ -85,6 +85,14 @@ Department of Engineering Informatics
         </li>
       </ul>    
   </li>
+  <li>
+      <b>Design Patterns</b>
+      <ul>
+        <li>
+            Model–View–Controller (MVC)
+        </li>
+      </ul>    
+  </li>
   
 </ul>
 
