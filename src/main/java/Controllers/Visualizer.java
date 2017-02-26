@@ -1,9 +1,7 @@
 package Controllers;
 
 import Models.Corner;
-import Models.FrameCorners;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.primitives.Ints;
 import org.opencv.core.CvType;
@@ -17,19 +15,8 @@ import java.util.List;
 
 public class Visualizer
 {
-    public static void paintCorners(List<Corner> cornerList, Mat frame, String type)
+    public static void paintCorners(List<Corner> cornerList, Mat frame, double[] color)
     {
-        double[] data  = new double[3];
-        if (type.equals("stable")){ // RED
-            data[0] = 0.0;
-            data[1] = 0.0;
-            data[2] = 255.0;
-        }
-        else{ // BLUE
-            data[0] = 255.0;
-            data[1] = 128.0;
-            data[2] = 0.0;
-        }
 
         frame.convertTo(frame, CvType.CV_64FC3);
         for (Corner c : cornerList)
@@ -42,15 +29,14 @@ public class Visualizer
                     if ( (i < 0 || i > frame.height()-1) || (j < 0 || j > frame.width()-1) ) {
                         break outerloop;
                     }
-                    frame.put(i,j,data);
+                    frame.put(i,j,color);
                 }
             }
         }
     }
 
-    public static void paintTextArea(List<Corner> textCornersList, Mat frame)
+    public static void paintTextArea(List<Corner> textCornersList, Mat frame, double[] color)
     {
-        double[] data = {0.0, 255.0, 0.0}; // GREEN
         frame.convertTo(frame,CvType.CV_64FC3);
         if (textCornersList.isEmpty()){
             return;
@@ -77,25 +63,25 @@ public class Visualizer
         int i = topLeft.getI();
         for (int j=topLeft.getJ(); j < topRight.getJ(); j++)
         {
-            frame.put(i,j,data);
+            frame.put(i,j,color);
         }
 
         int j = topRight.getJ();
         for (i=topRight.getI(); i < bottomRight.getI(); i++)
         {
-            frame.put(i,j,data);
+            frame.put(i,j,color);
         }
 
         i = bottomRight.getI();
         for (j=bottomRight.getJ(); j > bottomLeft.getJ(); j--)
         {
-            frame.put(i,j,data);
+            frame.put(i,j,color);
         }
 
         j = bottomLeft.getJ();
         for (i=bottomLeft.getI(); i > topLeft.getI(); i--)
         {
-            frame.put(i,j,data);
+            frame.put(i,j,color);
         }
     }
 }

@@ -14,7 +14,8 @@ public class Corner
     private int i;
     private int j;
     private int value;
-    private boolean hasPixelsAround;
+    private boolean cornerIsLonely;
+    private boolean stableCornerIsLonely;
     private IntArrayList horDiffList; // Horizontal Difference List
     private IntArrayList verDiffList; // Vertical Difference List
     private double cornerDensityProbability;
@@ -27,10 +28,8 @@ public class Corner
         i = i1;
         j = j1;
         value = value1;
-        //hasPixelsAround = false;
         horDiffList = new IntArrayList();
         verDiffList = new IntArrayList();
-        //cornerDensityProbability = 0.0;
     }
 
     public Corner(int i1, int j1)
@@ -63,9 +62,9 @@ public class Corner
     }*/
 
 
-    public void setHasPixelsAround(boolean has)
+    public void setCornerIsLonely(boolean has)
     {
-        hasPixelsAround = has;
+        cornerIsLonely = has;
     }
 
     @Override
@@ -85,8 +84,8 @@ public class Corner
         return value;
     }
 
-    public boolean getHasPixelsAround() {
-        return hasPixelsAround;
+    public boolean getCornerIsLonely() {
+        return cornerIsLonely;
     }
 
     public IntArrayList getHorDiffList() {
@@ -103,6 +102,14 @@ public class Corner
 
     public void setCornerDensityProbability(double cornerDensityProbability) {
         this.cornerDensityProbability = cornerDensityProbability;
+    }
+
+    public boolean getStableCornerIsLonely() {
+        return stableCornerIsLonely;
+    }
+
+    public void setStableCornerIsLonely(boolean stableCornerIsLonely) {
+        this.stableCornerIsLonely = stableCornerIsLonely;
     }
 }
 
