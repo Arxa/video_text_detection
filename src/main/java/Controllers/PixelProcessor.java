@@ -35,25 +35,24 @@ public class PixelProcessor
         result.convertTo(result, CvType.CV_8UC3);
 
         List<Corner> corners = new ArrayList<>();
-        cornersArray = new int[result.height()][result.width()];
+        //cornersArray = new int[result.height()][result.width()];
 
-        for (int i = 0; i < result.height(); i+=5) // TODO INFO: Scanning step: 5, for speed purposes
+        for (int i = 0; i < result.height(); i+=3) // TODO INFO: Scanning step: 5, for speed purposes
         {
-            for (int j = 0; j < result.width(); j+=5)
+            for (int j = 0; j < result.width(); j+=3)
             {
                 if (result.get(i,j)[0] > cornerThreshold)  // Corner of the two frames match, according to our cornerThreshold.
                 {
                     Double pixelValue1 = result.get(i,j)[0]; // Converting double to Double for using the intValue().
                     Corner c = new Corner(i,j,pixelValue1.intValue());
                     corners.add(c);
-                    cornersArray[i][j] = pixelValue1.intValue(); // We need this array for findPixelsWithNeighbours method
+                    //cornersArray[i][j] = pixelValue1.intValue(); // We need this array for findPixelsWithNeighbours method
                     //findPixelsWithNeighbours(corners,c);
                 }
             }
         }
         FrameCorners frameCorners = new FrameCorners(source,corners);
         SystemController.getCache().put(new Element(cacheId, frameCorners));
-        // getCache TODO why is this method in this class?
     }
 
 
@@ -198,6 +197,7 @@ public class PixelProcessor
             if (SystemController.getFromCache(CacheID.SECOND_FRAME).getCornersList().contains(c1)) // custom equality in contains method
             {
                 SystemController.getFromCache(CacheID.FIRST_FRAME).getStableCorners().add(c1);
+                //SystemController.getFromCache(CacheID.SECOND_FRAME).getStableCorners().add(c1);
             }
             else
             {
@@ -209,6 +209,7 @@ public class PixelProcessor
                         {
                             c1.getHorDiffList().add(c1.getJ()-c2.getJ());  // Text moves from right to left => positive difference
                             SystemController.getFromCache(CacheID.FIRST_FRAME).getMovingCorners().add(c1);
+                            //SystemController.getFromCache(CacheID.SECOND_FRAME).getMovingCorners().add(c1);
                         }
                     }
                 }
@@ -327,6 +328,28 @@ public class PixelProcessor
             //Collections.sort(getFromCache((int)key).getMovingCorners(),
             // (c1, c2) -> Integer.compare(c1.getI(),c2.getI()));
         }
+    }
+
+    public static void paintCornersToBinaryImage(Mat binaryBlackImage1)
+    {
+        for (Corner c : SystemController.getFromCache(CacheID.FIRST_FRAME).getStableCorners())
+        {
+            binaryBlackImage1.put(c.getI(),c.getJ(),255.0); // White Color
+        }
+//        for (Corner c : SystemController.getFromCache(CacheID.SECOND_FRAME).getStableCorners())
+//        {
+//            binaryBlackImage2.put(c.getI(),c.getJ(),255.0);
+//        }
+
+        for (Corner c : SystemController.getFromCache(CacheID.FIRST_FRAME).getQualifiedMovingCorners())
+        {
+            binaryBlackImage1.put(c.getI(),c.getJ(),255.0); // White Color
+        }
+        /*
+        for (Corner c : SystemController.getFromCache(CacheID.SECOND_FRAME).getQualifiedMovingCorners())
+        {
+            binaryBlackImage2.put(c.getI(),c.getJ(),255.0);
+        }*/
     }
 
 

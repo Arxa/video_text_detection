@@ -2,7 +2,10 @@ package Controllers;
 
 import Models.CacheID;
 import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfInt;
 import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoWriter;
 
 import java.io.File;
@@ -17,17 +20,14 @@ import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_WIDTH;
 
 public class Writer
 {
+    private static String currentVideoFolderName;
+    private static int binaryFrameCounter;
+    private static final String fixedOutputPath = "src\\main\\resources\\Outputs\\";
     private static VideoWriter output;
     private static File processedVideo;
 
-    public static void writeFrames()
+    public static void writeFramesToVideo()
     {
-        /* Is this required?
-        try {
-            System.load("C:\\Users\\arxa\\Desktop\\dll\\openh264-1.4.0-win64msvc.dll");
-        } catch (UnsatisfiedLinkError e) {
-            System.err.println("Native code library failed to load.\n" + e);
-        } */
         for (int id : CacheID.cacheIds.elements())
         {
                         /* ----Converting Mat to Image----
@@ -40,7 +40,6 @@ public class Writer
                         iv1.fitHeightProperty().bind(pane2.heightProperty());
                         iv1.fitWidthProperty().bind(pane2.widthProperty()); */
 
-            // System.out.println(getFromCache(finalI).getFrame().type());
             // We need to convert out frame type to number 8(check opencv format table) in order to write it.
             SystemController.getFromCache(id).getFrame().convertTo
                     (SystemController.getFromCache(id).getFrame(), CvType.CV_8UC2);
@@ -50,17 +49,22 @@ public class Writer
 
     public static void initializeVideoWriter()
     {
-        String filepath = "src\\main\\resources\\Outputs\\"+Player.getFilename().getName().replace(".mp4","")+" "+
-                new Date().toString().replace(":","-")+".mp4";
+        String filepath = fixedOutputPath+currentVideoFolderName+"\\"+currentVideoFolderName+".mp4";
         int fourcc = VideoWriter.fourcc('X','2','6','4');
         // This fourcc code works with .mp4 | Another working set is DIV3 with .avi
         output = new VideoWriter(filepath,fourcc, VideoProcessor.getCap().get(CAP_PROP_FPS),
                 new Size(VideoProcessor.getCap().get(CAP_PROP_FRAME_WIDTH),
                         VideoProcessor.getCap().get(CAP_PROP_FRAME_HEIGHT)),true);
-
-        //String filePath2 = "C:\\Users\\arxa\\Desktop\\InteliJ IDEA\\Thesis\\"+filepath;
         processedVideo = new File(filepath);
     }
+
+    public static void writeFrameAsImage(Mat frame)
+    {
+        MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
+        Imgcodecs.imwrite(fixedOutputPath+currentVideoFolderName+"\\"+ ++binaryFrameCounter+" - "+
+                currentVideoFolderName+".png",frame,params);
+    }
+
 
     public static VideoWriter getOutput() {
         return output;
@@ -68,5 +72,25 @@ public class Writer
 
     public static File getProcessedVideo() {
         return processedVideo;
+    }
+
+    public static String getCurrentVideoFolderName() {
+        return currentVideoFolderName;
+    }
+
+    public static void setCurrentVideoFolderName(String outputCurrentPath) {
+        Writer.currentVideoFolderName = outputCurrentPath;
+    }
+
+    public static String getFixedOutputPath() {
+        return fixedOutputPath;
+    }
+
+    public static int getBinaryFrameCounter() {
+        return binaryFrameCounter;
+    }
+
+    public static void setBinaryFrameCounter(int binaryFrameCounter) {
+        Writer.binaryFrameCounter = binaryFrameCounter;
     }
 }

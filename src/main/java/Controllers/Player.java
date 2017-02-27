@@ -8,6 +8,10 @@ import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Date;
 
 
 /**
@@ -24,7 +28,6 @@ public class Player
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose video file");
         filename = fileChooser.showOpenDialog(stage);
-        System.out.println(filename);
 
         if (filename != null && filename.exists())
         {
@@ -32,12 +35,18 @@ public class Player
             try
             {
                 playVideoToPane(pane,filename);
+                Writer.setCurrentVideoFolderName(filename.getName().replace(".mp4","")+" "+
+                        new Date().toString().replace(":","-"));
+                Files.createDirectories(Paths.get(Writer.getFixedOutputPath()+Writer.getCurrentVideoFolderName()));
+                Writer.setBinaryFrameCounter(0);
             }
             catch (java.lang.RuntimeException ex)
             {
                 label1.setText(label1.getText()+": File not supported");
                 label1.setStyle("-fx-text-fill: red");
                 System.out.println("File not supported");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

@@ -16,7 +16,7 @@ public class Main extends Application
     {
         SystemController.initSystem();
         Parent root = FXMLLoader.load(getClass().getResource("Views/RootLayout.fxml"));
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("VideoText Extractor");
         primaryStage.setScene(new Scene(root, 1500, 750));
         primaryStage.show();
 
