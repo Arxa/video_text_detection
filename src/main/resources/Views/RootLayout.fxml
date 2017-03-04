@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<SplitPane dividerPositions="0.47904191616766467" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="419.0" minWidth="-Infinity" prefHeight="758.0" prefWidth="1138.0" stylesheets="/CSS/RootLayout.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MainController">
+    <items>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="563.0" prefWidth="367.0">
+            <children>
+                <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#loadAndPlayVideo" text="Choose video file: " />
+                <Label fx:id="label1" layoutX="172.0" layoutY="16.0" />
+                <Pane fx:id="pane" layoutX="14.0" layoutY="69.0" prefHeight="350.0" prefWidth="523.0" />
+                <Pane fx:id="pane4" layoutX="77.0" layoutY="380.0" prefHeight="325.0" prefWidth="388.0" />
+                <Button fx:id="process" layoutX="25.0" layoutY="44.0" mnemonicParsing="false" onAction="#startProcessing" text="Process Video" />
+            </children></AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="666.0" prefWidth="585.0">
+         <children>
+            <Pane fx:id="pane2" layoutX="-2.0" layoutY="6.0" prefHeight="376.0" prefWidth="589.0" />
+            <Pane fx:id="pane3" layoutX="6.0" layoutY="449.0" prefHeight="300.0" prefWidth="500.0" />
+         </children></AnchorPane>
+    </items>
+</SplitPane>

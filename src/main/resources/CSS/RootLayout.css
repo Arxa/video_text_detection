@@ -1,0 +1,15 @@
+.root
+{
+    -fx-background-color: cadetblue;
+}
+
+.label
+{
+    -fx-font-style: normal;
+    -fx-font-size: 20px;
+}
+
+#pane,#pane2,#pane3
+{
+    -fx-background-color: red;
+}
