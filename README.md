@@ -5,7 +5,7 @@
 <a href="http://www.teicm.gr/index.php?lang=en" target="_blank"> <img src="tei.png" width="500" height="400" align="middle"> </a>
 <br>
 <br>
-<h1>Faculty of Applied Technology<br>
+<h1>School of Technological Applications<br>
 Department of Engineering Informatics
 </h1>
 
