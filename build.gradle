@@ -3,6 +3,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 mainClassName = "Main"
 
@@ -11,7 +12,7 @@ repositories{
 }
 
 dependencies{
-    compile files(uri('C:\\opencv\\opencv\\build\\java\\opencv-310.jar'))
+    compile files('C:\\opencv\\opencv\\build\\java\\opencv310.jar')
     compile group: 'com.google.guava', name: 'guava', version: '19.0'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
     compile group: 'colt', name: 'colt', version: '1.2.0'
@@ -22,4 +23,19 @@ dependencies{
     compile group: 'org.assertj', name: 'assertj-core', version: '3.6.1'
     compile group: 'com.github.hoary.ffmpeg', name: 'FFmpeg-windows-x86_64', version: '2.0.1.1'
 }
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': '1.0',
+                'Main-Class': 'Main'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+
+
 

@@ -12,8 +12,6 @@
 /build
 /lib
 /out
-*.mp4
-*.png
 *.dll
 *.iml
 *.ipr
