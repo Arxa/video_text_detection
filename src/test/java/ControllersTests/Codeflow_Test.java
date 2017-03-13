@@ -2,6 +2,7 @@
 //
 //import Controllers.MainController;
 //import Controllers.PixelProcessor;
+//import Controllers.SystemController;
 //import junitparams.JUnitParamsRunner;
 //import org.junit.*;
 //import org.junit.runner.RunWith;
@@ -10,7 +11,6 @@
 //import org.opencv.core.Mat;
 //import org.opencv.videoio.VideoCapture;
 //
-//import static Controllers.PixelProcessor.getFromCache;
 //
 ///**
 // * Created by arxa on 13/12/2016.
@@ -22,12 +22,12 @@
 //{
 //    @BeforeClass
 //    public static void beforeTests() {
-//        MainController.initCache();
+//        SystemController.initSystem();
 //    }
 //
 //    @AfterClass
 //    public static void afterTests() {
-//        MainController.getCm().shutdown();
+//        SystemController.closeSystem();
 //    }
 //
 ////    @Before

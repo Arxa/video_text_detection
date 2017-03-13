@@ -13,6 +13,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.stat.correlation.Covariance;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import java.util.*;
 
@@ -22,79 +23,69 @@ import java.util.*;
 
 public class PixelProcessor
 {
-    private static int[][] cornersArray;
     private static Mat result;
     private static final int cornerThreshold = 50; // TODO INFO: This number determines if our pixel's value is worth selecting it.
 
-    public static void findHarrisCorners(Mat source, int cacheId)
+    public static FrameCorners findHarrisCorners(Mat source, Mat gray, int cacheId)
     {
-        Mat gray = new Mat();
         result = new Mat();
-        Imgproc.cvtColor(source, gray, Imgproc.COLOR_RGB2GRAY, 0);
         Imgproc.cornerHarris(gray, result, 3, 11, 0.07);
         result.convertTo(result, CvType.CV_8UC3);
 
         List<Corner> corners = new ArrayList<>();
-        //cornersArray = new int[result.height()][result.width()];
+        int cornersArray[][] = new int[result.height()][result.width()];
 
-        for (int i = 0; i < result.height(); i+=3) // TODO INFO: Scanning step: 5, for speed purposes
+        for (int i = 0; i < result.height(); i+=3) // TODO INFO: Scanning step: 3, for speed purposes
         {
             for (int j = 0; j < result.width(); j+=3)
             {
-                if (result.get(i,j)[0] > cornerThreshold)  // Corner of the two frames match, according to our cornerThreshold.
+                if (result.get(i,j)[0] > cornerThreshold)  // Descent corner detected
                 {
-                    Double pixelValue1 = result.get(i,j)[0]; // Converting double to Double for using the intValue().
+                    Double pixelValue1 = result.get(i,j)[0]; // Converting double to Double to make use of intValue().
                     Corner c = new Corner(i,j,pixelValue1.intValue());
                     corners.add(c);
-                    //cornersArray[i][j] = pixelValue1.intValue(); // We need this array for findPixelsWithNeighbours method
+                    cornersArray[i][j] = pixelValue1.intValue(); // We need this array for findPixelsWithNeighbours method
                     //findPixelsWithNeighbours(corners,c);
                 }
             }
         }
-        FrameCorners frameCorners = new FrameCorners(source,corners);
-        SystemController.getCache().put(new Element(cacheId, frameCorners));
+        return new FrameCorners(source,corners,cornersArray);
+        //SystemController.getCache().put(new Element(cacheId, frameCorners));
     }
 
 
     //TODO FIX THIS
-    public static void deleteLonelyCorners()
-    {
-        for (Object key : SystemController.getCache().getKeys())
-        {
-            here:
-            for (Corner c : SystemController.getFromCache((int)key).getCornersList())
-            {
-                int count = 0;
-                for (int x = c.getI()-25; x < c.getI()+25; x++)
-                {
-                    for (int y = c.getJ()-25; y < c.getJ()+25; y++)
-                    {
-                        if ( (x < 0 || x > result.height()-1) || (y < 0 || y > result.width()-1) ) {
-                            continue here;
-                        }
-                        if (cornersArray[x][y] != 0) {
-                            count++;
-                        }
-                    }
-                }
-                if (count == 0){
-                    c.setCornerIsLonely(true);
-                }
-            }
-        }
-
-        for (Object key : SystemController.getCache().getKeys())
-        {
-            Iterator<Corner> i = SystemController.getFromCache((int)key).getCornersList().iterator();
-            while (i.hasNext())
-            {
-                Corner c = i.next();
-                if (c.getCornerIsLonely()) {
-                    i.remove();
-                }
-            }
-        }
-    }
+//    public static void deleteLonelyCorners()
+//    {
+//        for (Object key : SystemController.getCache().getKeys())
+//        {
+//            here:
+//            for (Corner c : SystemController.getFromCache((int)key).getCornersList())
+//            {
+//                int count = 0;
+//                for (int x = c.getI()-25; x < c.getI()+25; x++)
+//                {
+//                    for (int y = c.getJ()-25; y < c.getJ()+25; y++)
+//                    {
+//                        if ( (x < 0 || x > result.height()-1) || (y < 0 || y > result.width()-1) ) {
+//                            continue here;
+//                        }
+//                        if (cornersArray[x][y] != 0) {
+//                            count++;
+//                        }
+//                    }
+//                }
+//                if (count == 0){
+//                    c.setCornerIsLonely(true);
+//                }
+//            }
+//        }
+//
+//        for (Object key : SystemController.getCache().getKeys())
+//        {
+//            SystemController.getFromCache((int) key).getCornersList().removeIf(Corner::getCornerIsLonely);
+//        }
+//    }
 
 
     public static void testMethod() // removes corners with stable text which means it's not working well
@@ -194,7 +185,7 @@ public class PixelProcessor
     {
         for (Corner c1 : SystemController.getFromCache(CacheID.FIRST_FRAME).getCornersList())
         {
-            if (SystemController.getFromCache(CacheID.SECOND_FRAME).getCornersList().contains(c1)) // custom equality in contains method
+            if (SystemController.getFromCache(CacheID.SECOND_FRAME).getCornersList().contains(c1)) // custom equality used in contains method
             {
                 SystemController.getFromCache(CacheID.FIRST_FRAME).getStableCorners().add(c1);
                 //SystemController.getFromCache(CacheID.SECOND_FRAME).getStableCorners().add(c1);
@@ -330,28 +321,6 @@ public class PixelProcessor
         }
     }
 
-    public static void paintCornersToBinaryImage(Mat binaryBlackImage1)
-    {
-        for (Corner c : SystemController.getFromCache(CacheID.FIRST_FRAME).getStableCorners())
-        {
-            binaryBlackImage1.put(c.getI(),c.getJ(),255.0); // White Color
-        }
-//        for (Corner c : SystemController.getFromCache(CacheID.SECOND_FRAME).getStableCorners())
-//        {
-//            binaryBlackImage2.put(c.getI(),c.getJ(),255.0);
-//        }
-
-        for (Corner c : SystemController.getFromCache(CacheID.FIRST_FRAME).getQualifiedMovingCorners())
-        {
-            binaryBlackImage1.put(c.getI(),c.getJ(),255.0); // White Color
-        }
-        /*
-        for (Corner c : SystemController.getFromCache(CacheID.SECOND_FRAME).getQualifiedMovingCorners())
-        {
-            binaryBlackImage2.put(c.getI(),c.getJ(),255.0);
-        }*/
-    }
-
 
     /*public static void cleanStableCorners()
     {
@@ -416,4 +385,97 @@ public class PixelProcessor
             }
         }
     }*/
+
+    public static void filterStableCorners(List<Corner> corners, int[][] cornersArray)
+    {
+        for (Corner c : corners)
+        {
+            if (c.getI()-7 <=0 || c.getI()+7 >= result.height() || c.getJ()-7 <= 0 || c.getJ()+7 >= result.width()){
+                continue;
+            }
+            int cornerCounter = 0;
+            for (int i=c.getI()-7; i <= c.getI()+7; i++)
+            {
+                for (int j=c.getJ()-7; j <= c.getJ()+7; j++)
+                {
+                    if (cornersArray[i][j] > 0){
+                        cornerCounter++;
+                    }
+                }
+            }
+            c.setCornerDensity(cornerCounter);
+        }
+    }
+
+    public static void clean_filterStableCorners(List<Corner> corners)
+    {
+        // Remove stable corner if its mask density is below a threshold
+        Iterator<Corner> i = corners.iterator();
+        while (i.hasNext())
+        {
+            Corner c = i.next();
+            if (c.getCornerDensity() < 6 && c.getCornerDensity() >= 0) // Max: 225
+            {
+                i.remove();
+                System.out.println("Removed.");
+            }
+        }
+    }
+
+    public static double[][] matToArray(Mat frame)
+    {
+        double array[][] = new double[frame.height()][frame.width()];
+        for (int i=0; i<frame.height(); i++)
+        {
+            for (int j=0; j<frame.width(); j++)
+            {
+                array[i][j] = frame.get(i,j)[0];
+            }
+        }
+        return array;
+    }
+
+    public static double[][] find_MaximumGradientDifference(double[][] matArray,int matHeight,int matWidth)
+    {
+        double[][] mgdArray = new double[matHeight][matWidth];
+        for (int i=0; i < matHeight; i++)
+        {
+            for (int j=10; j < matWidth-10; j++)
+            {
+                mgdArray[i][j] = get_mgdNumber(i,j,matArray);
+            }
+        }
+        return mgdArray;
+    }
+
+    //@Contract(pure = true)
+    public static double get_mgdNumber(int I, int J, double[][] matArray)
+    {
+        double min = matArray[I][J-10];
+        double max = matArray[I][J-10];
+        for (int j =J-9; j <= J+10; j++)
+        {
+            if (matArray[I][j] > max){
+                max = matArray[I][j];
+            }
+            if (matArray[I][j] < min){
+                min = matArray[I][j];
+            }
+        }
+        return max-min;
+    }
+
+    public static Mat arrayToMat(double[][] array,int height, int width)
+    {
+        Mat image = new Mat(height,width,CvType.CV_16S);
+        for (int i=0; i<height; i++)
+        {
+            for (int j=0; j<width; j++)
+            {
+                image.put(i,j,array[i][j]);
+            }
+        }
+        return image;
+    }
+
 }

@@ -1,11 +1,12 @@
 package Controllers;
 
+import Models.CacheID;
 import Models.Corner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 import com.google.common.primitives.Ints;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
+import org.opencv.core.*;
+import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
 
@@ -15,9 +16,9 @@ import java.util.List;
 
 public class Visualizer
 {
-    public static void paintCorners(List<Corner> cornerList, Mat frame, double[] color)
+    public static int paintCorners(List<Corner> cornerList, Mat frame, double[] color)
     {
-
+        int paintedCorners = 0;
         frame.convertTo(frame, CvType.CV_64FC3);
         for (Corner c : cornerList)
         {
@@ -30,9 +31,11 @@ public class Visualizer
                         break outerloop;
                     }
                     frame.put(i,j,color);
+                    paintedCorners++;
                 }
             }
         }
+        return paintedCorners;
     }
 
     public static void paintTextArea(List<Corner> textCornersList, Mat frame, double[] color)
@@ -83,5 +86,42 @@ public class Visualizer
         {
             frame.put(i,j,color);
         }
+    }
+
+    public static int paintCornersToBinaryImage(List<Corner> corners, Mat binaryBlackImage1)
+    {
+        int paintedCorners = 0;
+        for (Corner c : corners)
+        {
+            binaryBlackImage1.put(c.getI(),c.getJ(),255.0); // White Color
+            paintedCorners++;
+        }
+        return paintedCorners;
+    }
+
+    public static void paintMatToBinary(Mat labels, Mat binary)
+    {
+        int k=0;
+        for (int i=0; i<binary.height(); i++)
+        {
+            for (int j=0; j<binary.width(); j++)
+            {
+                if (Double.compare(labels.get(k,0)[0],1.0) == 0)
+                {
+                    binary.put(i,j,255.0);
+                }
+                k++;
+            }
+        }
+    }
+
+    public static void paintBlocksToOriginalImage(List<Rect> textBlocks, Mat original)
+    {
+        for (Rect r : textBlocks)
+        {
+            Imgproc.rectangle(original,new Point(r.x,r.y),new Point(r.x+r.width,r.y+r.height),
+                    new Scalar(255.0),3);
+        }
+
     }
 }

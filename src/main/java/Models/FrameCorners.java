@@ -16,17 +16,19 @@ public class FrameCorners
     private List<Corner> stableCorners;
     private List<Corner> movingCorners;
     private List<Corner> qualifiedMovingCorners;
+    private int[][] cornersArray;
 
     public FrameCorners()
     {}
 
-    public FrameCorners(Mat frame1, List<Corner> corners1)
+    public FrameCorners(Mat frame1, List<Corner> corners1, int[][] cornersArray1)
     {
         frame = frame1;
         cornersList = corners1;
         stableCorners = new ArrayList<>();
         movingCorners = new ArrayList<>();
         qualifiedMovingCorners = new ArrayList<>();
+        cornersArray = cornersArray1;
     }
 
     public Mat getFrame() {
@@ -49,4 +51,11 @@ public class FrameCorners
         return qualifiedMovingCorners;
     }
 
+    public int[][] getCornersArray() {
+        return cornersArray;
+    }
+
+    public void setCornersArray(int[][] cornersArray) {
+        this.cornersArray = cornersArray;
+    }
 }

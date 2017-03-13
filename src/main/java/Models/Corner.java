@@ -2,9 +2,6 @@ package Models;
 
 import cern.colt.list.IntArrayList;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by arxa on 17/11/2016.
  */
@@ -14,6 +11,7 @@ public class Corner
     private int i;
     private int j;
     private int value;
+    private int cornerDensity;
     private boolean cornerIsLonely;
     private boolean stableCornerIsLonely;
     private IntArrayList horDiffList; // Horizontal Difference List
@@ -30,6 +28,7 @@ public class Corner
         value = value1;
         horDiffList = new IntArrayList();
         verDiffList = new IntArrayList();
+        cornerDensity = -1;
     }
 
     public Corner(int i1, int j1)
@@ -110,6 +109,14 @@ public class Corner
 
     public void setStableCornerIsLonely(boolean stableCornerIsLonely) {
         this.stableCornerIsLonely = stableCornerIsLonely;
+    }
+
+    public int getCornerDensity() {
+        return cornerDensity;
+    }
+
+    public void setCornerDensity(int cornerDensity) {
+        this.cornerDensity = cornerDensity;
     }
 }
 

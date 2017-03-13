@@ -25,44 +25,37 @@ public class Writer
     private static final String fixedOutputPath = "src\\main\\resources\\Outputs\\";
     private static VideoWriter output;
     private static File processedVideo;
+    private static String fullVideoPath;
 
-    public static void writeFramesToVideo()
+    public static void writeFrameToVideo(Mat frame)
     {
-        for (int id : CacheID.cacheIds.elements())
-        {
-                        /* ----Converting Mat to Image----
-                        MatOfByte byteMat1 = new MatOfByte();
-                        Imgcodecs.imencode(".bmp", getFromCache(i).getFrame(), byteMat1);
-                        Image image1 = new Image(new ByteArrayInputStream(byteMat1.toArray()));
-                        ImageView iv1 = new ImageView(image1);
-                        ----Show frame on Scene----
-                        pane2.getChildren().add(iv1);
-                        iv1.fitHeightProperty().bind(pane2.heightProperty());
-                        iv1.fitWidthProperty().bind(pane2.widthProperty()); */
-
-            // We need to convert out frame type to number 8(check opencv format table) in order to write it.
-            SystemController.getFromCache(id).getFrame().convertTo
-                    (SystemController.getFromCache(id).getFrame(), CvType.CV_8UC2);
-            output.write(SystemController.getFromCache(id).getFrame());
+        // We need to convert out frame type to number 8 (check opencv format table) in order to write it.
+        frame.convertTo(frame, CvType.CV_8UC2);
+        try {
+            output.write(frame);
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     public static void initializeVideoWriter()
     {
-        String filepath = fixedOutputPath+currentVideoFolderName+"\\"+currentVideoFolderName+".mp4";
+        fullVideoPath = fixedOutputPath+currentVideoFolderName+"\\"+currentVideoFolderName+".mp4";
         int fourcc = VideoWriter.fourcc('X','2','6','4');
         // This fourcc code works with .mp4 | Another working set is DIV3 with .avi
-        output = new VideoWriter(filepath,fourcc, VideoProcessor.getCap().get(CAP_PROP_FPS),
+        output = new VideoWriter(fullVideoPath,fourcc, VideoProcessor.getCap().get(CAP_PROP_FPS),
                 new Size(VideoProcessor.getCap().get(CAP_PROP_FRAME_WIDTH),
                         VideoProcessor.getCap().get(CAP_PROP_FRAME_HEIGHT)),true);
-        processedVideo = new File(filepath);
+        processedVideo = new File(fullVideoPath);
     }
 
-    public static void writeFrameAsImage(Mat frame)
+    public static File writeFrameAsImage(Mat frame)
     {
+        String filePath = fixedOutputPath+currentVideoFolderName+"\\"+ ++binaryFrameCounter+" - "+
+                currentVideoFolderName+".png";
         MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
-        Imgcodecs.imwrite(fixedOutputPath+currentVideoFolderName+"\\"+ ++binaryFrameCounter+" - "+
-                currentVideoFolderName+".png",frame,params);
+        Imgcodecs.imwrite(filePath,frame,params);
+        return new File(filePath);
     }
 
 
@@ -92,5 +85,9 @@ public class Writer
 
     public static void setBinaryFrameCounter(int binaryFrameCounter) {
         Writer.binaryFrameCounter = binaryFrameCounter;
+    }
+
+    public static String getFullVideoPath() {
+        return fullVideoPath;
     }
 }

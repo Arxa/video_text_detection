@@ -1,15 +1,15 @@
 package Controllers;
 
-import Models.CacheID;
 ;
-import Models.Color;
+import Models.ImageContainer;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import net.sf.ehcache.Element;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
+
+import java.util.List;
 
 
 /**
@@ -34,66 +34,94 @@ public class VideoProcessor
                 @Override protected Void call() throws Exception
                 {
                     Writer.initializeVideoWriter();
-                    Mat frame1 = new Mat();
-                    Mat frame2 = new Mat();
-                    boolean open1 = cap.read(frame1);
-                    boolean open2 = cap.read(frame2);
-                    if (open1){
-                        PixelProcessor.findHarrisCorners(frame1,CacheID.FIRST_FRAME);
-                    }
+                    ImageContainer.init();
+                    boolean open1 = cap.read(ImageContainer.getInput());
+
                     while (true)
                     {
-                        if (open1 && open2) // Start reading video frames by pairs
+                        if (open1)
                         {
-                            PixelProcessor.findHarrisCorners(frame2,CacheID.SECOND_FRAME);
+                            ImageContainer.setInput_GB(new Mat(ImageContainer.getInput().size(),ImageContainer.getInput().type()));
 
-                            // Creating binary images with zeros (black)
-                            Mat binaryFrame1 = new Mat(frame1.size(),CvType.CV_8UC1,new Scalar(0.0));
-                            //Mat binaryFrame2 = new Mat(frame2.size(),CvType.CV_8UC1,new Scalar(0.0));
+                            Imgproc.GaussianBlur(ImageContainer.getInput(),ImageContainer.getInput_GB(),
+                                    new Size(15.0,15.0),0.0,0.0);
 
-                            PixelProcessor.findStableAndMovingCorners();
-                            PixelProcessor.findMovingCorners();
+                            Imgproc.cvtColor(ImageContainer.getInput_GB(), ImageContainer.getInput_GB_Gray(), Imgproc.COLOR_RGB2GRAY, 0);
 
-                            // Mark Stable Corners with White
-                            PixelProcessor.paintCornersToBinaryImage(binaryFrame1);
-                            Mat dilated1 = new Mat(binaryFrame1.rows(),binaryFrame1.cols(),binaryFrame1.type());
-                            //Mat dilated2 = new Mat(binaryFrame2.rows(),binaryFrame2.cols(),binaryFrame2.type());
+                            Imgproc.Laplacian(ImageContainer.getInput_GB_Gray(),ImageContainer.getInput_GB_Gray_LPL(),
+                                    CvType.CV_16S,1,1,0); //bigger ksize stronger intensity
 
-                            Imgproc.dilate(binaryFrame1,dilated1,Imgproc.getStructuringElement
-                                    (Imgproc.MORPH_RECT, new Size(12.0,12.0))); // Defaults: 3x3 - Anchor: center
-                            //Imgproc.dilate(binaryFrame2,dilated2,new Mat());
-                            Writer.writeFrameAsImage(dilated1);
-                            //Writer.writeFrameAsImage(dilated2);
+                            // array allocation happens inside 'matToArray' method
+                            ImageContainer.setInput_GB_Gray_LPL_in_Array
+                                    (PixelProcessor.matToArray(ImageContainer.getInput_GB_Gray_LPL()));
 
-                            PixelProcessor.sortCorners();
-                            /*
-                            for (Object key : SystemController.getCache().getKeys())
-                            {
-                                PixelProcessor.applyNormalDistribution(SystemController.getFromCache((int)key).getStableCorners());
-                                PixelProcessor.cleanCorners(SystemController.getFromCache((int)key).getStableCorners());
-                                //PixelProcessor.applyNormalDistribution(getFromCache((int)key).getQualifiedMovingCorners());
-                                //PixelProcessor.cleanCorners(getFromCache((int)key).getQualifiedMovingCorners());
-                            }*/
-                            //for (Object key : SystemController.getCache().getKeys())
-                            //{
-                                Visualizer.paintCorners(SystemController.getFromCache(CacheID.FIRST_FRAME).
-                                        getStableCorners(),SystemController.getFromCache(CacheID.FIRST_FRAME).getFrame(), Color.RED);
-                                Visualizer.paintCorners(SystemController.getFromCache(CacheID.FIRST_FRAME).
-                                        getQualifiedMovingCorners(),SystemController.getFromCache(CacheID.FIRST_FRAME).getFrame(),Color.BLUE);
+                            ImageContainer.setInput_GB_Gray_LPL_MGD_in_Array(PixelProcessor.
+                                    find_MaximumGradientDifference(ImageContainer.getInput_GB_Gray_LPL_in_Array(),
+                                            ImageContainer.getInput_GB_Gray_LPL().height(),
+                                                    ImageContainer.getInput_GB_Gray_LPL().width()));
 
-                                /*Visualizer.paintTextArea(SystemController.getFromCache((int)key).
-                                        getStableCorners(),SystemController.getFromCache((int)key).getFrame(),Color.GREEN);
-                                Visualizer.paintTextArea(SystemController.getFromCache((int)key).
-                                        getQualifiedMovingCorners(),SystemController.getFromCache((int)key).getFrame(),Color.GREEN);*/
-                            //}
-                            Writer.writeFramesToVideo();
+                            ImageContainer.setInput_GB_Gray_LPL_MGD(PixelProcessor.
+                                    arrayToMat(ImageContainer.getInput_GB_Gray_LPL_MGD_in_Array(),
+                                            ImageContainer.getInput_GB_Gray_LPL().height(),ImageContainer.getInput_GB_Gray_LPL().width()));
+
+                            ImageContainer.getInput_GB_Gray_LPL_MGD_NORM().create
+                                    (ImageContainer.getInput_GB_Gray_LPL_MGD().size(),CvType.CV_32FC1);
+
+                            Core.normalize(ImageContainer.getInput_GB_Gray_LPL_MGD(),
+                                    ImageContainer.getInput_GB_Gray_LPL_MGD_NORM(),0.0,1.0,
+                                            Core.NORM_MINMAX,ImageContainer.getInput_GB_Gray_LPL_MGD_NORM().type());
+
+                            // Make Classification of 0~1 normalized values into 0 and 1
+                            ImageContainer.setInput_GB_Gray_LPL_MGD_NORM_KMEANS
+                                    (Clustering.k_Means(ImageContainer.getInput_GB_Gray_LPL_MGD_NORM()));
+
+                            // Initializing 'Binary' image filled with zeros (black)
+                            ImageContainer.setInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN
+                                    (new Mat(ImageContainer.getInput_GB_Gray_LPL_MGD_NORM().size(),
+                                            CvType.CV_8UC1,new Scalar(0.0)));
+
+                            // Fill the K-MEANS text cluster values to binary image above as ones (white)
+                            Visualizer.paintMatToBinary(ImageContainer.
+                                            getInput_GB_Gray_LPL_MGD_NORM_KMEANS(),
+                                                    ImageContainer.getInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN());
+
+                            // Initialize image for the Dilation operation
+                            ImageContainer.setInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED(new Mat
+                                    (ImageContainer.getInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN().rows(),
+                                            ImageContainer.getInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN().cols(),
+                                                    ImageContainer.getInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN().type()));
+
+                            // Do Dilation
+                            Imgproc.dilate(ImageContainer.getInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN(),
+                                    ImageContainer.getInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED(),
+                                        Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(13.0,13.0)));
+                                        // Defaults: 3x3 - Anchor: center
+
+                            // Calculate Sobel Edges of original image - needed below
+                            Imgproc.Sobel(ImageContainer.getInput(),ImageContainer.getInput_Sobel(),CvType.CV_8U,1,1);
+
+                            // Find and Filter Text Rect Blocks - with Sobel's help
+                            List<Rect> textBlocks = Clustering.find_TextBlocks
+                                    (ImageContainer.getInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED());
+
+                            // TODO consider changing the size of every new Mat to original input's only
+
+                            // Initializing 'Binary' image filled with zeros (black)
+                            ImageContainer.setInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED
+                                    (new Mat(ImageContainer.getInput_GB_Gray_LPL_MGD_NORM().size(),
+                                            CvType.CV_8UC1,new Scalar(0.0)));
+
+                            // Paint the approved text blocks to the original image
+                            Visualizer.paintBlocksToOriginalImage(textBlocks, ImageContainer.getInput());
+
+                            // Create Image file
+                            Writer.writeFrameAsImage(ImageContainer.getInput());
+
                             System.out.println("Cycle completed");
+                            ImageContainer.init();
 
-                            // Switching frames and their caches
-                            frame2.copyTo(frame1);
-                            SystemController.getCache().put(new Element(CacheID.FIRST_FRAME,
-                                    SystemController.getFromCache(CacheID.SECOND_FRAME)));
-                            open2 = cap.read(frame2);
+                            open1 = cap.read(ImageContainer.getInput());
+
                         }
                         else break;
                     } return null;

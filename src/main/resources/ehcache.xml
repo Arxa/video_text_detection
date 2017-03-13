@@ -6,7 +6,7 @@
     <!-- <diskStore path="java.io.tmpdir" /> -->
 
     <!-- Ask Ehcache to store cache in this path -->
-    <diskStore path="java.io.tmpdir" />
+    <!--<diskStore path="java.io.tmpdir" /> -->
 
     <!-- Sample cache named cache1
     This cache contains a maximum in memory of 10000 elements, and will expire
@@ -17,14 +17,12 @@
     disk cache, which in this configuration will go to wherever java.io.tmp is
     defined on your system. On a standard Linux system this will be /tmp" -->
     <cache name="cache1"
-           maxEntriesLocalHeap="10000"
-           maxEntriesLocalDisk="1000"
+           maxElementsInMemory="500"
            eternal="false"
-           diskSpoolBufferSizeMB="20"
-           timeToIdleSeconds="300" timeToLiveSeconds="600"
-           memoryStoreEvictionPolicy="LFU"
-           transactionalMode="off">
-        <persistence strategy="localTempSwap" />
+           overflowToDisk="false"
+           overflowToOffHeap="false"
+           memoryStoreEvictionPolicy="LRU" >
+        <persistence strategy="none" />
     </cache>
 
 </ehcache>
