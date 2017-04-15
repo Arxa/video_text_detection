@@ -23,18 +23,43 @@ Dr. Athanasios Nikolaidis, nikolaid@teiser.gr
 
 <h2>Description</h2>
 <p>The objective of this Thesis is the development of a Java desktop application capable of
- detecting and extracting text displays in complex video scenes. This work is inspired and based on
- multiple research scientific papers: <a href="https://www.hindawi.com/journals/mpe/2016/2187647/">["_A Method of Effective Text Extraction for Complex Video Scene_"]</a>,
- <a href="http://ieeexplore.ieee.org/document/5557889/">["_A Laplacian Approach to Multi-Oriented Text Detection in Video_"]</a>,
- <a href="https://www.researchgate.net/publication/223882980_A_new_robust_algorithm_for_video_text_extraction>["_A new robust algorithm for video text extraction_"]</a>
- Most of open-source research projects and papers 
- have been implemented using programming languages such as MATLAB and C++. What makes this work unique is the
- use of Java programming lanugage and it's powerful related technologies such as JavaFX, Ehcache, JUnit and Gradle.
+ detecting and extracting text displays from video scenes with complex background. This work is inspired and based on
+ multiple research scientific papers: <br> <br>
+ <a href="https://www.hindawi.com/journals/mpe/2016/2187647/">"<i>A Method of Effective Text Extraction for Complex Video Scene</i>"</a>,<br>
+ <a href="http://ieeexplore.ieee.org/document/5557889/">"<i>A Laplacian Approach to Multi-Oriented Text Detection in Video</i>"</a>,<br>
+ <a href="https://www.researchgate.net/publication/220860334_A_Laplacian_Method_for_Video_Text_Detection">"<i>A Laplacian Method for Video Text Detection</i>"</a>,<br>
+ <a href="https://www.researchgate.net/publication/223882980_A_new_robust_algorithm_for_video_text_extraction">"<i>A new robust algorithm for video text extraction</i>"</a><br>
+ 
+ Sophisticated algorithms, advanced <b>Image Processing</b> and <b>Machine Learning</b> techniques are being used in this software.
+ In addition, a fully proffesional code design and development environment is being used in order to create a stable, reusable, extensible and well tested application.
+ 
+
   This Thesis is currently on-going; the Thesis's detailed technical PDF is soon to be added here. </p>
+  
+  
+  <h2>Text Extraction Steps</h2>
+  
+  <ul>
+        <li>
+            Load video file locally or capture it through computer's webcam
+        </li>
+        <li>
+            Grab video frames and do the processing (Filtering, Clustering, Heuristics)
+        </li>
+        <li>
+            Show results of candidate text regions  
+        </li>
+        <li>
+            Create pixel features vector and classify them using SVM
+        </li>
+        <li>
+            Apply OCR on the precise text region and receive the text.
+        </li>
+ </ul>    
+  
+  
 
-<h2>Technologies</h2>
-
-<ul>
+<h2>Technologies used</h2>
   
   <li>
       <b>Programming language</b>
@@ -108,11 +133,3 @@ Dr. Athanasios Nikolaidis, nikolaid@teiser.gr
   </li>
   
 </ul>
-
-
-
-
-
-
-
-

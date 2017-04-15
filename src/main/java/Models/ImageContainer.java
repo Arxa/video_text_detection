@@ -2,6 +2,9 @@ package Models;
 
 import org.opencv.core.Mat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by arxa on 12/3/2017.
  */
@@ -10,6 +13,7 @@ public class ImageContainer
 {
     private static Mat input;
     private static Mat input_Sobel;
+    private static Mat input_Gray;
     private static Mat input_GB; // Gaussian Blurred
     private static Mat input_GB_Gray;
     private static Mat input_GB_Gray_LPL; // Laplacian
@@ -23,11 +27,15 @@ public class ImageContainer
     private static double[][] input_GB_Gray_LPL_in_Array;
     private static double[][] input_GB_Gray_LPL_MGD_in_Array;
 
+    private static List<Region> croppedTextRegions;
+
+
 
     public static void init()
     {
         input = new Mat();
         input_Sobel = new Mat();
+        input_Gray = new Mat();
         input_GB = new Mat();
         input_GB_Gray = new Mat();
         input_GB_Gray_LPL = new Mat();
@@ -37,6 +45,8 @@ public class ImageContainer
         input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN = new Mat();
         input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED = new Mat();
         input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED = new Mat();
+
+        croppedTextRegions = new ArrayList<>();
     }
 
     public static Mat getInput() {
@@ -45,6 +55,11 @@ public class ImageContainer
 
     public static void setInput(Mat input) {
         ImageContainer.input = input;
+    }
+
+    public static Mat getInput_Gray() {return input_Gray;
+    }
+    public static void setInput_Gray(Mat input_Gray) {ImageContainer.input_Gray = input_Gray;
     }
 
     public static Mat getInput_GB() {
@@ -141,5 +156,13 @@ public class ImageContainer
 
     public static void setInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED(Mat input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED) {
         ImageContainer.input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED = input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED;
+    }
+
+    public static List<Region> getCroppedTextRegions() {
+        return croppedTextRegions;
+    }
+
+    public static void setCroppedTextRegions(List<Region> croppedTextRegions) {
+        ImageContainer.croppedTextRegions = croppedTextRegions;
     }
 }

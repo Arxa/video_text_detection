@@ -11,8 +11,23 @@ repositories{
     mavenCentral()
 }
 
-dependencies{
-    compile files('C:\\opencv\\opencv\\build\\java\\opencv310.jar')
+
+dependencies {
+
+    // Local Libraries
+    compile files('./lib/opencv-320.jar')
+    compile files('./lib/libsvm.jar')
+    compile files('./lib/javaml/ajt-2.9.jar')
+    compile files('./lib/javaml/commons-math-1.2.jar')
+    compile files('./lib/javaml/Jama-1.0.2.jar')
+    compile files('./lib/javaml/javaml-0.1.7.jar')
+    compile files('./lib/javaml/weka.jar')
+
+    // Maven Libraries
+    //compile group: 'com.jcabi', name: 'jcabi-aspects', version: '0.22.6'
+    //compile group: 'org.aspectj', name: 'aspectjrt', version: '1.8.10'
+    //compile group: 'com.jcabi', name: 'jcabi-maven-plugin', version: '0.14.1'
+
     compile group: 'com.google.guava', name: 'guava', version: '19.0'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
     compile group: 'colt', name: 'colt', version: '1.2.0'
