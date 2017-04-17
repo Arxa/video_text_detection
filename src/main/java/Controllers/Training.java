@@ -20,7 +20,7 @@ public class Training
 {
     public static final int FEATURE_DIMENSIONS = 59;
     public static final int SUBREGIONS = 500;
-    private static final String DATA_PATH = "src\\main\\resources\\Training_Dataset";
+    private static final String DATA_PATH = "src\\main\\resources\\Testing_Dataset";
     private static final String DATA_TYPE = ".png";
     private static int number_of_text_data;
     private static int number_of_background_data;
@@ -34,8 +34,8 @@ public class Training
         {
             number_of_text_data = (int) Files.list(Paths.get(DATA_PATH+"\\"+"text")).count();
             number_of_background_data = (int) Files.list(Paths.get(DATA_PATH+"\\"+"background")).count();
-            training_set = new Mat((number_of_text_data + number_of_background_data) * SUBREGIONS,FEATURE_DIMENSIONS, CvType.CV_32F);
-            labels = new Mat((number_of_text_data + number_of_background_data) * SUBREGIONS, 1, CvType.CV_32S);
+            training_set = new Mat((number_of_text_data + number_of_background_data) * SUBREGIONS,FEATURE_DIMENSIONS, CvType.CV_32FC1);
+            labels = new Mat((number_of_text_data + number_of_background_data) * SUBREGIONS, 1, CvType.CV_32FC1);
         }
         catch (IOException e)
         {
@@ -46,11 +46,12 @@ public class Training
     public static void create_labels()
     {
         for (int i=0; i < number_of_text_data * SUBREGIONS; i++) {
-            labels.put(i,0,1);
+            labels.put(i,0,1.0);
         }
 
-        for (int i=number_of_text_data * SUBREGIONS; i < number_of_background_data * SUBREGIONS; i++) {
-            labels.put(i,0,0);
+        for (int i = number_of_text_data * SUBREGIONS;
+             i < ((number_of_background_data + number_of_text_data) * SUBREGIONS); i++) {
+            labels.put(i,0,0.0);
         }
     }
 

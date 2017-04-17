@@ -56,9 +56,9 @@ public class PixelProcessor
     public static double[][] matToArray(Mat frame)
     {
         double array[][] = new double[frame.height()][frame.width()];
-        for (int i=0; i<frame.height(); i++)
+        for (int i=0; i < frame.height(); i++)
         {
-            for (int j=0; j<frame.width(); j++)
+            for (int j=0; j < frame.width(); j++)
             {
                 array[i][j] = frame.get(i,j)[0];
             }
@@ -69,7 +69,7 @@ public class PixelProcessor
     public static double[] matTo1dArray(Mat frame)
     {
         double array[] = new double[frame.height()];
-        for (int i=0; i<frame.height(); i++)
+        for (int i=0; i < frame.height(); i++)
         {
             array[i] = frame.get(i,0)[0];
         }
@@ -93,12 +93,12 @@ public class PixelProcessor
     public static void crop_region_into_subregions(Region textRegions)
     {
         // Cropping the 500x100 text region into 500 10x10 subregions
-        for (int x = 0; x <= textRegions.getRegion().width() -10; x+=10)
+        for (int x = 0; x <= textRegions.getMatRegion().width() -10; x+=10)
         {
-            for (int y = 0; y <= textRegions.getRegion().height() -10; y+=10)
+            for (int y = 0; y <= textRegions.getMatRegion().height() -10; y+=10)
             {
                 Rect rect = new Rect(new Point(x,y), new Size(10.0,10.0));
-                Mat subregion = new Mat(textRegions.getRegion(),rect);
+                Mat subregion = new Mat(textRegions.getMatRegion(),rect);
                 SubRegion subRegion = new SubRegion(subregion);
                 textRegions.getSubregions().add(subRegion);
             }

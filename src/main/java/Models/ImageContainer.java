@@ -27,9 +27,6 @@ public class ImageContainer
     private static double[][] input_GB_Gray_LPL_in_Array;
     private static double[][] input_GB_Gray_LPL_MGD_in_Array;
 
-    private static List<Region> croppedTextRegions;
-
-
 
     public static void init()
     {
@@ -45,8 +42,6 @@ public class ImageContainer
         input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN = new Mat();
         input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED = new Mat();
         input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED = new Mat();
-
-        croppedTextRegions = new ArrayList<>();
     }
 
     public static Mat getInput() {
@@ -156,13 +151,5 @@ public class ImageContainer
 
     public static void setInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED(Mat input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED) {
         ImageContainer.input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED = input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED;
-    }
-
-    public static List<Region> getCroppedTextRegions() {
-        return croppedTextRegions;
-    }
-
-    public static void setCroppedTextRegions(List<Region> croppedTextRegions) {
-        ImageContainer.croppedTextRegions = croppedTextRegions;
     }
 }

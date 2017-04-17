@@ -115,12 +115,12 @@ public class Visualizer
         }
     }
 
-    public static void paintBlocksToOriginalImage(List<Rect> textBlocks, Mat original)
+    public static void paintRectsToMat(List<Rect> textBlocks, Mat original)
     {
         for (Rect r : textBlocks)
         {
-            Imgproc.rectangle(original,new Point(r.x,r.y),new Point(r.x+r.width,r.y+r.height),
-                    new Scalar(150.0),1);
+            Imgproc.rectangle(original, new Point(r.x,r.y), new Point(r.x+r.width,r.y+r.height),
+                    new Scalar(255.0),-1);
         }
 
     }

@@ -4,9 +4,11 @@ import com.google.common.util.concurrent.TimeLimiter;
 import libsvm.*;
 import net.sf.javaml.core.*;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Created by arxa on 9/4/2017.
@@ -70,15 +72,20 @@ public class SupportVectorMachine
 
     public static void setParameters()
     {
-        //param.C = 1;
+        param.C = 1024;
         param.cache_size = 20000;
+        param.eps = 0.001;
+        param.nu = 0.5;
         param.svm_type = svm_parameter.C_SVC;
         param.kernel_type = svm_parameter.RBF;
-        //param.gamma = 1;
-       // param.gamma = 0.015625; // Y parameter of RBF kernel
+        param.probability = 1;
+        param.gamma = 0.5; // Y
     }
 
-    public static void testGridSearch() throws Exception {
+    public static void testGridSearch() throws Exception
+    {
+        Files.write(Paths.get("svm_stats.txt"),"\n".getBytes());
+
         double[] C = new double[11];
         double[] Y = new double[11];
 
@@ -92,25 +99,39 @@ public class SupportVectorMachine
         for (int i = 0; i <= 10; i++) {
             Y[i] = 1.0 / Math.pow(2.0,(double)v--);
         }
-        int result;
-        for (int c=1; c <= 10; c++ ) {
-            for (int y = 0; y <= 10; y++) {
 
-                final int finalC = c;
-                final int finalY = y;
+        for (int c=0; c <= 10; c++ )
+        {
+            for (int y = 0; y <= 10; y++)
+            {
 
-                TimeLimiter limiter = new SimpleTimeLimiter();
+                final int finalC = (int)C[c];
+                final double finalY = Y[y];
 
-                String res = limiter.callWithTimeout(new Callable<String>() {
-                    public String call() {
+                //final String accurasy;
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                Future<String> future = executor.submit(new Callable<String>() {
+                    @Override
+                    public String call() throws Exception {
                         return gridSearch_test(finalC,finalY);
                     }
-                }, 5, TimeUnit.SECONDS, false);
-                //String r = gridSearch_test(finalC,finalY);
-                System.out.printf("Calculated c:"+c+", y:"+y+", accuracy: "+res);
+                });
+                try {
+                    System.out.println("Started..");
+                    Files.write(Paths.get("svm_stats.txt"),("Calculating For C:"+(int)C[c]+", Y:"+Y[y]+"\n").
+                            getBytes(), StandardOpenOption.APPEND);
+                    Files.write(Paths.get("svm_stats.txt"),("For C:"+(int)C[c]+", Y:"+Y[y]+" Accuracy: "+
+                            future.get(240, TimeUnit.SECONDS)+"\n\n").getBytes(),StandardOpenOption.APPEND);
+
+                    //System.out.println("For C:"+c+", Y:"+y+" Accuracy: "+future.get(30, TimeUnit.SECONDS));
+                    //System.out.println("Finished!");
+                } catch (TimeoutException e) {
+                    future.cancel(true);
+                    Files.write(Paths.get("svm_stats.txt"),"Terminated!\n\n".getBytes(),StandardOpenOption.APPEND);
+                }
+                executor.shutdownNow();
             }
         }
-
     }
 
     public static void gridSearch()
@@ -158,7 +179,7 @@ public class SupportVectorMachine
         System.out.println("Best C: "+bestC+" Best Y: "+bestY+" Accuracy: "+accuracy);
     }
 
-    public static String gridSearch_test(int c, int y)
+    public static String gridSearch_test(int c, double y)
     {
         boolean flag = false;
         double[] target = new double[prob.y.length];
@@ -225,7 +246,7 @@ public class SupportVectorMachine
         return svm.svm_load_model(filepath);
     }
 
-    public double evaluate(double[] features, svm_model model)
+    public static double evaluate(double[] features, svm_model model)
     {
         svm_node[] nodes = new svm_node[features.length];
 
@@ -234,7 +255,6 @@ public class SupportVectorMachine
             svm_node node = new svm_node();
             node.index = i;
             node.value = features[i];
-
             nodes[i] = node;
         }
 
@@ -245,19 +265,12 @@ public class SupportVectorMachine
         double[] prob_estimates = new double[totalClasses];
         double v = svm.svm_predict_probability(model, nodes, prob_estimates);
 
-        for (int i = 0; i < totalClasses; i++){
+        /*for (int i = 0; i < totalClasses; i++){
             System.out.print("(" + labels[i] + ":" + prob_estimates[i] + ")");
         }
-        System.out.println("(Actual:" + features[0] + " Prediction:" + v + ")");
+        System.out.println("(Actual:" + 1 + " Prediction:" + v + ")");*/
 
         return v;
-    }
-
-
-    public static int predict( )
-    {
-        //return (int) svm.predict(test);
-        return 0;
     }
 
     public static svm_parameter getParam() {

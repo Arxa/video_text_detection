@@ -1,5 +1,6 @@
 package Controllers;
 
+import Models.Region;
 import libsvm.*;
 
 import static Models.ImageContainer.*;
@@ -10,6 +11,8 @@ import javafx.scene.layout.Pane;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
+
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -104,11 +107,21 @@ public class VideoProcessor
                                     (getInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED());
 
 
+                            List<Region> textRegions = MatProcessor.getConfiguratedTextRegions(textBlocks);
 
-                            // TODO consider changing the size of every new Mat to original input's only
+                           List<Mat> testSVMImages = new ArrayList<>();
+                           for (Region r : textRegions)
+                           {
+                               Mat testSVMImage = MatProcessor.getTestSVMImage(r);
+                               Mat testSVMImageNormalized = new Mat();
+                               Core.normalize(testSVMImage, testSVMImageNormalized, 0.0,1.0,
+                                       Core.NORM_MINMAX, testSVMImage.type());
+                               testSVMImages.add(testSVMImageNormalized);
+                           }
 
 
-
+                            // -----------------------------
+                            /*
                             Training.init();
                             Training.create_labels();
                             Training.read_training_data("text");
@@ -116,46 +129,91 @@ public class VideoProcessor
 
                             Mat train_norm = new Mat();
 
-                            /*Core.normalize(Training.getTraining_set(), train_norm, 0.0,1.0,
-                                    Core.NORM_MINMAX, Training.getTraining_set().type());*/
+                            Core.normalize(Training.getTraining_set(), train_norm, 0.0,1.0,
+                                    Core.NORM_MINMAX, Training.getTraining_set().type());
 
                             System.out.println("Reading complete. Setting SVM parameters");
 
-                            SupportVectorMachine.setParameters();
 
-                            System.out.println("Training has begun.");
+                            double[][] testArray = PixelProcessor.matToArray(train_norm);
+                            */
+                            // ---------------------------------
 
-                            double[][] trainArray = PixelProcessor.matToArray(Training.getTraining_set());
-                            double[] labelsArray = PixelProcessor.matTo1dArray(Training.getLabels());
-
-                            SupportVectorMachine.createProblem(trainArray,labelsArray);
-                            //SupportVectorMachine.gridSearch();
-                            SupportVectorMachine.testGridSearch();
-
-                            //SupportVectorMachine.train(trainArray,labelsArray);
-
-                            //SupportVectorMachine.save("file1.xml",
+                            svm_model model = SupportVectorMachine.
+                                    load("src\\main\\resources\\SVM_Files\\svm_model.xml");
 
 
-                            System.out.println("Trained.");
+                            int textRegionCounter = 0;
+                            for (Mat m : testSVMImages)
+                            {
+                                List<Rect> nonTextSubregions = new ArrayList<>();
+                                int x = 0, y = 0;
+                                double[][] testArray = PixelProcessor.matToArray(m);
+                                int corrects = 0;
+                                for (int i=0; i < testArray.length; i++)
+                                {
+                                    double prediction = SupportVectorMachine.evaluate(testArray[i],model);
+                                    if (Double.compare(prediction,0.0) == 0) // subregion is non-text
+                                    {
+                                        if (i == 498) {
+                                            System.out.println("bla");
+                                        }
+                                        x = (int)(i/50.0);
+                                        if (x < 1) {
+                                            x = 0;
+                                            y = i * 10;
+                                        }
+                                        else {
+                                            y = (i - (x*50)) * 10;
+                                            x *= 10;
+                                        }
+                                        nonTextSubregions.add(new Rect(new Point(y,x), new Size(10.0,10.0)));
+                                        corrects++;
+                                        System.out.println("--"+i+"--");
+                                    }
+                                }
+                                Visualizer.paintRectsToMat(nonTextSubregions,
+                                        textRegions.get(textRegionCounter).getMatRegion());
+                                Writer.writeFrameAsImage(textRegions.get(textRegionCounter++).getMatRegion());
+                            }
 
-                            // Paint the approved text blocks to the original image
-                            //Visualizer.paintBlocksToOriginalImage(rects, getInput());
 
-                            //PixelProcessor.printTrainArray(Training.getTraining_set());
-                            //MatProcessor.printMat(Training.getLabels());
 
-                            // Create Image file
+                            // TODO consider changing the size of every new Mat to original input's only
+
+
+                            //Paint the approved text blocks to the original image
+                            //Visualizer.paintRectsToMat(textBlocks, getInput());
+
+                            //Create Image file
                             //Writer.writeFrameAsImage(getInput());
+
+
+
+
+
+
+                            //SupportVectorMachine.setParameters();
+                            //SupportVectorMachine.createProblem(trainArray,labelsArray);
+                           // SupportVectorMachine.gridSearch();
+                            //SupportVectorMachine.testGridSearch();
+
+                            //svm_model model = SupportVectorMachine.train();
+
+                            //SupportVectorMachine.save("svm_model",model);
+                            //SupportVectorMachine.save("svm_model.model",model);
+                            //SupportVectorMachine.save("svm_model.xml",model);
+                            //SupportVectorMachine.save("svm_model.data",model);
+
+                            //System.out.println("Trained and Saved.");
+
+
 
                             System.out.println("Cycle completed");
                             init();
 
                             open1 = cap.read(getInput());
-
-                            open1 = false;
-
-
+                            //open1 = false;
                         }
                         else break;
                     } return null;

@@ -24,11 +24,11 @@ public class Region
         subregions = new ArrayList<>();
     }
 
-    public Mat getRegion() {
+    public Mat getMatRegion() {
         return region;
     }
 
-    public void setRegion(Mat region) {
+    public void setMatRegion(Mat region) {
         region = region;
     }
 
