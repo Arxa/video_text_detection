@@ -9,6 +9,7 @@ import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
@@ -39,7 +40,6 @@ public class VideoProcessor
                     Writer.initializeVideoWriter();
                     init(); // Using Static import of ImageContainer here and in code below!
                     boolean open1 = cap.read(getInput());
-
                     while (true)
                     {
                         if (open1)
@@ -106,9 +106,28 @@ public class VideoProcessor
                             List<Rect> textBlocks = Clustering.find_TextBlocks
                                     (getInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED());
 
+                            Visualizer.paintRectsToMat(textBlocks,getInput());
+
+                            //Writer.writeFrameAsImage(getInput());
+
+                            //OCR.ocr();
+
 
                             List<Region> textRegions = MatProcessor.getConfiguratedTextRegions(textBlocks);
 
+                            //Test.test3();
+
+
+
+                            /*Mat original = Imgcodecs.imread("src\\main\\resources\\Testing_Dataset\\text\\korea00.png");
+                            Mat labels = Clustering.k_Means(original);
+                            Mat binary = new Mat(original.size(),CvType.CV_8UC1,new Scalar(0.0));
+                            Visualizer.paintMatToBinary(labels,binary);
+                            Writer.writeFrameAsImage(binary);*/
+                            OCR.ocr();
+                            // TODO dokimase tin alli eikona
+
+/*
                            List<Mat> testSVMImages = new ArrayList<>();
                            for (Region r : textRegions)
                            {
@@ -118,46 +137,74 @@ public class VideoProcessor
                                        Core.NORM_MINMAX, testSVMImage.type());
                                testSVMImages.add(testSVMImageNormalized);
                            }
+*/
 
 
-                            // -----------------------------
-                            /*
+
+                            // TRAINING
+/*
                             Training.init();
                             Training.create_labels();
                             Training.read_training_data("text");
                             Training.read_training_data("background");
 
-                            Mat train_norm = new Mat();
+                            Mat matNorm = new Mat();
+                            //Core.normalize(Training.getTraining_set(), matNorm, 0.0,1.0,
+                                    //Core.NORM_MINMAX, Training.getTraining_set().type());
+                            double[][] trainArray = PixelProcessor.matToArray(Training.getTraining_set());
+                            double[] labelsArray = PixelProcessor.matTo1dArray(Training.getLabels());
 
-                            Core.normalize(Training.getTraining_set(), train_norm, 0.0,1.0,
-                                    Core.NORM_MINMAX, Training.getTraining_set().type());
+                            SupportVectorMachine.setParameters();
+                            SupportVectorMachine.createProblem(trainArray,labelsArray);
+                            //SupportVectorMachine.testGridSearch();
+                            svm_model model = SupportVectorMachine.train();
+                            SupportVectorMachine.save("svm_model_sobel_1d.xml",model);
+                            System.out.println("Trained and Saved.");
+*/
 
-                            System.out.println("Reading complete. Setting SVM parameters");
+                            //   TESTING
+/*
+                            Mat original = Imgcodecs.imread("src\\main\\resources\\Testing_Dataset\\text\\0.png");
+                            Mat original_gray = new Mat();
+                            Mat original_gray_sobel = new Mat();
+                            Mat adjusted = MatProcessor.change_mat_resolution(original, 500, 100);
+                            Imgproc.cvtColor(adjusted, original_gray, Imgproc.COLOR_RGB2GRAY, 0);
+                            Imgproc.Sobel(original_gray,original_gray_sobel,CvType.CV_8U,1,1);
+
+                            //Mat train_norm = new Mat();
+                            //Mat gray = new Mat();
+                            //Mat test = Imgcodecs.imread("src\\main\\resources\\Testing_Dataset\\text\\0.png");
+                            //Mat adjusted = MatProcessor.change_mat_resolution(test, 500, 100);
+                            //Imgproc.cvtColor(adjusted, gray, Imgproc.COLOR_RGB2GRAY, 0);
+                            Region region = new Region(original_gray_sobel);
+                            PixelProcessor.crop_region_into_subregions(region);
+                            //Mat testImage  = MatProcessor.getTestSVMImage(region);
+                            Mat testImage = Test.get1dTestImage(region);
+
+                            //Core.normalize(testImage, train_norm, 0.0,1.0,
+                                    //Core.NORM_MINMAX, testImage.type());
+                                    System.out.println("Reading complete. Setting SVM parameters");
 
 
-                            double[][] testArray = PixelProcessor.matToArray(train_norm);
-                            */
-                            // ---------------------------------
+                            //svm_model model = SupportVectorMachine.load("src\\main\\resources\\SVM_Files\\svm_model_sobel_1d.xml");
 
-                            svm_model model = SupportVectorMachine.
-                                    load("src\\main\\resources\\SVM_Files\\svm_model.xml");
-
+                            List<Mat> testSVMImages = new ArrayList<>();
+                            testSVMImages.add(testImage);
 
                             int textRegionCounter = 0;
                             for (Mat m : testSVMImages)
                             {
                                 List<Rect> nonTextSubregions = new ArrayList<>();
                                 int x = 0, y = 0;
-                                double[][] testArray = PixelProcessor.matToArray(m);
-                                int corrects = 0;
+                                double[][] testArray = PixelProcessor.matTo1dArray(m);
+                                int corrects = 0, falses = 0;
                                 for (int i=0; i < testArray.length; i++)
                                 {
-                                    double prediction = SupportVectorMachine.evaluate(testArray[i],model);
-                                    if (Double.compare(prediction,0.0) == 0) // subregion is non-text
+                                    //double prediction = SupportVectorMachine.evaluate(testArray[i],model);
+                                    //System.out.println(prediction);
+                                    //if (Double.compare(prediction,-1.0) == 0) // subregion is non-text
+                                    if (Double.compare(testArray[i][0],25.0) < 0)
                                     {
-                                        if (i == 498) {
-                                            System.out.println("bla");
-                                        }
                                         x = (int)(i/50.0);
                                         if (x < 1) {
                                             x = 0;
@@ -168,52 +215,27 @@ public class VideoProcessor
                                             x *= 10;
                                         }
                                         nonTextSubregions.add(new Rect(new Point(y,x), new Size(10.0,10.0)));
-                                        corrects++;
-                                        System.out.println("--"+i+"--");
+                                        falses++;
                                     }
+                                    //else if (Double.compare(prediction,1.0) == 0) corrects++;
+
                                 }
-                                Visualizer.paintRectsToMat(nonTextSubregions,
-                                        textRegions.get(textRegionCounter).getMatRegion());
-                                Writer.writeFrameAsImage(textRegions.get(textRegionCounter++).getMatRegion());
+                                //System.out.println("Corrects: "+corrects+" Falses: "+falses);
+                                //Visualizer.paintRectsToMat(nonTextSubregions,
+                                        //textRegions.get(textRegionCounter).getMatRegion());
+                                //Writer.writeFrameAsImage(textRegions.get(textRegionCounter++).getMatRegion());
+                                Visualizer.paintRectsToMat(nonTextSubregions, original_gray);
+                                Writer.writeFrameAsImage(original_gray);
                             }
-
-
+*/
 
                             // TODO consider changing the size of every new Mat to original input's only
-
-
-                            //Paint the approved text blocks to the original image
-                            //Visualizer.paintRectsToMat(textBlocks, getInput());
-
-                            //Create Image file
-                            //Writer.writeFrameAsImage(getInput());
-
-
-
-
-
-
-                            //SupportVectorMachine.setParameters();
-                            //SupportVectorMachine.createProblem(trainArray,labelsArray);
-                           // SupportVectorMachine.gridSearch();
-                            //SupportVectorMachine.testGridSearch();
-
-                            //svm_model model = SupportVectorMachine.train();
-
-                            //SupportVectorMachine.save("svm_model",model);
-                            //SupportVectorMachine.save("svm_model.model",model);
-                            //SupportVectorMachine.save("svm_model.xml",model);
-                            //SupportVectorMachine.save("svm_model.data",model);
-
-                            //System.out.println("Trained and Saved.");
-
-
 
                             System.out.println("Cycle completed");
                             init();
 
                             open1 = cap.read(getInput());
-                            //open1 = false;
+                            open1 = false;
                         }
                         else break;
                     } return null;

@@ -66,12 +66,12 @@ public class PixelProcessor
         return array;
     }
 
-    public static double[] matTo1dArray(Mat frame)
+
+    public static double[][] matTo1dArray(Mat frame)
     {
-        double array[] = new double[frame.height()];
-        for (int i=0; i < frame.height(); i++)
-        {
-            array[i] = frame.get(i,0)[0];
+        double array[][] = new double[frame.height()][1];
+        for (int i=0; i < frame.height(); i++) {
+            array[i][0] = frame.get(i,0)[0];
         }
         return array;
     }

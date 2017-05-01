@@ -70,15 +70,22 @@ public class SupportVectorMachine
     }
     */
 
+    public static void set_C_Y(int c, double y) {
+        param.C = c;
+        param.gamma = y;
+    }
+
     public static void setParameters()
     {
-        param.C = 1024;
+        //param.C = 32;
+        param.C = 128;
         param.cache_size = 20000;
         param.eps = 0.001;
-        param.nu = 0.5;
+        param.nu = 0.01;
         param.svm_type = svm_parameter.C_SVC;
         param.kernel_type = svm_parameter.RBF;
         param.probability = 1;
+        //param.gamma = 0.00048828125;
         param.gamma = 0.5; // Y
     }
 
@@ -108,7 +115,7 @@ public class SupportVectorMachine
                 final int finalC = (int)C[c];
                 final double finalY = Y[y];
 
-                //final String accurasy;
+                //final String accuracy;
                 ExecutorService executor = Executors.newSingleThreadExecutor();
                 Future<String> future = executor.submit(new Callable<String>() {
                     @Override
@@ -121,7 +128,7 @@ public class SupportVectorMachine
                     Files.write(Paths.get("svm_stats.txt"),("Calculating For C:"+(int)C[c]+", Y:"+Y[y]+"\n").
                             getBytes(), StandardOpenOption.APPEND);
                     Files.write(Paths.get("svm_stats.txt"),("For C:"+(int)C[c]+", Y:"+Y[y]+" Accuracy: "+
-                            future.get(240, TimeUnit.SECONDS)+"\n\n").getBytes(),StandardOpenOption.APPEND);
+                            future.get(60, TimeUnit.SECONDS)+"\n\n").getBytes(),StandardOpenOption.APPEND);
 
                     //System.out.println("For C:"+c+", Y:"+y+" Accuracy: "+future.get(30, TimeUnit.SECONDS));
                     //System.out.println("Finished!");
@@ -185,7 +192,6 @@ public class SupportVectorMachine
         double[] target = new double[prob.y.length];
 
         double bestC = 0, bestY = 0;
-        int accuracy = 0;
         param.C = c;
         param.gamma = y;
         svm.svm_cross_validation(prob,param,3,target);
@@ -196,14 +202,7 @@ public class SupportVectorMachine
                 correctCounter++;
             }
         }
-        if (correctCounter > accuracy) {
-            accuracy = correctCounter;
-        }
-        flag = true;
-        if (flag){
-            return String.valueOf(accuracy);
-        }
-        else return "-1";
+        return String.valueOf(correctCounter);
     }
 
     public static void createProblem(double[][] train, double[] labels)

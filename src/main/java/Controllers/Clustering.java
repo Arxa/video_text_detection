@@ -15,6 +15,10 @@ import java.util.List;
 
 public class Clustering
 {
+    /**
+     * @see <a href="http://docs.opencv.org/3.1.0/d5/d38/group__core__cluster.html#ga9a34dc06c6ec9460e90860f15bcd2f88">OpenCV-kmeans</a>
+     * <a href="http://docs.opencv.org/3.1.0/d9/d5d/classcv_1_1TermCriteria.html">OpenCV-TermCriteria</a>
+     */
     public static Mat k_Means(Mat image)
     {
         Mat data = new Mat(image.height()*image.width(),1, CvType.CV_32FC1);
@@ -29,7 +33,14 @@ public class Clustering
         }
         int clusters = 2;
         Mat labels = new Mat();
-        TermCriteria criteria = new TermCriteria(TermCriteria.EPS+TermCriteria.MAX_ITER,data.height(),1.0 );
+
+     /*
+         TermCriteria Constructor Parameters:
+         type: The type of termination criteria, one of TermCriteria::Type
+         maxCount: The maximum number of iterations or elements to compute.
+         epsilon: The desired accuracy or change in parameters at which the iterative algorithm stops.
+      */
+        TermCriteria criteria = new TermCriteria(TermCriteria.EPS + TermCriteria.MAX_ITER,data.height(),1.0 );
         int attempts = 5;
         int flag = Core.KMEANS_PP_CENTERS;
         Mat centers = new Mat();

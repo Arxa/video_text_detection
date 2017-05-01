@@ -1,3 +1,4 @@
+
 apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'application'
@@ -23,10 +24,9 @@ dependencies {
     compile files('./lib/javaml/javaml-0.1.7.jar')
     compile files('./lib/javaml/weka.jar')
 
-    // Maven Libraries
-    //compile group: 'com.jcabi', name: 'jcabi-aspects', version: '0.22.6'
-    //compile group: 'org.aspectj', name: 'aspectjrt', version: '1.8.10'
-    //compile group: 'com.jcabi', name: 'jcabi-maven-plugin', version: '0.14.1'
+    compile group: 'org.bytedeco.javacpp-presets', name: 'tesseract', version: '3.03-rc1-0.11'
+    compile group: 'org.bytedeco.javacpp-presets', name: 'tesseract', version: '3.03-rc1-0.11', classifier: 'windows-x86_64'
+    compile group: 'org.bytedeco.javacpp-presets', name: 'leptonica', version: '1.71-0.11', classifier: 'windows-x86_64'
 
     compile group: 'com.google.guava', name: 'guava', version: '19.0'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
@@ -37,18 +37,6 @@ dependencies {
     compile group: 'pl.pragmatists', name: 'JUnitParams', version: '1.0.5'
     compile group: 'org.assertj', name: 'assertj-core', version: '3.6.1'
     compile group: 'com.github.hoary.ffmpeg', name: 'FFmpeg-windows-x86_64', version: '2.0.1.1'
-}
-
-//create a single Jar with all dependencies
-task fatJar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'Gradle Jar File Example',
-                'Implementation-Version': '1.0',
-                'Main-Class': 'Main'
-    }
-    baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
 }
 
 
