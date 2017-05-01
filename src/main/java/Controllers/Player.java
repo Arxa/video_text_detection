@@ -1,6 +1,8 @@
 package Controllers;
 
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -21,51 +23,62 @@ public class Player
 {
     private static File filename;
 
-    public static void loadAndPlayVideo(Label label1, Pane pane)
+    public static void loadAndPlayVideo(Pane pane, TextArea logArea, Button processButton,
+                                        Button chooseVideoFileButton, Label videoNameLabel)
     {
+        processButton.setDisable(true);
+
         Stage stage = new Stage();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose video file");
         filename = fileChooser.showOpenDialog(stage);
 
-        if (filename != null && filename.exists())
+        if (filename == null) {
+            return;
+        }
+
+        if (filename.exists())
         {
-            label1.setText(filename.getName());
             try
             {
                 playVideoToPane(pane,filename);
-                Writer.setCurrentVideoFolderName(filename.getName().replace(".mp4","")+" "+
+                Writer.setUniqueFolderName(filename.getName().replace(".mp4","")+" "+
                         new Date().toString().replace(":","-"));
-                Files.createDirectories(Paths.get(Writer.getFixedOutputPath()+Writer.getCurrentVideoFolderName()));
-                Writer.setBinaryFrameCounter(0);
+
+                Files.createDirectories(Paths.get(Writer.getFolderPath()
+                        + Writer.getUniqueFolderName() + "\\Text Blocks"));
+                Files.createDirectories(Paths.get(Writer.getFolderPath()
+                        + Writer.getUniqueFolderName() + "\\Painted Frames"));
+
+                Log.printLogMessageToGUI(logArea, "Video file loaded successfully");
+                ViewController.updateVideoNameLabel(filename.getName(), videoNameLabel);
+                processButton.setDisable(false);
             }
-            catch (java.lang.RuntimeException ex)
+            catch (java.lang.RuntimeException | IOException ex)
             {
-                label1.setText(label1.getText()+": File not supported");
-                label1.setStyle("-fx-text-fill: red");
-                System.out.println("File not supported");
-            } catch (IOException e) {
-                e.printStackTrace();
+                Log.printLogMessageToGUI(logArea, "File format not supported: please use an .mp4 format");
             }
+        }
+        else
+        {
+            Log.printLogMessageToGUI(logArea, "File does not exist!");
         }
     }
 
-    public static void playProcessedVideo(Pane pane,String filePath)
-    {
-        File file = new File(filePath);
-        if (file.exists())
-        {
-            try
-            {
-                playVideoToPane(pane,file);
-            }
-            catch (java.lang.RuntimeException ex)
-            {
-                System.out.println("ERROR");
-            }
-        }
-        else System.out.println("PROCESSED FILE DOES NOT EXIST");
-    }
+//    public static void playProcessedVideo(Pane pane,String filePath)
+//    {
+//        File file = new File(filePath);
+//        if (file.exists())
+//        {
+//            try {
+//                playVideoToPane(pane,file);
+//            }
+//            catch (java.lang.RuntimeException ex) {
+//                System.out.println("ERROR");
+//            }
+//        }
+//        else System.out.println("PROCESSED FILE DOES NOT EXIST");
+//    }
 
     public static void playVideoToPane(Pane pane, File filePath)
     {

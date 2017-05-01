@@ -21,19 +21,18 @@ import Models.ImageContainer;
 
 public class MatProcessor
 {
-    public static List<Region> getConfiguratedTextRegions(List<Rect> textBlocks)
+    public static List<Mat> getTextBlockList(List<Rect> textBlocks)
     {
-        List<Region> textRegions = new ArrayList<>();
+        List<Mat> textRegions = new ArrayList<>();
         for (Rect r : textBlocks)
         {
             // Creating a crop of the original gray image according to textBlocks rectangles
             Mat crop = new Mat(ImageContainer.getInput(),r);
-            Mat resized = new Mat();
-            Size sz = new Size(500,100); // Adjusting resolution
-            Imgproc.resize(crop, resized, sz);
-            Mat resizedGray = new Mat();
-            Imgproc.cvtColor(resized, resizedGray, Imgproc.COLOR_RGB2GRAY, 0);
-            textRegions.add(new Region(resizedGray));
+            //Mat resized = new Mat();
+            // sz = new Size(250,50); // Adjusting resolution
+            //Imgproc.resize(crop, resized, sz);
+            //Mat resizedGray = new Mat();
+            textRegions.add(crop);
             //ImageContainer.getCroppedTextRegions().add(new Region(resized));
         }
         return textRegions;

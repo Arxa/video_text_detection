@@ -1,6 +1,5 @@
 package Controllers;
 
-import Models.CacheID;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
@@ -9,7 +8,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoWriter;
 
 import java.io.File;
-import java.util.Date;
+
 import static org.opencv.videoio.Videoio.CAP_PROP_FPS;
 import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_HEIGHT;
 import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_WIDTH;
@@ -20,16 +19,17 @@ import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_WIDTH;
 
 public class Writer
 {
-    private static String currentVideoFolderName;
-    private static int binaryFrameCounter;
-    private static final String fixedOutputPath = "src\\main\\resources\\Outputs\\";
+    private static final String folderPath = "src\\main\\resources\\Outputs\\";
+    private static String uniqueFolderName;
+    private static int fileCounter;
     private static VideoWriter output;
-    private static File processedVideo;
-    private static String fullVideoPath;
+    private static String fullVideoFilePath;
 
     public static void writeFrameToVideo(Mat frame)
     {
-        // We need to convert out frame type to number 8 (check opencv format table) in order to write it.
+        /*
+        We need to convert our frame type to number 8 i.e. 8UC2 (check opencv format table)
+         */
         frame.convertTo(frame, CvType.CV_8UC2);
         try {
             output.write(frame);
@@ -40,19 +40,27 @@ public class Writer
 
     public static void initializeVideoWriter()
     {
-        fullVideoPath = fixedOutputPath+currentVideoFolderName+"\\"+currentVideoFolderName+".mp4";
+        fullVideoFilePath = folderPath + uniqueFolderName + "\\"+uniqueFolderName +".mp4";
+        /*
+        This fourcc code works with .mp4. The outcome is unknown for different combinations
+         */
         int fourcc = VideoWriter.fourcc('X','2','6','4');
-        // This fourcc code works with .mp4 | Another working set is DIV3 with .avi
-        output = new VideoWriter(fullVideoPath,fourcc, VideoProcessor.getCap().get(CAP_PROP_FPS),
+        output = new VideoWriter(fullVideoFilePath, fourcc, VideoProcessor.getCap().get(CAP_PROP_FPS),
                 new Size(VideoProcessor.getCap().get(CAP_PROP_FRAME_WIDTH),
                         VideoProcessor.getCap().get(CAP_PROP_FRAME_HEIGHT)),true);
-        processedVideo = new File(fullVideoPath);
     }
 
-    public static File writeFrameAsImage(Mat frame)
+    public static File writeTextBlock(Mat frame)
     {
-        String filePath = fixedOutputPath+currentVideoFolderName+"\\"+ ++binaryFrameCounter+" - "+
-                currentVideoFolderName+".png";
+        String filePath = folderPath + uniqueFolderName +"\\Text Blocks\\"+ fileCounter++ + ".png";
+        MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
+        Imgcodecs.imwrite(filePath,frame,params);
+        return new File(filePath);
+    }
+
+    public static File writePaintedFrame(Mat frame)
+    {
+        String filePath = folderPath + uniqueFolderName +"\\Painted Frames\\"+ fileCounter++ + ".png";
         MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
         Imgcodecs.imwrite(filePath,frame,params);
         return new File(filePath);
@@ -63,31 +71,31 @@ public class Writer
         return output;
     }
 
-    public static File getProcessedVideo() {
-        return processedVideo;
+//    public static File getProcessedVideo() {
+//        return processedVideo;
+//    }
+
+    public static String getUniqueFolderName() {
+        return uniqueFolderName;
     }
 
-    public static String getCurrentVideoFolderName() {
-        return currentVideoFolderName;
+    public static void setUniqueFolderName(String outputCurrentPath) {
+        Writer.uniqueFolderName = outputCurrentPath;
     }
 
-    public static void setCurrentVideoFolderName(String outputCurrentPath) {
-        Writer.currentVideoFolderName = outputCurrentPath;
+    public static int getFileCounter() {
+        return fileCounter;
     }
 
-    public static String getFixedOutputPath() {
-        return fixedOutputPath;
+    public static void setFileCounter(int fileCounter) {
+        Writer.fileCounter = fileCounter;
     }
 
-    public static int getBinaryFrameCounter() {
-        return binaryFrameCounter;
+    public static String getFullVideoFilePath() {
+        return fullVideoFilePath;
     }
 
-    public static void setBinaryFrameCounter(int binaryFrameCounter) {
-        Writer.binaryFrameCounter = binaryFrameCounter;
-    }
-
-    public static String getFullVideoPath() {
-        return fullVideoPath;
+    public static String getFolderPath() {
+        return folderPath;
     }
 }

@@ -9,10 +9,9 @@ import javafx.scene.layout.Pane;
 
 public class ViewController
 {
-    public static void processIsComplete(Pane pane2, Label label1)
+    public static void updateVideoNameLabel(String name, Label label)
     {
-        label1.setText("Processing Completed: 100%");
-        label1.setStyle("-fx-text-fill: green");
-        Player.playProcessedVideo(pane2,Writer.getProcessedVideo().getPath());
+        label.setText(name);
     }
+
 }

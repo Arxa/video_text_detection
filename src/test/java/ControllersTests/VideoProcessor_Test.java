@@ -45,10 +45,10 @@
 //
 //    @Before
 //    public void beforeTest() {
-//        Writer.setCurrentVideoFolderName("videoWithNoCorners".replace(".mp4","")+" "+
+//        Writer.setUniqueFolderName("videoWithNoCorners".replace(".mp4","")+" "+
 //                new Date().toString().replace(":","-"));
 //        try {
-//            Files.createDirectories(Paths.get(Writer.getFixedOutputPath()+Writer.getCurrentVideoFolderName()));
+//            Files.createDirectories(Paths.get(Writer.getFixedOutputPath()+Writer.getUniqueFolderName()));
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
@@ -104,7 +104,7 @@
 //                    Assert.assertTrue("Dilated image should be empty", dilated.empty());
 //
 //                    Assert.assertTrue("Image file should exist(?)",
-//                            Writer.writeFrameAsImage(dilated).exists());
+//                            Writer.writeTextBlock(dilated).exists());
 //
 //                    PixelProcessor.sortCorners();
 //
@@ -117,7 +117,7 @@
 //                    Assert.assertTrue("qualifiedPaintedCorners should be 0", qualifiedPaintedCorners == 0);
 //
 //                    Writer.writeFramesToVideo();
-//                    File video = new File(Writer.getFullVideoPath());
+//                    File video = new File(Writer.getFullVideoFilePath());
 //                    Assert.assertTrue("Video File should exist", video.exists());
 //
 //                    // Switching frames and their caches

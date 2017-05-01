@@ -1,8 +1,6 @@
 package Controllers;
 
 import org.bytedeco.javacpp.*;
-import org.junit.Test;
-
 import static org.bytedeco.javacpp.lept.*;
 import static org.bytedeco.javacpp.tesseract.*;
 import static org.junit.Assert.assertTrue;
@@ -13,29 +11,33 @@ import static org.junit.Assert.assertTrue;
 
 public class OCR
 {
-    public static void ocr()
+    public static String applyOCR(String matPath)
     {
         BytePointer outText;
 
         TessBaseAPI api = new TessBaseAPI();
-        // Initialize tesseract-ocr with English, without specifying tessdata path
+
+        // Initialize tesseract-applyOCR with English, without specifying tessdata path
         if (api.Init("src/main/resources/", "ENG") != 0) {
             System.err.println("Could not initialize tesseract.");
             System.exit(1);
         }
 
         // Open input image with leptonica library
-        PIX image = pixRead("src\\main\\resources\\Testing_Dataset\\text\\korea0.png");
+        PIX image = pixRead(matPath);
         api.SetImage(image);
+
         // Get OCR result
         outText = api.GetUTF8Text();
-        String string = outText.getString();
-        assertTrue(!string.isEmpty());
-        System.out.println("OCR output:\n" + string);
+        String ocr_text = outText.getString();
+        assertTrue(!ocr_text.isEmpty());
+        System.out.println("OCR output:\n" + ocr_text);
 
         // Destroy used object and release memory
         api.End();
         outText.deallocate();
         pixDestroy(image);
+
+        return ocr_text;
     }
 }

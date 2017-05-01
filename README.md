@@ -1,3 +1,7 @@
+<img src="https://travis-ci.org/Arxa/VideoText_Extractor.svg?branch=master">
+<br>
+<br>
+
 ```diff
 + [This Project is currently on-going]
 ```

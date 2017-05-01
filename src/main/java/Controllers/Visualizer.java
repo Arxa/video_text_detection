@@ -1,6 +1,7 @@
 package Controllers;
 
 import Models.CacheID;
+import Models.Color;
 import Models.Corner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
@@ -120,7 +121,7 @@ public class Visualizer
         for (Rect r : textBlocks)
         {
             Imgproc.rectangle(original, new Point(r.x,r.y), new Point(r.x+r.width,r.y+r.height),
-                    new Scalar(255.0),-1);
+                    new Scalar(Color.RED),2);
         }
 
     }

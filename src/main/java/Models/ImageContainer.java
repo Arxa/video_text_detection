@@ -12,6 +12,7 @@ import java.util.List;
 public class ImageContainer
 {
     private static Mat input;
+    private static Mat input_Painted; // Painted with the detected text blocks
     private static Mat input_Sobel;
     private static Mat input_Gray;
     private static Mat input_GB; // Gaussian Blurred
@@ -27,10 +28,10 @@ public class ImageContainer
     private static double[][] input_GB_Gray_LPL_in_Array;
     private static double[][] input_GB_Gray_LPL_MGD_in_Array;
 
-
     public static void init()
     {
         input = new Mat();
+        input_Painted = new Mat();
         input_Sobel = new Mat();
         input_Gray = new Mat();
         input_GB = new Mat();
@@ -152,4 +153,13 @@ public class ImageContainer
     public static void setInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED(Mat input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED) {
         ImageContainer.input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED = input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED_FILTERED;
     }
+
+    public static Mat getInput_Painted() {
+        return input_Painted;
+    }
+
+    public static void setInput_Painted(Mat input_Painted) {
+        ImageContainer.input_Painted = input_Painted;
+    }
+
 }

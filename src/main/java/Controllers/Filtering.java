@@ -18,7 +18,6 @@ public class Filtering
                 sobelEdgeDensity += ImageContainer.getInput_Sobel().get(i,j)[0];
             }
         }
-        //return Double.compare(sobelEdgeDensity / area, 8.0) > 0;
-        return true; //TODO Change this
+        return Double.compare(sobelEdgeDensity / area, 2.0) > 0;
     }
 }

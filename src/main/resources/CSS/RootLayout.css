@@ -3,13 +3,14 @@
     -fx-background-color: cadetblue;
 }
 
-.label
+#playInputVideo_Pane,#pane2,#pane3
 {
-    -fx-font-style: normal;
-    -fx-font-size: 20px;
+    -fx-background-color: cadetblue;
 }
 
-#pane,#pane2,#pane3
+#logArea
 {
-    -fx-background-color: red;
+    -fx-text-fill: crimson;
+    -fx-background-color: slategrey;
+    -fx-fill: slategrey;
 }
