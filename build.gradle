@@ -33,6 +33,7 @@ dependencies {
     compile group: 'org.assertj', name: 'assertj-core', version: '3.6.1'
     compile group: 'com.github.hoary.ffmpeg', name: 'FFmpeg-windows-x86_64', version: '2.0.1.1'
     compile group: 'org.im4java', name: 'im4java', version: '1.4.0'
+    testCompile group: "org.loadui", name: "testFx", version: "3.1.2"
 }
 
 

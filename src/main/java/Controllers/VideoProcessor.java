@@ -26,12 +26,11 @@ public class VideoProcessor
      * @author Nikiforos Archakis
      */
 
-    public static void processVideo(ProgressBar progressBar1, TextArea logArea,
-                                    Button chooseButton, ProgressIndicator progressIndicator1,
-                                    TextArea extractedText_Area)
+    public static void processVideo(MainController view)
     {
-        progressBar1.setProgress(0.0);
-        progressIndicator1.setProgress(0.0);
+        view.updateProgressBar(0.0);
+        view.updateProgressIndicator(0.0);
+
         /*
         Required in order to use core OpenCV methods
          */
@@ -50,7 +49,7 @@ public class VideoProcessor
                     double percentageProgress = 0.1;
                     int totalFPS = (int) cap.get(CAP_PROP_FRAME_COUNT);
                     Platform.runLater(() -> {
-                        progressIndicator1.setProgress(-1.0); // Waiting mode
+                        view.updateProgressIndicator(-1.0); // Waiting mode
                     });
 
                     while (true)
@@ -240,10 +239,9 @@ public class VideoProcessor
                                 String extracted_text = OCR.applyOCR(f.getPath());
 
                                 Platform.runLater(() -> {
-                                    extractedText_Area.setText(extractedText_Area.getText() + extracted_text + "\n");
+                                    view.appendToExtractedTextArea(extracted_text);
                                 });
                             }
-
                             /*
                             Progress Bar code
                              */
@@ -257,7 +255,7 @@ public class VideoProcessor
 
                             if (Double.compare(f_progress, 1.0) < 0) {
                                 Platform.runLater(() -> {
-                                    progressBar1.setProgress(f_progress);
+                                    view.updateProgressBar(f_progress);
                                 });
                             }
 
@@ -275,7 +273,6 @@ public class VideoProcessor
                                 open1 = cap.read(getInput());
                                 frameIterations++;
                             }
-
                         }
                         else break;
                     }
@@ -283,26 +280,24 @@ public class VideoProcessor
                 }
                 @Override protected void succeeded() {
                     super.succeeded();
-                    progressBar1.setProgress(1.0);
-                    progressIndicator1.setProgress(1.0);
-                    SystemController.closeVideoHandlers();
-                    Log.printLogMessageToGUI(logArea,"Video processing has successfully completed!");
-                    chooseButton.setDisable(false);
-                    System.out.println("ok");
+                    view.updateProgressBar(1.0);
+                    view.updateProgressIndicator(1.0);
+                    view.enableChooseVideoFileButton();
+                    view.appendToLog("Video processing has successfully completed!");
                 }
                 @Override protected void cancelled() {
                     super.cancelled();
-                    progressBar1.setProgress(0.0);
-                    progressIndicator1.setProgress(0.0);
-                    Log.printLogMessageToGUI(logArea,"Video processing has been canceled!");
-                    chooseButton.setDisable(false);
+                    view.updateProgressBar(0.0);
+                    view.updateProgressIndicator(0.0);
+                    view.appendToLog("Video processing has been canceled!");
+                    view.enableChooseVideoFileButton();
                 }
                 @Override protected void failed() {
                     super.failed();
-                    progressBar1.setProgress(0.0);
-                    progressIndicator1.setProgress(0.0);
-                    Log.printLogMessageToGUI(logArea,"Video processing has failed!");
-                    chooseButton.setDisable(false);
+                    view.updateProgressBar(0.0);
+                    view.updateProgressIndicator(0.0);
+                    view.appendToLog("Video processing has failed!");
+                    view.enableChooseVideoFileButton();
                 }
             };
             Thread th = new Thread(task);
