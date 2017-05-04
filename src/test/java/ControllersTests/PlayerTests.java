@@ -1,14 +1,14 @@
 package ControllersTests;
 
+import Controllers.MainController;
 import Controllers.Player;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import org.junit.*;
 import org.loadui.testfx.GuiTest;
@@ -21,6 +21,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
+import static org.loadui.testfx.Assertions.assertNodeExists;
 import static org.loadui.testfx.Assertions.verifyThat;
 import static org.loadui.testfx.controls.Commons.hasText;
 
@@ -34,6 +36,21 @@ import static org.loadui.testfx.controls.Commons.hasText;
 
 public class PlayerTests extends GuiTest
 {
+    /*
+    UI TEST ELEMENTS
+     */
+    private static Node chooseVideoFile_Button;
+    private static Node playInputVideo_Pane;
+    private static Node processVideo_Button;
+    private static Node inputVideoLabel;
+    private static Node videoName;
+    private static Node extractingTextLabel;
+    private static Node progressBar1;
+    private static Node log_Area;
+    private static Node progressIndicator;
+    private static Node testFXLabel;
+
+
     private static final String simpleMovingTextVideo = "src\\test\\resources\\moving_text.mp4";
     private static final String simpleStableTextVideo = "src\\test\\resources\\stable_text.mp4";
     private static final String noTextVideo = "src\\test\\resources\\no_text.mp4";
@@ -43,7 +60,7 @@ public class PlayerTests extends GuiTest
     protected Parent getRootNode() {
         Parent parent = null;
         try {
-            parent = FXMLLoader.load(getClass().getResource("Views/RootLayout.fxml"));
+            parent = FXMLLoader.load(getClass().getClassLoader().getResource("Views/RootLayout.fxml"));
             return parent;
         } catch (IOException ex) {
             System.out.println("Failed to Initialize TestFX");
@@ -51,8 +68,54 @@ public class PlayerTests extends GuiTest
         return parent;
     }
 
+    @BeforeClass
+    public static void initToolkit() {
+
+    }
+
+    @AfterClass
+    public static void afterTests() {
+
+    }
+
+    @Before
+    public void beforeTest()
+    {
+        chooseVideoFile_Button = find("#chooseVideoFile_Button");
+        playInputVideo_Pane = find("#playInputVideo_Pane");
+        processVideo_Button = find("#processVideo_Button");
+        inputVideoLabel = find("#inputVideoLabel");
+        videoName = find("#videoName");
+        extractingTextLabel = find("#extractingTextLabel");
+        progressBar1 = find("#progressBar1");
+        log_Area = find("#logArea");
+        progressIndicator = find("#progressIndicator");
+//        testFXLabel = find("#testFX");
+    }
+
+    @After
+    public void afterTest() {
+
+    }
+
     @Test
-    public void setBothnamesAndCheckEnabledSearchButton() {
+    public void testUIInitialState()
+    {
+        assertTrue(!chooseVideoFile_Button.isDisabled());
+        assertTrue(processVideo_Button.isDisabled());
+        assertTrue( ((TextArea)log_Area).getText().equals(""));
+        assertTrue( ((Label)videoName).getText().equals("Only .mp4 video format is supported"));
+        assertTrue( ((Label)inputVideoLabel).getText().equals("Input Video:"));
+        assertTrue(processVideo_Button.isDisabled());
+        assertTrue( ((Label)extractingTextLabel).getText().equals("Extracting text:"));
+        assertTrue(Double.compare(((ProgressIndicator)progressIndicator).getProgress(),0.0) == 0);
+        assertTrue(Double.compare(((ProgressIndicator)progressBar1).getProgress(),0.0) == 0);
+
+        //click("#chooseVideoFile_Button");
+        //assertNodeExists( ".dialog" );
+        //verifyThat("#chooseVideoFile_Button", Node::isDisabled);
+
+/*
         TextField firstname = find("#firstname");
         firstname.setText("bennet");
         verifyThat("#firstname", hasText("bennet"));
@@ -63,44 +126,27 @@ public class PlayerTests extends GuiTest
 
         Button search = find("#search");
         assertFalse(search.disableProperty().get());
+        */
     }
 
-    @BeforeClass
-    public static void initToolkit()
-            throws InterruptedException
+    @Test
+    public void testProcessButtonClick()
     {
-//        final CountDownLatch latch = new CountDownLatch(1);
-//        SwingUtilities.invokeLater(() -> {
-//            new JFXPanel(); // initializes JavaFX environment
-//            latch.countDown();
-//        });
-//
-//        // That's a pretty reasonable delay... Right?
-//        if (!latch.await(5L, TimeUnit.SECONDS))
-//            throw new ExceptionInInitializerError();
+        //testFXLabel.setAccessibleText(simpleMovingTextVideo);
+        //click(testFXLabel);
+        //MainController.validateVideoFile(MainController.getFilename()), GlobalTest.getViewTest());
+        //Assert.assertTrue(Player.validateFileName());
     }
 
+    // TODO CHANGE THE THIS PARAMETER AND MAKE ONLY ONE METHOD TO STORE THE REFERENCE
 
-    @AfterClass
-    public static void afterTests() {
-
-    }
-
-    @Before
-    public void beforeTest()
-    {
-
-    }
-
-    @After
-    public void afterTest() {
-
-    }
 
     /*
     Just opening and closing the choose file dialog.
     It should behave as the input filename is null.
      */
+
+    /*
     @Test
     public void loadAndPlayVideo_Test_noFileChosen()
     {
@@ -115,6 +161,8 @@ public class PlayerTests extends GuiTest
         });
 
     }
+
+    */
 
 
 }

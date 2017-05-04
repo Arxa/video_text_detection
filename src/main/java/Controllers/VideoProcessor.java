@@ -22,6 +22,8 @@ public class VideoProcessor
 {
     private static VideoCapture cap;
 
+    private static String folder = "Korea_4"; //temp
+
     /**
      * @author Nikiforos Archakis
      */
@@ -56,10 +58,12 @@ public class VideoProcessor
                     {
                         if (open1)
                         {
+                            Writer.writeImage(getInput(),"src\\main\\resources\\Steps\\"+folder+"\\input.png");
                             /*
                             Initialize a Mat object for the Gaussian Blurred image
                              */
                             setInput_GB(new Mat(getInput().size(),getInput().type()));
+
 
                             /*
                             (Apply Gaussian Blurred Filter)
@@ -79,12 +83,15 @@ public class VideoProcessor
                              */
                             Imgproc.GaussianBlur(getInput(),getInput_GB(),
                                     new Size(15.0,15.0),0.0,0.0);
+                            Writer.writeImage(getInput_GB(),"src\\main\\resources\\Steps\\"+folder+"\\input_GB.png");
 
                             /*
                             (Change color space to GrayScale)
                             input_GB -> GrayScale = input_GB_Gray
                              */
                             Imgproc.cvtColor(getInput_GB(), getInput_GB_Gray(), Imgproc.COLOR_RGB2GRAY, 0);
+
+                            Writer.writeImage(getInput_GB_Gray(),"src\\main\\resources\\Steps\\"+folder+"\\input_GB_Gray.png");
 
                             /*
                             (Apply the Laplacian Filter)
@@ -102,7 +109,9 @@ public class VideoProcessor
                             delta – Optional delta value that is added to the results prior to storing them in dst.
                              */
                             Imgproc.Laplacian(getInput_GB_Gray(),getInput_GB_Gray_LPL(),
-                                    CvType.CV_16S,1,1,0);
+                                    CvType.CV_16S,3,1,0);
+
+                            Writer.writeImage(getInput_GB_Gray_LPL(),"src\\main\\resources\\Steps\\"+folder+"\\input_GB_Gray_LPL.png");
 
                             /*
                             Convert the input_GB_Gray_LPL Mat object to a 2D Array.
@@ -128,6 +137,9 @@ public class VideoProcessor
                             setInput_GB_Gray_LPL_MGD(PixelProcessor.
                                     arrayToMat(getInput_GB_Gray_LPL_MGD_in_Array(),
                                             getInput_GB_Gray_LPL().height(),getInput_GB_Gray_LPL().width(),CvType.CV_16S));
+
+                            Writer.writeImage(getInput_GB_Gray_LPL_MGD(),
+                                    "src\\main\\resources\\Steps\\"+folder+"\\input_GB_Gray_LPL_MGD.png");
 
                             /*
                             Initialize Mat file to store the Normalization result
@@ -166,6 +178,9 @@ public class VideoProcessor
                             Visualizer.paintMatToBinary(getInput_GB_Gray_LPL_MGD_NORM_KMEANS(),
                                                     getInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN());
 
+                            Writer.writeImage(getInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN(),
+                                    "src\\main\\resources\\Steps\\"+folder+"\\input_GB_Gray_LPL_MGD_NORM_KMEANS.png");
+
                             /*
                             Initialize image for the Dilation operation named
                             input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED
@@ -195,10 +210,15 @@ public class VideoProcessor
                                         Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
                                                 new Size(13.0,13.0)));
 
+                            Writer.writeImage(getInput_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED(),
+                                    "src\\main\\resources\\Steps\\"+folder+"\\input_GB_Gray_LPL_MGD_NORM_KMEANS_BIN_DILATED.png");
+
                             /*
                             Calculate Sobel Edges of original image (i.e. input) - needed below
                              */
                             Imgproc.Sobel(getInput(),getInput_Sobel(),CvType.CV_8U,1,1);
+
+                            Writer.writeImage(getInput_Sobel(),"src\\main\\resources\\Steps\\"+folder+"\\input_Sobel.png");
 
                             /*
                             Find text blocks by finding the connected components of
@@ -214,7 +234,8 @@ public class VideoProcessor
                             getInput().copyTo(getInput_Painted());
                             Visualizer.paintRectsToMat(textBlocks,getInput_Painted());
 
-                            Writer.writePaintedFrame(getInput_Painted());
+                            //Writer.writePaintedFrame(getInput_Painted());
+                            Writer.writeImage(getInput_Painted(),"src\\main\\resources\\Steps\\"+folder+"\\input_Painted.png");
 
                             for (Mat m : MatProcessor.getTextBlockList(textBlocks))
                             {
@@ -273,6 +294,7 @@ public class VideoProcessor
                                 open1 = cap.read(getInput());
                                 frameIterations++;
                             }
+                            //open1 = false;
                         }
                         else break;
                     }
@@ -300,6 +322,15 @@ public class VideoProcessor
                     view.enableChooseVideoFileButton();
                 }
             };
+            /*
+            Catching Thread Exceptions
+             */
+            task.exceptionProperty().addListener((observable, oldValue, newValue) ->  {
+                if(newValue != null) {
+                    Exception ex = (Exception) newValue;
+                    ex.printStackTrace();
+                }
+            });
             Thread th = new Thread(task);
             th.setDaemon(true);
             th.start();

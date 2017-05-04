@@ -30,7 +30,6 @@ public class OCR
         // Get OCR result
         outText = api.GetUTF8Text();
         String ocr_text = outText.getString();
-        assertTrue(!ocr_text.isEmpty());
         System.out.println("OCR output:\n" + ocr_text);
 
         // Destroy used object and release memory

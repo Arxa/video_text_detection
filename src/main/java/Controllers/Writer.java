@@ -58,6 +58,13 @@ public class Writer
         return new File(filePath);
     }
 
+    public static File writeImage(Mat frame, String fullpath)
+    {
+        MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
+        Imgcodecs.imwrite(fullpath,frame,params);
+        return new File(fullpath);
+    }
+
     public static File writePaintedFrame(Mat frame)
     {
         String filePath = folderPath + uniqueFolderName +"\\Painted Frames\\"+ fileCounter++ + ".png";

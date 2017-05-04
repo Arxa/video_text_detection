@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -13,7 +14,6 @@ import java.io.File;
 
 public class MainController
 {
-
     /*
     UI Elements
      */
@@ -34,15 +34,32 @@ public class MainController
     private ProgressIndicator progressIndicator;
     @FXML
     private Label videoName;
+    @FXML
+    private Label testFX;
+
+    private static File filename;
 
     /*
     UI Events
      */
 
     @FXML
-    private void loadAndPlayVideo(ActionEvent actionEvent)
+    private void chooseVideoFile(MouseEvent actionEvent)
     {
-        File filename = Player.getFilenameFromDialog(this);
+        filename = Player.getFilenameFromDialog(this);
+        validateVideoFile(filename);
+    }
+
+    @FXML
+    private void startProcessing(ActionEvent actionEvent)
+    {
+        disableChooseVideoFileButton();
+        disableProcessVideoButton();
+        VideoProcessor.processVideo(this);
+    }
+
+    public void validateVideoFile(File filename)
+    {
         int status = Player.validateFileName(filename, this);
         if (status == 1)
         {
@@ -58,14 +75,6 @@ public class MainController
                 appendToLog("JAVA-FX VIDEO PLAYER ERROR");
             }
         }
-    }
-
-    @FXML
-    private void startProcessing(ActionEvent actionEvent)
-    {
-        disableChooseVideoFileButton();
-        disableProcessVideoButton();
-        VideoProcessor.processVideo(this);
     }
 
 
@@ -125,6 +134,13 @@ public class MainController
         extractedText_Area.setText(extractedText_Area.getText() + text + "\n");
     }
 
+    public void testFXClicked(MouseEvent mouseEvent) {
+
+    }
+
+    public static File getFilename() {
+        return filename;
+    }
 }
 
 
