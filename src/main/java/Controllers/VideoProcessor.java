@@ -1,11 +1,7 @@
 package Controllers;
 
-import static Models.ImageContainer.*;
-import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_COUNT;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.scene.control.*;
-import javafx.scene.control.ProgressBar;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
@@ -13,6 +9,8 @@ import org.opencv.videoio.VideoCapture;
 import java.io.File;
 import java.util.List;
 
+import static Models.ImageContainer.*;
+import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_COUNT;
 
 /**
  * Created by arxa on 16/11/2016.
@@ -22,17 +20,16 @@ public class VideoProcessor
 {
     private static VideoCapture cap;
 
-    private static String folder = "Korea_4"; //temp
+    private String folder = "Korea_4"; //temp
 
     /**
      * @author Nikiforos Archakis
      */
 
-    public static void processVideo(MainController view)
+    public void processVideo()
     {
-        view.updateProgressBar(0.0);
-        view.updateProgressIndicator(0.0);
-
+        ViewController.getViewController().updateProgressBar(0.0);
+        ViewController.getViewController().updateProgressIndicator(0.0);
         /*
         Required in order to use core OpenCV methods
          */
@@ -51,7 +48,7 @@ public class VideoProcessor
                     double percentageProgress = 0.1;
                     int totalFPS = (int) cap.get(CAP_PROP_FRAME_COUNT);
                     Platform.runLater(() -> {
-                        view.updateProgressIndicator(-1.0); // Waiting mode
+                        ViewController.getViewController().updateProgressIndicator(-1.0); // Waiting mode
                     });
 
                     while (true)
@@ -260,7 +257,7 @@ public class VideoProcessor
                                 String extracted_text = OCR.applyOCR(f.getPath());
 
                                 Platform.runLater(() -> {
-                                    view.appendToExtractedTextArea(extracted_text);
+                                    ViewController.getViewController().appendToExtractedTextArea(extracted_text);
                                 });
                             }
                             /*
@@ -276,7 +273,7 @@ public class VideoProcessor
 
                             if (Double.compare(f_progress, 1.0) < 0) {
                                 Platform.runLater(() -> {
-                                    view.updateProgressBar(f_progress);
+                                    ViewController.getViewController().updateProgressBar(f_progress);
                                 });
                             }
 
@@ -302,24 +299,24 @@ public class VideoProcessor
                 }
                 @Override protected void succeeded() {
                     super.succeeded();
-                    view.updateProgressBar(1.0);
-                    view.updateProgressIndicator(1.0);
-                    view.enableChooseVideoFileButton();
-                    view.appendToLog("Video processing has successfully completed!");
+                    ViewController.getViewController().updateProgressBar(1.0);
+                    ViewController.getViewController().updateProgressIndicator(1.0);
+                    ViewController.getViewController().enableChooseVideoFileButton();
+                    ViewController.getViewController().appendToLog("Video processing has successfully completed!");
                 }
                 @Override protected void cancelled() {
                     super.cancelled();
-                    view.updateProgressBar(0.0);
-                    view.updateProgressIndicator(0.0);
-                    view.appendToLog("Video processing has been canceled!");
-                    view.enableChooseVideoFileButton();
+                    ViewController.getViewController().updateProgressBar(0.0);
+                    ViewController.getViewController().updateProgressIndicator(0.0);
+                    ViewController.getViewController().appendToLog("Video processing has been canceled!");
+                    ViewController.getViewController().enableChooseVideoFileButton();
                 }
                 @Override protected void failed() {
                     super.failed();
-                    view.updateProgressBar(0.0);
-                    view.updateProgressIndicator(0.0);
-                    view.appendToLog("Video processing has failed!");
-                    view.enableChooseVideoFileButton();
+                    ViewController.getViewController().updateProgressBar(0.0);
+                    ViewController.getViewController().updateProgressIndicator(0.0);
+                    ViewController.getViewController().appendToLog("Video processing has failed!");
+                    ViewController.getViewController().enableChooseVideoFileButton();
                 }
             };
             /*

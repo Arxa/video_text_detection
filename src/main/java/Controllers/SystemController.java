@@ -1,9 +1,9 @@
 package Controllers;
 
-import Models.FrameCorners;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Status;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -48,10 +48,6 @@ public class SystemController
         if (VideoProcessor.getCap() != null) {
             VideoProcessor.getCap().release(); // Closing VideoCapture
         }
-    }
-
-    public static FrameCorners getFromCache(int key) {
-        return ((FrameCorners)getCache().get(key).getObjectValue());
     }
 
     public static Cache getCache() {

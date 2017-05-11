@@ -24,7 +24,6 @@
                   <Font name="System Italic" size="17.0" />
                </font>
             </Label>
-            <Label id="testFX" fx:id="testFX" layoutX="352.0" layoutY="18.0" onMouseClicked="#chooseVideoFile" text="testFX" visible="false" />
             </children></AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="674.0" prefWidth="510.0" stylesheets="/CSS/RootLayout.css">
          <children>

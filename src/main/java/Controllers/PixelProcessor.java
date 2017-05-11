@@ -2,7 +2,10 @@ package Controllers;
 
 import Models.Region;
 import Models.SubRegion;
-import org.opencv.core.*;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Size;
 
 /**
  * Created by arxa on 16/11/2016.
@@ -66,7 +69,6 @@ public class PixelProcessor
         return array;
     }
 
-
     public static double[][] matTo1dArray(Mat frame)
     {
         double array[][] = new double[frame.height()][1];
@@ -75,20 +77,6 @@ public class PixelProcessor
         }
         return array;
     }
-
-    /*public static opencv_core.Mat arrayToMatJavacpp (double[][] array,int height, int width, int matType)
-    {
-        opencv_core.Mat image = new opencv_core.Mat(height,width,matType);
-        UByteIndexer idx = image.createIndexer();
-        for (int i=0; i<height; i++)
-        {
-            for (int j=0; j<width; j++)
-            {
-                idx.put(i,j,(int)array[i][j]);
-            }
-        }
-        return image;
-    }*/
 
     public static void crop_region_into_subregions(Region textRegions)
     {
@@ -105,15 +93,4 @@ public class PixelProcessor
         }
     }
 
-    public static void printTrainArray(double[][] train)
-    {
-        for (int i=0; i <= train.length; i++)
-        {
-            System.out.printf("\nROW %d: ",i);
-            for (int y=0; y <= train[i].length; y++)
-            {
-                System.out.printf("%f ",train[i][y]);
-            }
-        }
-    }
 }

@@ -2,6 +2,7 @@ package Controllers;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,7 +17,7 @@ public class Player
 {
     private static File filename;
 
-    public static void updateDirectories(MainController view)
+    public boolean updateDirectories()
     {
         try
         {
@@ -32,15 +33,14 @@ public class Player
                     + Writer.getUniqueFolderName() + "\\Text Blocks"));
             Files.createDirectories(Paths.get(Writer.getFolderPath()
                     + Writer.getUniqueFolderName() + "\\Painted Frames"));
+            return true;
         }
         catch (RuntimeException | IOException ex) {
-            view.appendToLog("File format not supported: please use .mp4 format");
+            return  false;
         }
     }
 
-
-
-    public static int validateFileName(File filename, MainController view)
+    public int validateVideoFile(File filename)
     {
         if (filename == null) {
             /*
@@ -56,14 +56,13 @@ public class Player
             return 1; // FILE OK
         }
         else {
-            view.appendToLog("File does not exist!");
             return -1; // FILE DOES NOT EXIST
         }
     }
 
-    public static File getFilenameFromDialog(MainController view)
+    public File getFilenameFromDialog()
     {
-        view.disableProcessVideoButton();
+        ViewController.getViewController().disableProcessVideoButton();
         Stage stage = new Stage();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose video file");
@@ -71,7 +70,12 @@ public class Player
         return filename;
     }
 
+
     public static File getFilename() {
         return filename;
+    }
+
+    public static void setFilename(File filename) {
+        Player.filename = filename;
     }
 }

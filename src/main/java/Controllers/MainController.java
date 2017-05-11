@@ -3,7 +3,6 @@ package Controllers;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
@@ -17,7 +16,6 @@ public class MainController
     /*
     UI Elements
      */
-
     @FXML
     private Pane playInputVideo_Pane;
     @FXML
@@ -42,12 +40,29 @@ public class MainController
     /*
     UI Events
      */
-
     @FXML
     private void chooseVideoFile(MouseEvent actionEvent)
     {
-        filename = Player.getFilenameFromDialog(this);
-        validateVideoFile(filename);
+        Player player = new Player();
+        filename = player.getFilenameFromDialog();
+        switch (player.validateVideoFile(filename)) {
+            case 1:
+                if (!player.updateDirectories()){
+                    appendToLog("Failed to initialize directories");
+                    enableChooseVideoFileButton();
+                    return;
+                }
+                playVideoToPane(filename); //TODO check for exceptions
+                enableProcessVideoButton();
+                appendToLog("Video file Loaded Successfully");
+                enableProcessVideoButton();
+                break;
+            case -1:
+                appendToLog("Video file does not exist!");
+                enableProcessVideoButton();
+                break;
+            default:
+        }
     }
 
     @FXML
@@ -55,33 +70,14 @@ public class MainController
     {
         disableChooseVideoFileButton();
         disableProcessVideoButton();
-        VideoProcessor.processVideo(this);
-    }
-
-    public void validateVideoFile(File filename)
-    {
-        int status = Player.validateFileName(filename, this);
-        if (status == 1)
-        {
-            try
-            {
-                playVideoToPane(filename);
-                appendToLog("Video file loaded successfully");
-                changeVideoNameLabel(filename.getName());
-                enableProcessVideoButton();
-                Player.updateDirectories(this);
-            }
-            catch (Exception e) {
-                appendToLog("JAVA-FX VIDEO PLAYER ERROR");
-            }
-        }
+        VideoProcessor videoProcessor = new VideoProcessor();
+        videoProcessor.processVideo();
     }
 
 
     /*
     UI Binding Methods
      */
-
     public void disableProcessVideoButton() {
         processVideo_Button.setDisable(true);
     }
@@ -94,7 +90,7 @@ public class MainController
         return processVideo_Button.isDisabled();
     }
 
-    public void playVideoToPane(File videoFile) throws Exception
+    public void playVideoToPane(File videoFile)
     {
         String uri = videoFile.toURI().toString();
         Media media = new Media(uri);

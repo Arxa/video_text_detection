@@ -2,9 +2,6 @@ package Models;
 
 import org.opencv.core.Mat;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by arxa on 12/3/2017.
  */

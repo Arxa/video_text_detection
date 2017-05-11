@@ -9,9 +9,7 @@ import org.opencv.videoio.VideoWriter;
 
 import java.io.File;
 
-import static org.opencv.videoio.Videoio.CAP_PROP_FPS;
-import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_HEIGHT;
-import static org.opencv.videoio.Videoio.CAP_PROP_FRAME_WIDTH;
+import static org.opencv.videoio.Videoio.*;
 
 /**
  * Created by arxa on 26/2/2017.
@@ -77,10 +75,6 @@ public class Writer
     public static VideoWriter getOutput() {
         return output;
     }
-
-//    public static File getProcessedVideo() {
-//        return processedVideo;
-//    }
 
     public static String getUniqueFolderName() {
         return uniqueFolderName;

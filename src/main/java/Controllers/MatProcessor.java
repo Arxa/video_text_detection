@@ -1,5 +1,6 @@
 package Controllers;
 
+import Models.ImageContainer;
 import Models.Region;
 import Models.SubRegion;
 import org.opencv.core.CvType;
@@ -11,8 +12,6 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import Models.ImageContainer;
 
 
 /**

@@ -1,9 +1,9 @@
 package Controllers;
 
-import org.bytedeco.javacpp.*;
+import org.bytedeco.javacpp.BytePointer;
+
 import static org.bytedeco.javacpp.lept.*;
-import static org.bytedeco.javacpp.tesseract.*;
-import static org.junit.Assert.assertTrue;
+import static org.bytedeco.javacpp.tesseract.TessBaseAPI;
 
 /**
  * Created by arxa on 27/4/2017.
@@ -29,6 +29,12 @@ public class OCR
 
         // Get OCR result
         outText = api.GetUTF8Text();
+        if (outText == null) {
+            System.out.println("OCR TEXT IS NULL");
+            api.End();
+            pixDestroy(image);
+            return "";
+        }
         String ocr_text = outText.getString();
         System.out.println("OCR output:\n" + ocr_text);
 
