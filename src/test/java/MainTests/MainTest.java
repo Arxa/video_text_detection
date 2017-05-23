@@ -116,7 +116,7 @@ public class MainTest extends GuiTest
 
     /*
      Failing on Travis
-      
+
     @Test
     public void testProcessButtonClick()
     {
