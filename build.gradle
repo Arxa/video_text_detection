@@ -22,12 +22,6 @@ jar {
     }
 }
 
-project.gradle.taskGraph.whenReady {
-    connectedAndroidTest {
-        ignoreFailures = true
-    }
-}
-
 dependencies {
 
     // Local Libraries
