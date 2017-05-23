@@ -3,6 +3,7 @@ package Controllers;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
@@ -20,7 +21,7 @@ public class VideoProcessor
 {
     private static VideoCapture cap;
 
-    private String folder = "Korea_4"; //temp
+    private String folder = "Kmeans"; //temp
 
     /**
      * @author Nikiforos Archakis

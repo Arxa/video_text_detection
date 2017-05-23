@@ -20,9 +20,7 @@
 Dr. Athanasios Nikolaidis, nikolaid@teiser.gr
 
 <h2>Description</h2>
-<p>The objective of this Thesis is the development of a Java desktop application capable of
- detecting and extracting text displays from video scenes with a complex background. This Thesis combines methodologies and techniques presented in the Papers listed below
-  while it also uses some custom practices and algorithms of mine.<br> <br>
+<p>The objective of this Thesis is the development of high quality Image Processing software for detection and extraction of text displays in video scenes with a complex background. Our approach combines methodologies and techniques presented in popular scientific papers while it also implements custom algorithms and ideas in a highly advanced software development environment.<br> <br>
  <a href="https://www.hindawi.com/journals/mpe/2016/2187647/">"<i>A Method of Effective Text Extraction for Complex Video Scene</i>"</a>,<br>
  <a href="http://ieeexplore.ieee.org/document/5557889/">"<i>A Laplacian Approach to Multi-Oriented Text Detection in Video</i>"</a>,<br>
  <a href="https://www.researchgate.net/publication/220860334_A_Laplacian_Method_for_Video_Text_Detection">"<i>A Laplacian Method for Video Text Detection</i>"</a>,<br>
