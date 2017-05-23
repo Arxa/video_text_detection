@@ -2,5 +2,4 @@ language: java
 jdk:
   - oraclejdk8
 ignore:
-  -
-  - src/main/test/*
+  - 'src/test/**'
