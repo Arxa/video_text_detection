@@ -1,12 +1,4 @@
-.root
-{
-    -fx-background-color: cadetblue;
-}
 
-#playInputVideo_Pane,#pane2,#pane3
-{
-    -fx-background-color: cadetblue;
-}
 
 #logArea
 {
@@ -14,3 +6,31 @@
     -fx-background-color: slategrey;
     -fx-fill: slategrey;
 }
+
+#extractButton {
+    -fx-moz-box-shadow:inset 0px -3px 7px 0px #29bbff;
+    -fx-webkit-box-shadow:inset 0px -3px 7px 0px #29bbff;
+    -fx-box-shadow:inset 0px -3px 7px 0px #29bbff;
+    -fx-background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #2dabf9), color-stop(1, #0688fa));
+    -fx-background:-moz-linear-gradient(top, #2dabf9 5%, #0688fa 100%);
+    -fx-background:-webkit-linear-gradient(top, #2dabf9 5%, #0688fa 100%);
+    -fx-background:-o-linear-gradient(top, #2dabf9 5%, #0688fa 100%);
+    -fx-background:-ms-linear-gradient(top, #2dabf9 5%, #0688fa 100%);
+    -fx-background:linear-gradient(to bottom, #2dabf9 5%, #0688fa 100%);
+    -fx-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#2dabf9', endColorstr='#0688fa',GradientType=0);
+    -fx-background-color: cornflowerblue;
+    -fx-moz-border-radius:3px;
+    -fx-webkit-border-radius:3px;
+    -fx-border-radius:3px;
+    -fx-border:1px solid #0b0e07;
+    -fx-display:inline-block;
+    -fx-cursor:pointer;
+    -fx-color:#ffffff;
+    -fx-font-family:Arial;
+    -fx-font-size:15px;
+    -fx-padding:9px 23px;
+    -fx-text-decoration:none;
+    -fx-text-shadow:0px 1px 0px #263666;
+}
+
+

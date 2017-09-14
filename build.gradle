@@ -15,36 +15,34 @@ repositories{
 
 jar {
     manifest {
-        attributes "Main-Class": "$mainClassName"
+        attributes(
+                'Main-Class': 'Main',
+        )
     }
+}
 
+task fatJar(type: Jar) {
+    manifest.from jar.manifest
+    classifier = 'all'
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
     }
+    with jar
 }
 
-/*
- * Allows you to run the UI tests in headless mode by calling gradle with the -Pheadless=true argument
- */
-if (project.hasProperty('headless') ? project.headless : false) {
-    println "Running UI Tests Headless"
-    test {
-        jvmArgs = ['-Djava.awt.headless=true', '-Dtestfx.robot=glass', '-Dtestfx.headless=true', '-Dprism.order=sw', '-Dprism.text=t2k']
-    }
+artifacts {
+    archives fatJar
 }
 
-jacocoTestReport {
-    reports {
-        xml.enabled true
-        html.enabled false
-    }
-}
 
 dependencies {
 
     // Local Libraries
-    compile files('./lib/opencv-320.jar')
-    compile files('./lib/libsvm.jar')
+    compile fileTree('lib')
 
     compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
 

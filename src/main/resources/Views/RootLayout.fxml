@@ -1,58 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 
-<SplitPane dividerPositions="0.47904191616766467" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="419.0" minWidth="-Infinity" prefHeight="758.0" prefWidth="1138.0" stylesheets="/CSS/RootLayout.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MainController">
-    <items>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="563.0" prefWidth="367.0">
-            <children>
-                <Button id="chooseVideoFile_Button" fx:id="chooseVideoFile_Button" layoutX="53.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#chooseVideoFile" text="Choose video file: " />
-                <Pane id="playInputVideo_Pane" fx:id="playInputVideo_Pane" layoutX="14.0" layoutY="118.0" prefHeight="266.0" prefWidth="523.0" />
-                <Button id="processVideo_Button" fx:id="processVideo_Button" disable="true" layoutX="218.0" layoutY="14.0" mnemonicParsing="false" onAction="#startProcessing" text="Process Video" />
-            <Label id="inputVideoLabel" layoutX="14.0" layoutY="77.0" text="Input Video:">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Label>
-            <Label id="videoName" fx:id="videoName" layoutX="136.0" layoutY="78.0" prefHeight="26.0" prefWidth="381.0" text="Only .mp4 video format is supported">
-               <font>
-                  <Font name="System Italic" size="17.0" />
-               </font>
-            </Label>
-            </children></AnchorPane>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="674.0" prefWidth="510.0" stylesheets="/CSS/RootLayout.css">
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="1200.0" stylesheets="/CSS/RootLayout.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MainController">
+   <children>
+      <Pane fx:id="videoPane" layoutX="-4.0" layoutY="25.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="379.0" prefWidth="667.0" AnchorPane.leftAnchor="-4.0">
          <children>
-            <Label id="extractingTextLabel" layoutX="53.0" layoutY="37.0" text="Extracting text:" textFill="#131414">
-               <font>
-                  <Font name="System Bold" size="17.0" />
-               </font>
-            </Label>
-            <TextArea id="extractedText_Area" fx:id="extractedText_Area" editable="false" layoutX="36.0" layoutY="92.0" prefHeight="299.0" prefWidth="467.0" promptText="Extracted text will be shown here..." wrapText="true">
-               <font>
-                  <Font size="21.0" />
-               </font>
-            </TextArea>
-            <ProgressBar id="progressBar1" fx:id="progressBar1" layoutX="235.0" layoutY="41.0" prefWidth="200.0" progress="0.0" />
-            <TextArea id="logArea" fx:id="log_Area" editable="false" layoutX="45.0" layoutY="461.0" prefHeight="281.0" prefWidth="467.0" promptText="Messages will be shown here, such as: errors, exceptions, status etc." stylesheets="@../CSS/RootLayout.css" wrapText="true">
-               <font>
-                  <Font size="13.0" />
-               </font>
-            </TextArea>
-            <Label layoutX="248.0" layoutY="417.0" prefHeight="36.0" prefWidth="51.0" text="Log" textFill="#f50000">
-               <font>
-                  <Font name="System Bold" size="25.0" />
-               </font>
-            </Label>
-            <ProgressIndicator id="progressIndicator" fx:id="progressIndicator" blendMode="SRC_ATOP" layoutX="454.0" layoutY="30.0" progress="0.0">
-               <effect>
-                  <Blend />
-               </effect>
-            </ProgressIndicator>
-         </children></AnchorPane>
-    </items>
-</SplitPane>
+            <ImageView fx:id="videoIcon" fitHeight="97.0" fitWidth="113.0" layoutX="283.0" layoutY="129.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Icons/video.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+      <MenuBar>
+        <menus>
+          <Menu mnemonicParsing="false" text="Video">
+            <items>
+              <MenuItem fx:id="openVideo" mnemonicParsing="false" text="Open..." />
+                  <MenuItem fx:id="closeVideo" mnemonicParsing="false" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Play">
+            <items>
+              <MenuItem fx:id="playOriginal" mnemonicParsing="false" text="Original" />
+                  <MenuItem fx:id="playDetected" mnemonicParsing="false" text="Detected Text" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <TextArea fx:id="textArea" editable="false" layoutX="715.0" layoutY="151.0" opacity="0.39" prefHeight="200.0" prefWidth="369.0" wrapText="true" />
+      <ProgressIndicator fx:id="progressIndicator" layoutX="851.0" layoutY="25.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="75.0" prefWidth="132.0" progress="0.0" visible="false" />
+      <Button fx:id="extractButton" layoutX="861.0" layoutY="52.0" mnemonicParsing="false" text="Extract Text" visible="false" />
+   </children>
+</AnchorPane>

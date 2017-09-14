@@ -1,141 +1,111 @@
 package Controllers;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainController
 {
-    /*
-    UI Elements
-     */
-    @FXML
-    private Pane playInputVideo_Pane;
-    @FXML
-    private Button processVideo_Button;
-    @FXML
-    private ProgressBar progressBar1;
-    @FXML
-    private Button chooseVideoFile_Button;
-    @FXML
-    private TextArea extractedText_Area;
-    @FXML
-    private TextArea log_Area;
-    @FXML
-    private ProgressIndicator progressIndicator;
-    @FXML
-    private Label videoName;
-    @FXML
-    private Label testFX;
+    public Pane videoPane;
+    public ImageView videoIcon;
+    public TextArea textArea;
+    public Button extractButton;
+    public ProgressIndicator progressIndicator;
+    public AnchorPane anchorPane;
+    public MenuItem openVideo;
+    public MenuItem closeVideo;
+    public MenuItem playOriginal;
+    public MenuItem playDetected;
 
-    private static File filename;
+    private static File currentVideoFile;
+    private static Stage stage;
 
-    /*
-    UI Events
-     */
-    @FXML
-    private void chooseVideoFile(MouseEvent actionEvent)
+    public void initialize()
     {
-        Player player = new Player();
-        filename = player.getFilenameFromDialog();
-        switch (player.validateVideoFile(filename)) {
-            case 1:
-                if (!player.updateDirectories()){
-                    appendToLog("Failed to initialize directories");
-                    enableChooseVideoFileButton();
-                    return;
+        videoIcon.setCursor(Cursor.HAND);
+        extractButton.setCursor(Cursor.HAND);
+        videoIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            FileProcessor.chooseVideoFile();
+        });
+        extractButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            extractButton.setVisible(false);
+            progressIndicator.setVisible(true);
+            progressIndicator.setProgress(-1.0);
+            VideoProcessor.extractText(currentVideoFile);
+        });
+        openVideo.setOnAction(event -> {
+            textArea.clear();
+            progressIndicator.setVisible(false);
+            FileProcessor.chooseVideoFile();
+        });
+        closeVideo.setOnAction(event -> {
+            textArea.clear();
+            videoPane.getChildren().clear();
+            videoPane.getChildren().add(videoIcon);
+            videoIcon.setVisible(true);
+            resizeStageSlowly(680.0, false);
+        });
+        playOriginal.setOnAction(event -> {
+            Player.playVideo(currentVideoFile);
+        });
+        playDetected.setOnAction(event -> {
+            File videoFile = new File(ImageWriter.getUniquePath()+"\\Video\\video.mp4");
+            if (videoFile.exists()){
+                Player.playVideo(videoFile);
+            }
+        });
+    }
+
+    public static File getCurrentVideoFile() {
+        return currentVideoFile;
+    }
+
+    public static void setCurrentVideoFile(File currentVideoFile) {
+        MainController.currentVideoFile = currentVideoFile;
+    }
+    public static void setStage(Stage stage1){
+        stage = stage1;
+    }
+
+    public static Stage getStage() {
+        return stage;
+    }
+
+
+    public static void resizeStageSlowly(double desiredSize, boolean maximize){
+        References.getMainController().extractButton.setVisible(true);
+        Timer animTimer = new Timer();
+        animTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (maximize){
+                    if ((int)MainController.getStage().getWidth() < (int)desiredSize) {
+                        MainController.getStage().setWidth(MainController.getStage().getWidth() + 5.0);
+                    }else {
+                        MainController.getStage().setWidth(desiredSize);
+                        this.cancel();
+                    }
+                } else {
+                    if ((int)MainController.getStage().getWidth() > (int)desiredSize) {
+                        MainController.getStage().setWidth(MainController.getStage().getWidth() - 5.0);
+                    } else {
+                        MainController.getStage().setWidth(desiredSize);
+                        this.cancel();
+                    }
                 }
-                playVideoToPane(filename); //TODO check for exceptions
-                enableProcessVideoButton();
-                appendToLog("Video file Loaded Successfully");
-                enableProcessVideoButton();
-                break;
-            case -1:
-                appendToLog("Video file does not exist!");
-                enableProcessVideoButton();
-                break;
-            default:
-        }
-    }
-
-    @FXML
-    private void startProcessing(ActionEvent actionEvent)
-    {
-        disableChooseVideoFileButton();
-        disableProcessVideoButton();
-        VideoProcessor videoProcessor = new VideoProcessor();
-        videoProcessor.processVideo();
-    }
-
-
-    /*
-    UI Binding Methods
-     */
-    public void disableProcessVideoButton() {
-        processVideo_Button.setDisable(true);
-    }
-
-    public void enableProcessVideoButton() {
-        processVideo_Button.setDisable(false);
-    }
-
-    public boolean processVideoButtonIsDisabled() {
-        return processVideo_Button.isDisabled();
-    }
-
-    public void playVideoToPane(File videoFile)
-    {
-        String uri = videoFile.toURI().toString();
-        Media media = new Media(uri);
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
-        MediaView mediaView = new MediaView(mediaPlayer);
-        playInputVideo_Pane.getChildren().add(mediaView);
-        mediaView.fitHeightProperty().bind(playInputVideo_Pane.heightProperty());
-        mediaView.fitWidthProperty().bind(playInputVideo_Pane.widthProperty());
-        mediaPlayer.play();
-    }
-
-    public void appendToLog(String message) {
-        log_Area.setText(log_Area.getText() + message + "\n");
-    }
-
-    public void changeVideoNameLabel(String filename) {
-        videoName.setText(filename);
-    }
-
-    public void disableChooseVideoFileButton() {
-        chooseVideoFile_Button.setDisable(true);
-    }
-
-    public void enableChooseVideoFileButton() {
-        chooseVideoFile_Button.setDisable(false);
-    }
-
-    public void updateProgressBar(double progress) {
-        progressBar1.setProgress(progress);
-    }
-
-    public void updateProgressIndicator(double progress) {
-        progressIndicator.setProgress(progress);
-    }
-
-    public void appendToExtractedTextArea(String text) {
-        extractedText_Area.setText(extractedText_Area.getText() + text + "\n");
-    }
-
-    public void testFXClicked(MouseEvent mouseEvent) {
-
-    }
-
-    public static File getFilename() {
-        return filename;
+            }
+        },1, 5);
     }
 }
 

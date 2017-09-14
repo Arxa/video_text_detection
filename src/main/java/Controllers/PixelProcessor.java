@@ -1,11 +1,6 @@
 package Controllers;
 
-import Models.Region;
-import Models.SubRegion;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Size;
 
 /**
  * Created by arxa on 16/11/2016.
@@ -13,6 +8,18 @@ import org.opencv.core.Size;
 
 public class PixelProcessor
 {
+    public static boolean areaIsSobelDense(double left, double top, double width, double height, double area)
+    {
+        double sobelEdgeDensity = 0.0;
+        for (int i=(int)top; i<(int)top+(int)height; i++)
+        {
+            for (int j=(int)left; j<(int)left+(int)width; j++)
+            {
+                sobelEdgeDensity += VideoProcessor.getSobel().get(i,j)[0];
+            }
+        }
+        return Double.compare(sobelEdgeDensity / area, 2.0) > 0;
+    }
 
     public static double[][] find_MaximumGradientDifference(double[][] matArray,int matHeight,int matWidth)
     {
@@ -68,29 +75,4 @@ public class PixelProcessor
         }
         return array;
     }
-
-    public static double[][] matTo1dArray(Mat frame)
-    {
-        double array[][] = new double[frame.height()][1];
-        for (int i=0; i < frame.height(); i++) {
-            array[i][0] = frame.get(i,0)[0];
-        }
-        return array;
-    }
-
-    public static void crop_region_into_subregions(Region textRegions)
-    {
-        // Cropping the 500x100 text region into 500 10x10 subregions
-        for (int x = 0; x <= textRegions.getMatRegion().width() -10; x+=10)
-        {
-            for (int y = 0; y <= textRegions.getMatRegion().height() -10; y+=10)
-            {
-                Rect rect = new Rect(new Point(x,y), new Size(10.0,10.0));
-                Mat subregion = new Mat(textRegions.getMatRegion(),rect);
-                SubRegion subRegion = new SubRegion(subregion);
-                textRegions.getSubregions().add(subRegion);
-            }
-        }
-    }
-
 }

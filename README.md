@@ -38,7 +38,7 @@
             JavaFX
         </li>
         <li>
-            OpenCV
+            DLLs
         </li>
         <li>
             JavaCPP-Tesseract
