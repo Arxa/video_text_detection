@@ -43,6 +43,14 @@ public class ImageWriter
         return new File(filePath);
     }
 
+    public static File writeOCRImage(Mat frame)
+    {
+        String filePath = folderPath + uniqueFolderName +"\\OCR Images\\"+ fileCounter++ + ".png";
+        MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
+        Imgcodecs.imwrite(filePath,frame,params);
+        return new File(filePath);
+    }
+
     public static File writeStep(Mat frame)
     {
         String filePath = folderPath + uniqueFolderName +"\\Steps\\"+ fileCounter++ + ".png";

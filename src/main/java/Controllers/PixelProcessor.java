@@ -10,15 +10,17 @@ public class PixelProcessor
 {
     public static boolean areaIsSobelDense(double left, double top, double width, double height, double area)
     {
-        double sobelEdgeDensity = 0.0;
+        int cannyPixels = 0;
         for (int i=(int)top; i<(int)top+(int)height; i++)
         {
             for (int j=(int)left; j<(int)left+(int)width; j++)
             {
-                sobelEdgeDensity += VideoProcessor.getSobel().get(i,j)[0];
+                if (Double.compare(VideoProcessor.getSobel().get(i,j)[0],255.0) == 0){
+                    cannyPixels++;
+                }
             }
         }
-        return Double.compare(sobelEdgeDensity / area, 2.0) > 0;
+        return Double.compare(cannyPixels / area, 0.05) > 0;
     }
 
     public static double[][] find_MaximumGradientDifference(double[][] matArray,int matHeight,int matWidth)

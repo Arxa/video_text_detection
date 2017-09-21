@@ -54,6 +54,8 @@ public class FileProcessor
                     + ImageWriter.getUniqueFolderName() + "\\Steps"));
             Files.createDirectories(Paths.get(ImageWriter.getFolderPath()
                     + ImageWriter.getUniqueFolderName() + "\\Video"));
+            Files.createDirectories(Paths.get(ImageWriter.getFolderPath()
+                    + ImageWriter.getUniqueFolderName() + "\\OCR Images"));
             return true;
         }
         catch (RuntimeException | IOException ex) {
