@@ -1,6 +1,6 @@
 //package MainTests;
 //
-//import Controllers.References;
+//import Models.Controllers;
 //import javafx.fxml.FXMLLoader;
 //import javafx.scene.Node;
 //import javafx.scene.Parent;
@@ -51,7 +51,7 @@
 //    protected Parent getRootNode() {
 //        Parent parent = null;
 //        try {
-//            loader = new FXMLLoader(getClass().getClassLoader().getResource("Views/RootLayout.fxml"));
+//            loader = new FXMLLoader(getClass().getClassLoader().getResource("Views/main.fxml"));
 //            parent = loader.load();
 //            return parent;
 //        } catch (IOException ex) {
@@ -78,7 +78,7 @@
 //    @Before
 //    public void beforeTest()
 //    {
-//        References.setController(loader);
+//        Controllers.setMainController(loader);
 //
 //        chooseVideoFile_Button = find("#chooseVideoFile_Button");
 //        playInputVideo_Pane = find("#playInputVideo_Pane");
