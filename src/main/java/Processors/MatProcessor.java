@@ -2,10 +2,8 @@ package Processors;
 
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Created by arxa on 2/4/2017.
@@ -17,7 +15,6 @@ public class MatProcessor
     {
         List<Mat> textRegions = new ArrayList<>();
         for (Rect r : textBlocks) {
-            // Creating a crop of the original gray image according to textBlocks rectangles
             Mat crop = new Mat(VideoProcessor.getInput(),r);
             textRegions.add(crop);
         }
@@ -59,7 +56,8 @@ public class MatProcessor
         }
     }
 
-    public static Mat k_Means(Mat image) {
+    public static Mat k_Means(Mat image)
+    {
         Mat data = new Mat(image.height() * image.width(), 1, CvType.CV_32FC1);
         int k = 0;
         for (int i = 0; i < image.height(); i++) {
@@ -71,12 +69,12 @@ public class MatProcessor
         int clusters = 2;
         Mat labels = new Mat();
 
-     /*
+        /*
          TermCriteria Constructor Parameters:
          type: The type of termination criteria, one of TermCriteria::Type
          maxCount: The maximum number of iterations or elements to compute.
          epsilon: The desired accuracy or change in parameters at which the iterative algorithm stops.
-      */
+        */
         TermCriteria criteria = new TermCriteria(TermCriteria.EPS + TermCriteria.MAX_ITER, 10, 1);
         int attempts = 5;
         int flag = Core.KMEANS_PP_CENTERS;

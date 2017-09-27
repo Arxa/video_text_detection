@@ -22,7 +22,7 @@ public class Main extends Application
 
         stage.getIcons().add(new Image(Main.class.getResourceAsStream("Icons/app.png")));
         Controllers.setMainController(loader);
-        MainController.setStage(stage);
+        MainController.setMainStage(stage);
 
         FileProcessor.loadLibraries();
 

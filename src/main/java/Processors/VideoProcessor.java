@@ -2,6 +2,7 @@ package Processors;
 
 import Entities.Controllers;
 import Entities.StructuringElement;
+import ViewControllers.MainController;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import org.opencv.core.*;
@@ -9,11 +10,9 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.VideoWriter;
 import org.opencv.videoio.Videoio;
-
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Created by arxa on 16/11/2016.
@@ -42,156 +41,122 @@ public class VideoProcessor
             {
                 @Override protected Void call() throws Exception
                 {
-                    double frames = (int)cap.get(Videoio.CAP_PROP_FRAME_COUNT);
+                    double frames = (int) cap.get(Videoio.CAP_PROP_FRAME_COUNT);
                     boolean open1 = cap.read(input);
                     int currentFrame = 1;
                     input.copyTo(inputPainted);
                     Size kernel = StructuringElement.getStructuringElement(input.height()*input.width());
                     Mat structuringElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, kernel);
-                    Controllers.getMainController().textArea.appendText("\nStructuring Element: "+kernel.height+"-"+kernel.width+"\n");
+                    Controllers.getLogController().logTextArea.appendText("[Structuring Element: "+kernel.height+" x "+kernel.width+"]\n");
                     while (open1 && !thread.isInterrupted())
                     {
-                            ImageWriter.writeStep(input);
+                        ImageWriter.writeStep(input);
 
-                            /*
-                            Apply Gaussian Blurred Filter
-                            GaussianBlur Parameters:
-                            src – input image
-                            dst – output image of the same size and type as src.
-                            ksize – Gaussian kernel size. ksize.width and ksize.height
+                        /*
+                        Apply Gaussian Blurred Filter
+                        GaussianBlur Parameters:
+                        src – input image
+                        dst – output image of the same size and type as src.
+                        ksize – Gaussian kernel size. ksize.width and ksize.height
                                 can differ but they both must be positive and odd.
                                 Or, they can be zero’s and then they are computed from sigma* .
-                            sigmaX – Gaussian kernel standard deviation in X direction.
-                            sigmaY – Gaussian kernel standard deviation in Y direction;
+                        sigmaX – Gaussian kernel standard deviation in X direction.
+                        sigmaY – Gaussian kernel standard deviation in Y direction;
                                 if sigmaY is zero, it is set to be equal to sigmaX,
                                 if both sigmas are zeros, they are computed from ksize.width and ksize.height
-                             */
-                            Imgproc.GaussianBlur(input, dst, new Size(15.0,15.0),0.0,0.0);
-                            ImageWriter.writeStep(dst);
+                         */
+                        Imgproc.GaussianBlur(input, dst, new Size(15.0,15.0),0.0,0.0);
+                        ImageWriter.writeStep(dst);
 
-                            /*
-                            Convert to GrayScale
-                             */
-                            Imgproc.cvtColor(dst, src, Imgproc.COLOR_RGB2GRAY, 0);
-                            ImageWriter.writeStep(src);
+                        // Convert to GrayScale
+                        Imgproc.cvtColor(dst, src, Imgproc.COLOR_RGB2GRAY, 0);
+                        ImageWriter.writeStep(src);
 
-                            /*
-                            Apply the Laplacian Filter
-                            Laplacian Parameters:
-                            src – Source image.
-                            dst – Destination image of the same size and the same number of channels as src .
-                            ddepth – Desired depth of the destination image.
-                            ksize – Aperture size used to compute the second-derivative filters.
+                        /*
+                        Apply the Laplacian Filter
+                        Laplacian Parameters:
+                        src – Source image.
+                        dst – Destination image of the same size and the same number of channels as src .
+                        ddepth – Desired depth of the destination image.
+                        ksize – Aperture size used to compute the second-derivative filters.
                                 The ksize must be positive and odd. Bigger ksize leads to stronger intensity.
-                            scale – Optional scale factor for the computed Laplacian values.
+                        scale – Optional scale factor for the computed Laplacian values.
                                 By default, no scaling is applied.
-                            delta – Optional delta value that is added to the results prior to storing them in dst.
-                             */
-                            Imgproc.Laplacian(src, dst, CvType.CV_16S,3,2,0);
-                            ImageWriter.writeStep(dst);
-
-                            /*
-                            Convert to a 2D Array.
-                            We need this conversion for the next step.
-                             */
-                            double[][] laplaceArray = PixelProcessor.matToArray(dst);
-
-                            /*
-                            Apply the MaximumGradientDifference(MGD) operator
-                             */
-                            double[][] mgdArray = PixelProcessor.find_MaximumGradientDifference(laplaceArray, dst.height(), dst.width());
-
-                            /*
-                            Convert the mgdArray back again into a Mat object
-                             */
-                            src = PixelProcessor.arrayToMat(mgdArray, dst.height(), dst.width(), CvType.CV_16S);
-                            ImageWriter.writeStep(src);
-
-                            /*
-                            Apply [0..1] normalization
-                             */
-                           // Core.normalize(src, dst,0.0,1.0, Core.NORM_MINMAX);
-
-                            /*
-                            Convert to Binary
-                             */
-                            src.convertTo(src, CvType.CV_8UC1);
-                            Imgproc.threshold(src, dst, 80,255,Imgproc.THRESH_BINARY);
-                            ImageWriter.writeStep(dst);
-
-                            /*
-                            Apply the morphological operation 'Dilation'
-                            ImgProc.dilate Parameters:
-                            src – input image; the number of channels can be arbitrary,
-                                but the depth should be one of CV_8U, CV_16U, CV_16S, CV_32F` or ``CV_64F.
-                            dst – output image of the same size and type as src.
-                            element – structuring element used for dilation;
-                                if element=Mat() , a 3 x 3 rectangular structuring element is used.
-                            anchor – position of the anchor within the element;
-                                default value (-1, -1) means that the anchor is at the element center.
-                             */
-                            Imgproc.dilate(dst, src, structuringElement);
-                            ImageWriter.writeStep(src);
-
-                            /*
-                            Calculate Sobel Edges of original image (i.e. input) - needed afterwards
-                             */
-                            Imgproc.Canny(input, sobel,50, 150);
-//                            Mat withLines = new Mat();
-//                            Mat lines = new Mat();
-                            //sobel.copyTo(withLines);
-
-                        // Imgproc.cvtColor(sobel, withLines, Imgproc.COLOR_BGR2GRAY);
-
-//                        Imgproc.HoughLinesP(sobel, lines, 1, Math.PI / 180, 150, 20, 50);
-//
-//                            for(int i = 0; i < lines.rows(); i++) {
-//                                double[] val = lines.get(i, 0);
-//                                Imgproc.line(withLines, new Point(val[0], val[1]), new Point(val[2], val[3]), new Scalar(255), 1);
-//                            }
-//                        ImageWriter.writeStep(withLines);
+                        delta – Optional delta value that is added to the results prior to storing them in dst.
+                         */
+                        Imgproc.Laplacian(src, dst, CvType.CV_16S,3,2,0);
+                        ImageWriter.writeStep(dst);
 
 
-                            ImageWriter.writeStep(sobel);
+                        // Convert to a 2D Array. We need this conversion for the next step.
+                        double[][] laplaceArray = PixelProcessor.matToArray(dst);
 
-                            /*
-                            Find text blocks by finding the connected components of
-                            dilated image and filtering them based on their Sobel edges density.
-                             */
-                            List<Rect> textBlocks = MatProcessor.find_TextBlocks(src);
 
-                            /*
-                            Paint the filtered textBlocks from above to the original frame (i.e. input)
-                            */
-                            MatProcessor.paintRectsToMat(textBlocks,inputPainted);
-                            ImageWriter.writePaintedFrame(inputPainted);
-                            ImageWriter.writeStep(inputPainted);
+                        // Apply the MaximumGradientDifference(MGD) operator
+                        double[][] mgdArray = PixelProcessor.find_MaximumGradientDifference(laplaceArray, dst.height(), dst.width());
 
-                            /*
-                            Write painted frame to video
-                             */
-                            videoWriter.write(inputPainted);
 
-                            /*
-                            Extract Text from current frame's textblocks
-                             */
-                            preprocessTextBlocks(textBlocks);
+                        // Convert the mgdArray back again into a Mat object
+                        src = PixelProcessor.arrayToMat(mgdArray, dst.height(), dst.width(), CvType.CV_16S);
+                        ImageWriter.writeStep(src);
 
-                            /*
-                            Are any more frames to read?
-                            Read frames with a step of 5 frames per time. No need to detect the same text
-                             */
-                            for (int i=0; i < 5; i++) {
-                                cap.read(input);
-                                currentFrame++;
-                                input.copyTo(inputPainted);
-                                MatProcessor.paintRectsToMat(textBlocks,inputPainted);
-                                videoWriter.write(inputPainted);
-                            }
-                            open1 = cap.read(input);
+                        // Convert to Binary
+                        src.convertTo(src, CvType.CV_8UC1);
+                        Imgproc.threshold(src, dst, 80,255,Imgproc.THRESH_BINARY);
+                        ImageWriter.writeStep(dst);
+
+                        /*
+                        Apply the morphological operation Dilation
+                        ImgProc.dilate Parameters:
+                        src – input image; the number of channels can be arbitrary,
+                              but the depth should be one of CV_8U, CV_16U, CV_16S, CV_32F` or ``CV_64F.
+                        dst – output image of the same size and type as src.
+                        element – structuring element used for dilation;
+                              if element=Mat() , a 3 x 3 rectangular structuring element is used.
+                        anchor – position of the anchor within the element;
+                              default value (-1, -1) means that the anchor is at the element center.
+                         */
+                        Imgproc.dilate(dst, src, structuringElement);
+                        ImageWriter.writeStep(src);
+
+                        // Calculate Canny Edges of original frame
+                        Imgproc.Canny(input, sobel,50, 150);
+                        ImageWriter.writeStep(sobel);
+
+                        /*
+                        Find text blocks by finding the connected components of
+                        dilated image and filtering them based on their Sobel edges density.
+                         */
+                        List<Rect> textBlocks = MatProcessor.find_TextBlocks(src);
+
+                        // Paint the filtered textBlocks from above to the original frame (i.e. input)
+                        MatProcessor.paintRectsToMat(textBlocks,inputPainted);
+                        ImageWriter.writePaintedFrame(inputPainted);
+                        ImageWriter.writeStep(inputPainted);
+
+                        // Write painted frame to video
+                        videoWriter.write(inputPainted);
+
+                        // Extract Text from current frame's textblocks
+                        preprocessTextBlocks(textBlocks);
+
+                        /*
+                        Reading/Skipping the next 5 frames to speed up.
+                        Human readable text should last more than 5 frame at least.
+                         */
+                        for (int i=0; i < 5; i++) {
+                            cap.read(input);
                             currentFrame++;
                             input.copyTo(inputPainted);
+                            MatProcessor.paintRectsToMat(textBlocks,inputPainted);
+                            // These frames are not processed, however we shall write them to the video result, using the last detected text areas
+                            videoWriter.write(inputPainted);
+                        }
+                        open1 = cap.read(input);
+                        currentFrame++;
+                        input.copyTo(inputPainted);
 
+                        // Update progress bar
                         final int currentFrame_final = currentFrame;
                         final double frames_final = frames;
                         Platform.runLater(() -> {
@@ -203,7 +168,8 @@ public class VideoProcessor
                 @Override protected void succeeded() {
                     cap.release();
                     videoWriter.release();
-                    Controllers.getMainController().textArea.appendText("Operation completed!");
+                    // TODO do smth about the following copied code?
+                    Controllers.getLogController().logTextArea.appendText("Operation completed!\n");
                     Controllers.getMainController().progressIndicator.setVisible(false);
                     Controllers.getMainController().extractButton.setVisible(true);
                     Controllers.getMainController().progressBar.setProgress(0.0);
@@ -212,40 +178,52 @@ public class VideoProcessor
                 }
                 @Override protected void cancelled() {
                     videoWriter.release();
-                    Controllers.getMainController().textArea.appendText("ERROR: Something went wrong!");
+                    Controllers.getLogController().logTextArea.appendText("ERROR: Thread Cancelled!\n");
+                    MainController.getLogStage().show();
+                    Controllers.getMainController().progressIndicator.setVisible(false);
+                    Controllers.getMainController().extractButton.setVisible(true);
+                    Controllers.getMainController().progressBar.setProgress(0.0);
+                    Controllers.getMainController().progressBar.setVisible(false);
                     super.cancelled();
-
                 }
                 @Override protected void failed() {
                     videoWriter.release();
-                    Controllers.getMainController().textArea.appendText("ERROR: Something went wrong!");
+                    Controllers.getLogController().logTextArea.appendText("ERROR: Thread Failed!\n");
+                    MainController.getLogStage().show();
+                    Controllers.getMainController().progressIndicator.setVisible(false);
+                    Controllers.getMainController().extractButton.setVisible(true);
+                    Controllers.getMainController().progressBar.setProgress(0.0);
+                    Controllers.getMainController().progressBar.setVisible(false);
                     super.failed();
                 }
             };
+
             // Catching Thread Exceptions
             task.exceptionProperty().addListener((observable, oldValue, newValue) ->  {
                 if(newValue != null) {
                     Exception ex = (Exception) newValue;
-                    Controllers.getMainController().textArea.appendText(ex.getMessage());
+                    Controllers.getLogController().logTextArea.appendText("ERROR: Thread Exception: " + ex.getMessage()+"\n");
+                    MainController.getLogStage().show();
                 }
             });
+
             thread = new Thread(task);
             thread.setDaemon(false);
             thread.start();
         }
     }
 
+    /**
+     *
+     * @param textBlocks
+     */
     public static void preprocessTextBlocks(List<Rect> textBlocks)
     {
         for (Mat m : MatProcessor.getTextBlocksAsMat(textBlocks))
         {
-            /*
-             Apply the 'Unsharp Mark' Filter
-             */
             ImageWriter.writeOCRImage(m);
             Imgproc.cvtColor(m, src, Imgproc.COLOR_RGB2GRAY, 0);
             ImageWriter.writeOCRImage(src);
-
 
             Imgproc.GaussianBlur(src, dst, new Size(0, 0), 3);
             ImageWriter.writeOCRImage(dst);
@@ -253,28 +231,25 @@ public class VideoProcessor
             Core.addWeighted(src, 1.5, dst, -0.5, 0, unsharp);
             ImageWriter.writeOCRImage(unsharp);
 
-            //Core.normalize(unsharp, src,0.0,1.0, Core.NORM_MINMAX);
-            //src.convertTo(src, CvType.CV_8UC1);
-            //Imgproc.threshold(unsharp, src, 80,255,Imgproc.THRESH_BINARY);
-            //Imgproc.adaptiveThreshold(unsharp,src,255,Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 11, 2);
             Core.normalize(unsharp, src,0.0,1.0, Core.NORM_MINMAX);
             Mat kmeans = MatProcessor.k_Means(src);
             Mat binary = new Mat(unsharp.height(), unsharp.width(), CvType.CV_8UC1);
             MatProcessor.paintMatToBinary(kmeans,binary);
 
             ImageWriter.writeOCRImage(binary);
-//            Imgproc.resize(src, dst, new Size(), 4.0, 4.0, Imgproc.INTER_LINEAR);
-//            ImageWriter.writeOCRImage(dst);
+            //Imgproc.resize(binary, binary, new Size(), 4.0, 4.0, Imgproc.INTER_LINEAR);
 
-
-            //ImageWriter.writeStep(src);
-            /*
-             Extract Text
-             */
+            // Extract Text
             File f = ImageWriter.writeTextBlock(binary);
-            String extracted_text = OcrProcessor.getOcrText(f.getPath());
+            String extracted_text = "";
+            try {
+                extracted_text = OcrProcessor.getOcrText(f.getPath());
+            } catch (IOException e) {
+                Controllers.getLogController().logTextArea.appendText("ERROR: OCR Exception: " + e.getMessage());
+            }
+            final String ocr_result = extracted_text;
             Platform.runLater(() -> {
-                Controllers.getMainController().textArea.appendText(extracted_text);
+                Controllers.getMainController().textArea.appendText(ocr_result);
             });
         }
     }

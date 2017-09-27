@@ -37,9 +37,10 @@
                   <MenuItem fx:id="playDetected" mnemonicParsing="false" text="Detected Text" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Settings">
+          <Menu mnemonicParsing="false" text="Tools">
             <items>
-              <MenuItem fx:id="preferencesMenuItem" mnemonicParsing="false" text="Preferences" />
+              <MenuItem fx:id="settingsMenuItem" mnemonicParsing="false" text="Settings" />
+                <MenuItem fx:id="logMenuItem" mnemonicParsing="false" text="Log" />
             </items>
           </Menu>
         </menus>

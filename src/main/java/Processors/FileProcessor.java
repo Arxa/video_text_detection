@@ -6,7 +6,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,9 +21,7 @@ public class FileProcessor
     public static void chooseVideoFile()
     {
         File chosenFile = FileProcessor.showFileDialog();
-        if (chosenFile == null){
-            return;
-        }
+        if (chosenFile == null) return;
         MainController.setCurrentVideoFile(chosenFile);
         if (!FileProcessor.validateVideoFileName(MainController.getCurrentVideoFile())){
             new Alert(Alert.AlertType.WARNING, "ERROR on loading file\n"+
@@ -47,14 +44,11 @@ public class FileProcessor
     public static boolean createDirectories()
     {
         try {
-            /*
-            Generating unique name of current video file operation
-             */
+            // Generating unique name of current video file operation
             ImageWriter.setUniqueFolderName(MainController.getCurrentVideoFile().getName().replace(".mp4","")+" "+
                     new Date().toString().replace(":","-"));
-            /*
-            Creating paths for write operations
-             */
+
+            // Creating paths for write operations
             Files.createDirectories(Paths.get(ImageWriter.getFolderPath()
                     + ImageWriter.getUniqueFolderName() + "\\Text Blocks"));
             Files.createDirectories(Paths.get(ImageWriter.getFolderPath()
@@ -64,11 +58,11 @@ public class FileProcessor
             Files.createDirectories(Paths.get(ImageWriter.getFolderPath()
                     + ImageWriter.getUniqueFolderName() + "\\Video"));
             Files.createDirectories(Paths.get(ImageWriter.getFolderPath()
-                    + ImageWriter.getUniqueFolderName() + "\\OcrProcessor Images"));
+                    + ImageWriter.getUniqueFolderName() + "\\OCR Images"));
             return true;
         }
         catch (RuntimeException | IOException ex) {
-            return  false;
+            return false;
         }
     }
 
@@ -86,34 +80,39 @@ public class FileProcessor
         return fileChooser.showOpenDialog(stage);
     }
 
-    public static void loadLibraries()
+    public static void loadLibraries() throws IOException
     {
-        System.load("C:\\Users\\310297685\\IdeaProjects\\Thesis\\VideoText_Extractor\\src\\main\\resources\\DLLs\\openh264-1.6.0-win64msvc.dll");
+
 
         try {
+            String currentDirectory = new File(".").getCanonicalPath();
+            System.load(currentDirectory + "\\src\\main\\resources\\DLLs\\openh264-1.6.0-win64msvc.dll");
+            Controllers.getLogController().logTextArea.appendText("Loaded openh254 FFMPEG library\n");
+
             String osName = System.getProperty("os.name");
             if(osName.startsWith("Windows"))
             {
                 int bit = Integer.parseInt(System.getProperty("sun.arch.data.model"));
                 if(bit == 32){
-                    Controllers.getMainController().textArea.appendText("Loaded OpenCV for "+osName+" "+bit+"-bit\n");
-                    System.load("C:\\Users\\310297685\\IdeaProjects\\Thesis\\VideoText_Extractor\\src\\main\\resources\\DLLs\\opencv_java320.dll");
+                    System.load(currentDirectory + "\\src\\main\\resources\\DLLs\\opencv_java320.dll");
+                    Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for "+osName+" "+bit+"-bit\n");
                 }
                 else if (bit == 64){
-                    Controllers.getMainController().textArea.appendText("Loaded OpenCV for "+osName+" "+bit+"-bit\n");
-                    System.load("C:\\Users\\310297685\\IdeaProjects\\Thesis\\VideoText_Extractor\\src\\main\\resources\\DLLs\\opencv_java320.dll");
+                    System.load(currentDirectory + "\\src\\main\\resources\\DLLs\\opencv_java320.dll");
+                    Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for "+osName+" "+bit+"-bit\n");
                 }
                 else{
-                    Controllers.getMainController().textArea.appendText("Loaded OpenCV for "+osName+" "+bit+"-bit\n");
-                    System.load("C:\\Users\\310297685\\IdeaProjects\\Thesis\\VideoText_Extractor\\src\\main\\resources\\DLLs\\opencv_java320.dll");
+                    System.load(currentDirectory + "\\src\\main\\resources\\DLLs\\opencv_java320.dll");
+                    Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for "+osName+" "+bit+"-bit\n");
                 }
             }
             else if(osName.equals("Mac OS X")){
-                Controllers.getMainController().textArea.appendText("Loaded OpenCV for "+osName);
-                System.load("C:\\Users\\310297685\\IdeaProjects\\Thesis\\VideoText_Extractor\\src\\main\\resources\\DLLs\\opencv_java320.dll");
+                System.load(currentDirectory + "\\src\\main\\resources\\DLLs\\opencv_java320.dll");
+                Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for "+osName+"\n");
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load opencv native library\n", e);
+        } catch (Throwable e) {
+            Controllers.getLogController().logTextArea.appendText("Failed to load opencv native library: " + e.getMessage()+"\n");
+            MainController.getLogStage().show();
         }
     }
 }

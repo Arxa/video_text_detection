@@ -1,5 +1,6 @@
 package Entities;
 
+import ViewControllers.LogController;
 import ViewControllers.MainController;
 import ViewControllers.PreferencesController;
 import javafx.fxml.FXMLLoader;
@@ -15,6 +16,7 @@ public class Controllers
 {
     private static MainController mainController;
     private static PreferencesController preferencesController;
+    private static LogController logController;
 
     public static void setMainController(FXMLLoader loader)
     {
@@ -25,6 +27,10 @@ public class Controllers
         preferencesController = loader.getController();
     }
 
+    public static void setLogController(FXMLLoader loader) {
+        logController = loader.getController();
+    }
+
 
     public static MainController getMainController() {
         return mainController;
@@ -32,5 +38,9 @@ public class Controllers
 
     public static PreferencesController getPreferencesController() {
         return preferencesController;
+    }
+
+    public static LogController getLogController() {
+        return logController;
     }
 }

@@ -10,16 +10,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PreferencesController {
 
@@ -32,7 +30,7 @@ public class PreferencesController {
 
     public void initialize() throws IOException {
 
-        Path file = Paths.get("C:\\Users\\310297685\\IdeaProjects\\Thesis\\VideoText_Extractor\\src\\main\\resources\\OCR\\language_codes\\lang_codes");
+        Path file = Paths.get("src\\main\\resources\\OCR\\languages\\lang_codes.txt");
 
         languageMap = new HashMap<>();
         List<String> lines = Files.readAllLines(file, Charset.defaultCharset());
@@ -42,16 +40,6 @@ public class PreferencesController {
             languageMap.put(tokens[1],tokens[0]);
             ocrLanguage_combobox.getItems().add(tokens[1]);
         }
-
-//        Iterator it = FileUtils.iterateFiles(new File("C:\\Users\\310297685\\Desktop\\tessdata-3.04.00"), null, false);
-//        while(it.hasNext()){
-//            File temp = (File) it.next();
-//            if (!languageMap.values().contains(temp.getName().split("\\.")[0])){
-//                temp.delete();
-//                System.out.println("deleted");
-//            }
-//        }
-
 
         ocrLanguage_combobox.getSelectionModel().select("English");
 
