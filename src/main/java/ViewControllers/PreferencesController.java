@@ -1,23 +1,34 @@
 package ViewControllers;
 
+import Entities.Controllers;
 import Processors.ImageWriter;
 import Processors.OcrProcessor;
+import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
+import com.sun.javafx.application.HostServicesDelegate;
 import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
+import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
+import javafx.scene.Cursor;
+import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
+import org.apache.commons.io.FileUtils;
+
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Stream;
 
 public class PreferencesController {
 
@@ -27,8 +38,31 @@ public class PreferencesController {
     public CheckBox exportImages_checkbox;
 
     private static Map<String,String> languageMap;
+    public Label moreLanguagesLabel;
 
     public void initialize() throws IOException {
+
+        moreLanguagesLabel.setCursor(Cursor.HAND);
+        moreLanguagesLabel.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Download the .traineddata language files(s) you wish to add from the following link and place the file(s) project's directory: src\\main\\resources\\OCR\\tessdata");
+            alert.setTitle("How to add more languages");
+            FlowPane fp = new FlowPane();
+            Label lbl = new Label("Download the .traineddata language files(s) you wish to add from the following link \n" +
+                    "and place the file(s) in the project's directory: src\\main\\resources\\OCR\\tessdata \n" +
+                    "Restart the application and you should see the new language options in Tools->Settings");
+            Hyperlink link = new Hyperlink("https://github.com/tesseract-ocr/tessdata/tree/3.04.00");
+            link.addEventHandler(MouseEvent.MOUSE_CLICKED, event1 -> {
+                try {
+                    Desktop.getDesktop().browse(new URI("https://github.com/tesseract-ocr/tessdata/tree/3.04.00"));
+                } catch (IOException | URISyntaxException e) {
+                    Controllers.getLogController().logTextArea.appendText("Failed to open website link!\n");
+                }
+            });
+            fp.getChildren().addAll( lbl, link);
+            alert.getDialogPane().contentProperty().set(fp);
+            alert.showAndWait();
+
+        });
 
         Path file = Paths.get("src\\main\\resources\\OCR\\languages\\lang_codes.txt");
 
@@ -38,7 +72,14 @@ public class PreferencesController {
             line = line.replaceAll("\\(","").replaceAll("\\)","");
             String[] tokens = line.split(" ");
             languageMap.put(tokens[1],tokens[0]);
-            ocrLanguage_combobox.getItems().add(tokens[1]);
+        }
+
+        File folder = new File("src\\main\\resources\\OCR\\tessdata");
+        Collection<File> files = FileUtils.listFiles(folder, null, false);
+        for(File f : files){
+            if (languageMap.values().contains(f.getName().split("\\.")[0])){
+                ocrLanguage_combobox.getItems().add(getKeyByValue(languageMap,f.getName().split("\\.")[0]));
+            }
         }
 
         ocrLanguage_combobox.getSelectionModel().select("English");
@@ -123,5 +164,14 @@ public class PreferencesController {
 
     public static Map<String, String> getLanguageMap() {
         return languageMap;
+    }
+
+    public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
+        for (Map.Entry<T, E> entry : map.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 }

@@ -171,9 +171,9 @@ public class MainController
             return;
         }
         settingsStage = new Stage();
-        settingsStage.setTitle("Preferences");
+        settingsStage.setTitle("Settings");
         settingsStage.getIcons().add(new Image(MainController.class.getResourceAsStream("../Icons/app.png")));
-        settingsStage.setScene(new Scene(root, 600, 250));
+        settingsStage.setScene(new Scene(root, 400, 250));
     }
 
     public static File getCurrentVideoFile() {

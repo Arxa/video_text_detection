@@ -36,7 +36,7 @@ public class ImageWriter
     public static void writeOCRImage(Mat frame)
     {
         if (!writingEnabled) return;
-        String filePath = folderPath + uniqueFolderName +"\\OcrProcessor Images\\"+ fileCounter++ + ".png";
+        String filePath = folderPath + uniqueFolderName +"\\OCR Images\\"+ fileCounter++ + ".png";
         MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
         Imgcodecs.imwrite(filePath,frame,params);
     }
