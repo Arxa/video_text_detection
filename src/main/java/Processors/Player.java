@@ -9,6 +9,11 @@ import java.io.File;
 
 public class Player {
 
+    /**
+     * Plays the video file in the GUI pane
+     * @param videoFile The file to be played
+     * @return True if success, False otherwise
+     */
     public static boolean playVideo(File videoFile)
     {
         try {

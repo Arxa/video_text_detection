@@ -11,6 +11,11 @@ import java.util.List;
 
 public class MatProcessor
 {
+    /**
+     * Crops areas from the original image which correspond to the given Rect blocks
+     * @param textBlocks The Rect text blocks list
+     * @return A list of Mat crops
+     */
     public static List<Mat> getTextBlocksAsMat(List<Rect> textBlocks)
     {
         List<Mat> textRegions = new ArrayList<>();
@@ -21,6 +26,11 @@ public class MatProcessor
         return textRegions;
     }
 
+    /**
+     * Finds the text block areas by filtering the connected components of the dilated Mat image.
+     * @param dilated The dilated Mat image
+     * @return A List of Rect representing the finalist text block areas
+     */
     public static List<Rect> find_TextBlocks(Mat dilated)
     {
         List<Rect> textBlocks = new ArrayList<>();
@@ -29,13 +39,22 @@ public class MatProcessor
         Mat centroids = new Mat();
         int numberOfLabels = Imgproc.connectedComponentsWithStats(dilated,labels,stats,centroids,8, CvType.CV_32S);
 
-        // Label 0 is considered to be the background label
+        // Label 0 is considered to be the background label, so we skip it
         for (int i=1; i<numberOfLabels; i++)
         {
-            //stats: (left,top,width,height,area) We care only for the last 3 values
+            /*
+             * stats columns; [0-4] : [left top width height area}
+             * Applying the first filters; a connected component is only accepted if;
+             * its width is more than twice as big than its height AND
+             * its area is greater than the product of its height, width and 0.004
+             */
             if ( Double.compare(stats.get(i,2)[0]/stats.get(i,3)[0],2.0) > 0 &&
                     Double.compare(stats.get(i,4)[0],(dilated.height()*dilated.width())*0.004 ) > 0)
             {
+                /*
+                 * Applying the second filters; a connected component is accepted only if;
+                 * its area corresponds to enough Canny edges (see method's description)
+                 */
                 if (PixelProcessor.areaIsSobelDense(stats.get(i,0)[0],stats.get(i,1)[0],
                         stats.get(i,2)[0],stats.get(i,3)[0],stats.get(i,4)[0]))
                 {
@@ -47,7 +66,12 @@ public class MatProcessor
         return textBlocks;
     }
 
-    public static void paintRectsToMat(List<Rect> textBlocks, Mat original)
+    /**
+     * Paints with red the text block boundaries of the original image
+     * @param textBlocks The list of text blocks
+     * @param original Original image
+     */
+    public static void paintTextBlocks(List<Rect> textBlocks, Mat original)
     {
         for (Rect r : textBlocks)
         {
@@ -56,7 +80,13 @@ public class MatProcessor
         }
     }
 
-    public static Mat k_Means(Mat image)
+    /**
+     * Applies the k-means clustering algorithm, using only 2 clusters,
+     * in order to achieve image thresholding
+     * @param image The target Mat image
+     * @return The original image converted to binary (black and white)
+     */
+    public static Mat thresholdImageWithKmeans(Mat image)
     {
         Mat data = new Mat(image.height() * image.width(), 1, CvType.CV_32FC1);
         int k = 0;
@@ -79,13 +109,18 @@ public class MatProcessor
         int attempts = 5;
         int flag = Core.KMEANS_PP_CENTERS;
         Mat centers = new Mat();
-
         Core.kmeans(data, clusters, labels, criteria, attempts, flag, centers);
-        return labels;
+        return MatProcessor.convertLabelsToBinary(labels, image);
     }
 
-    public static void paintMatToBinary(Mat labels, Mat binary)
+    /**
+     * Converts the k-means labels result into a new binary image
+     * @param labels The labels result from the kmeans algorithm
+     * @param image The Mat image for which we calculated the kmeans thresholding
+     */
+    public static Mat convertLabelsToBinary(Mat labels, Mat image)
     {
+        Mat binary = new Mat(image.height(), image.width(), CvType.CV_8UC1);
         int k=0;
         for (int i=0; i<binary.height(); i++)
         {
@@ -99,5 +134,6 @@ public class MatProcessor
                 k++;
             }
         }
+        return binary;
     }
 }

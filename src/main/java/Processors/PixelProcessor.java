@@ -1,5 +1,6 @@
 package Processors;
 
+import org.jetbrains.annotations.Contract;
 import org.opencv.core.Mat;
 
 /**
@@ -8,6 +9,17 @@ import org.opencv.core.Mat;
 
 public class PixelProcessor
 {
+    /**
+     * Filters a given connected component by checking if its area corresponds to a satisfactory Canny edges threshold,
+     * where threshold; the number of Canny Edge Pixels corresponding to the connected component's area divided to
+     * the total pixels area, should be greater than 0.05
+     * @param left connected component's left coordinate
+     * @param top connected component's top coordinate
+     * @param width connected component's width
+     * @param height connected component's height
+     * @param area connected component's area
+     * @return True if the connected component is accepted. False otherwise.
+     */
     public static boolean areaIsSobelDense(double left, double top, double width, double height, double area)
     {
         int cannyPixels = 0;
@@ -15,7 +27,8 @@ public class PixelProcessor
         {
             for (int j=(int)left; j<(int)left+(int)width; j++)
             {
-                if (Double.compare(VideoProcessor.getSobel().get(i,j)[0],255.0) == 0){
+                // Canny pixels have 255 color number
+                if (Double.compare(VideoProcessor.getCanny().get(i,j)[0],255.0) == 0){
                     cannyPixels++;
                 }
             }
@@ -23,24 +36,38 @@ public class PixelProcessor
         return Double.compare(cannyPixels / area, 0.05) > 0;
     }
 
-    public static double[][] find_MaximumGradientDifference(double[][] matArray,int matHeight,int matWidth)
+
+    /**
+     * Returns the MaximumGradientDifference operation of the input image
+     * by calculating the MGD number of every pixel
+     * @param laplaceImage The target Mat image
+     * @return The MGD result in double 2D array format
+     */
+    public static double[][] getMgdArray(Mat laplaceImage)
     {
-        double[][] mgdArray = new double[matHeight][matWidth];
-        for (int i=0; i < matHeight; i++)
-        {
-            for (int j=10; j < matWidth-10; j++)
-            {
-                mgdArray[i][j] = get_mgdNumber(i,j,matArray);
+        double[][] laplaceArray = PixelProcessor.matToArray(laplaceImage);
+        double[][] mgdArray = new double[laplaceImage.height()][laplaceImage.width()];
+        for (int i=0; i < laplaceImage.height(); i++) {
+            for (int j=10; j < laplaceImage.width() - 10; j++) {
+                mgdArray[i][j] = getMgdNumber(i,j,laplaceArray);
             }
         }
         return mgdArray;
     }
 
-    public static double get_mgdNumber(int I, int J, double[][] matArray)
+    /**
+     * Calculates the MGD number of a single image pixel
+     * @param I The height-coordinate of the given pixel
+     * @param J The width-coordinate of the given pixel
+     * @param matArray The entire respective image stored in a 2D array
+     * @return The MGD number for the pixel that was given
+     */
+    @Contract(pure = true)
+    public static double getMgdNumber(int I, int J, double[][] matArray)
     {
         double min = matArray[I][J-10];
         double max = matArray[I][J-10];
-        for (int j =J-9; j <= J+10; j++)
+        for (int j=J-9; j <= J+10; j++)
         {
             if (matArray[I][j] > max){
                 max = matArray[I][j];

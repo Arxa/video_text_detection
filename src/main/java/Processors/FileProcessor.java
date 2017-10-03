@@ -1,13 +1,16 @@
 package Processors;
 
+import Entities.ApplicationPaths;
 import Entities.Controllers;
 import ViewControllers.MainController;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.Contract;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -18,46 +21,58 @@ import java.util.Date;
 
 public class FileProcessor
 {
+    /**
+     * Allows the user to choose a file through a file dialog
+     * and then validates if the File is valid, if it's playable
+     * and if the corresponding directories have been successfully created.
+     * If no problem appears, the application window resizes slowly.
+     */
     public static void chooseVideoFile()
     {
         File chosenFile = FileProcessor.showFileDialog();
         if (chosenFile == null) return;
-        MainController.setCurrentVideoFile(chosenFile);
-        if (!FileProcessor.validateVideoFileName(MainController.getCurrentVideoFile())){
+        if (!FileProcessor.validateVideoFileName(chosenFile)){
             new Alert(Alert.AlertType.WARNING, "ERROR on loading file\n"+
                     "Couldn't load file specified", ButtonType.OK).showAndWait();
             return;
         }
-        if (!Player.playVideo(MainController.getCurrentVideoFile())){
-            new Alert(Alert.AlertType.WARNING, "ERROR on loading file\n"+
+        if (!Player.playVideo(chosenFile)){
+            new Alert(Alert.AlertType.WARNING, "ERROR on playing the video file\n"+
                     "Please choose a valid .mp4 video file", ButtonType.OK).showAndWait();
             return;
         }
-        if (!FileProcessor.createDirectories()){
-            new Alert(Alert.AlertType.WARNING, "ERROR on loading file\n"+
+        if (!FileProcessor.createDirectories(chosenFile)){
+            new Alert(Alert.AlertType.WARNING, "ERROR on creating directories\n"+
                     "Failed to create directories", ButtonType.OK).showAndWait();
             return;
         }
+        MainController.setCurrentVideoFile(chosenFile);
         MainController.resizeStageSlowly(1150, true);
     }
 
-    public static boolean createDirectories()
+    /**
+     * Creates the required directories for the application to work,
+     * by setting a unique directory name for the current application use
+     * and creating directories required by the application.
+     * @return True if successful, False otherwise
+     */
+    public static boolean createDirectories(File chosenFile)
     {
         try {
             // Generating unique name of current video file operation
-            ImageWriter.setUniqueFolderName(MainController.getCurrentVideoFile().getName().replace(".mp4","")+" "+
+            ImageWriter.setUniqueFolderName(chosenFile.getName().replace(".mp4","")+" "+
                     new Date().toString().replace(":","-"));
 
             // Creating paths for write operations
-            Files.createDirectories(Paths.get(ImageWriter.getFolderPath()
+            Files.createDirectories(Paths.get(ImageWriter.getFolderPath() +"\\"
                     + ImageWriter.getUniqueFolderName() + "\\Text Blocks"));
-            Files.createDirectories(Paths.get(ImageWriter.getFolderPath()
+            Files.createDirectories(Paths.get(ImageWriter.getFolderPath() +"\\"
                     + ImageWriter.getUniqueFolderName() + "\\Painted Frames"));
-            Files.createDirectories(Paths.get(ImageWriter.getFolderPath()
+            Files.createDirectories(Paths.get(ImageWriter.getFolderPath() +"\\"
                     + ImageWriter.getUniqueFolderName() + "\\Steps"));
-            Files.createDirectories(Paths.get(ImageWriter.getFolderPath()
+            Files.createDirectories(Paths.get(ImageWriter.getFolderPath() +"\\"
                     + ImageWriter.getUniqueFolderName() + "\\Video"));
-            Files.createDirectories(Paths.get(ImageWriter.getFolderPath()
+            Files.createDirectories(Paths.get(ImageWriter.getFolderPath() +"\\"
                     + ImageWriter.getUniqueFolderName() + "\\OCR Images"));
             return true;
         }
@@ -66,10 +81,15 @@ public class FileProcessor
         }
     }
 
+    @Contract("null -> false")
     public static boolean validateVideoFileName(File filename) {
         return filename != null && filename.exists();
     }
 
+    /**
+     * Lunches the GUI file chooser only for .mp4 files
+     * @return The File that was chosen or null otherwise
+     */
     public static File showFileDialog()
     {
         Stage stage = new Stage();
@@ -80,13 +100,15 @@ public class FileProcessor
         return fileChooser.showOpenDialog(stage);
     }
 
-    public static void loadLibraries() throws IOException
+    /**
+     * Loads Native Libraries for the detected OS
+     */
+    //TODO load natives cross platform
+    public static void loadLibraries() throws IOException, URISyntaxException
     {
-
-
+        String path = ApplicationPaths.RESOURCES_NATIVES;
         try {
-            String currentDirectory = new File(".").getCanonicalPath();
-            System.load(currentDirectory + "\\src\\main\\resources\\DLLs\\openh264-1.6.0-win64msvc.dll");
+            System.load(path + "/openh264-1.6.0-win64msvc.dll");
             Controllers.getLogController().logTextArea.appendText("Loaded openh254 FFMPEG library\n");
 
             String osName = System.getProperty("os.name");
@@ -94,24 +116,25 @@ public class FileProcessor
             {
                 int bit = Integer.parseInt(System.getProperty("sun.arch.data.model"));
                 if(bit == 32){
-                    System.load(currentDirectory + "\\src\\main\\resources\\DLLs\\opencv_java320.dll");
+                    System.load(path + "/opencv_java320.dll");
                     Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for "+osName+" "+bit+"-bit\n");
                 }
                 else if (bit == 64){
-                    System.load(currentDirectory + "\\src\\main\\resources\\DLLs\\opencv_java320.dll");
+                    System.load(path + "/opencv_java320.dll");
                     Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for "+osName+" "+bit+"-bit\n");
                 }
                 else{
-                    System.load(currentDirectory + "\\src\\main\\resources\\DLLs\\opencv_java320.dll");
+                    System.load(path + "/opencv_java320.dll");
                     Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for "+osName+" "+bit+"-bit\n");
                 }
             }
             else if(osName.equals("Mac OS X")){
-                System.load(currentDirectory + "\\src\\main\\resources\\DLLs\\opencv_java320.dll");
+                System.load(path + "/opencv_java320.dll");
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for "+osName+"\n");
             }
         } catch (Throwable e) {
             Controllers.getLogController().logTextArea.appendText("Failed to load opencv native library: " + e.getMessage()+"\n");
+            System.out.println(e.getMessage());
             MainController.getLogStage().show();
         }
     }

@@ -1,11 +1,21 @@
-apply plugin: 'idea'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'ca.cutterslade.gradle:gradle-dependency-analyze:1.2.0'
+    }
+}
+
 apply plugin: 'java'
+// Uncomment the following plugin to test for unused libraries
+//apply plugin: 'ca.cutterslade.analyze'
+
+apply plugin: 'idea'
 apply plugin: 'application'
-apply plugin: 'jacoco'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-
 mainClassName = "Main"
 
 repositories{
@@ -38,35 +48,19 @@ artifacts {
     archives fatJar
 }
 
-
 dependencies {
 
     // Local Libraries
     compile fileTree('lib')
 
     compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
-
     compile group: 'org.bytedeco.javacpp-presets', name: 'tesseract', version: '3.03-rc1-0.11'
     compile group: 'org.bytedeco.javacpp-presets', name: 'tesseract', version: '3.03-rc1-0.11', classifier: 'windows-x86_64'
     compile group: 'org.bytedeco.javacpp-presets', name: 'leptonica', version: '1.71-0.11', classifier: 'windows-x86_64'
     compile group: 'org.languagetool', name: 'language-en', version: '3.8'
-
-    compile group: 'com.google.guava', name: 'guava', version: '19.0'
-    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
-    compile group: 'colt', name: 'colt', version: '1.2.0'
-    compile group: 'net.sf.ehcache', name: 'ehcache', version: '2.10.3'
-    compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.21'
     compile group: 'junit', name: 'junit', version: '4.12'
-    compile group: 'pl.pragmatists', name: 'JUnitParams', version: '1.0.5'
-    compile group: 'org.assertj', name: 'assertj-core', version: '3.6.1'
-    compile group: 'com.github.hoary.ffmpeg', name: 'FFmpeg-windows-x86_64', version: '2.0.1.1'
-    compile group: 'org.im4java', name: 'im4java', version: '1.4.0'
 
     testCompile group: "org.loadui", name: "testFx", version: "3.1.2"
     testCompile 'org.testfx:testfx-core:4.0.1-alpha'
     testRuntime 'org.testfx:openjfx-monocle:1.8.0_20'
 }
-
-
-
-

@@ -1,13 +1,16 @@
 package Processors;
 
+import Entities.ApplicationPaths;
 import Entities.Controllers;
 import ViewControllers.MainController;
-import ViewControllers.PreferencesController;
+import ViewControllers.SettingsController;
 import org.bytedeco.javacpp.BytePointer;
+import org.jetbrains.annotations.NotNull;
 import org.languagetool.JLanguageTool;
 import org.languagetool.language.BritishEnglish;
 import org.languagetool.rules.RuleMatch;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.*;
 import static org.bytedeco.javacpp.lept.*;
 import static org.bytedeco.javacpp.tesseract.TessBaseAPI;
@@ -18,22 +21,33 @@ import static org.bytedeco.javacpp.tesseract.TessBaseAPI;
 
 public class OcrProcessor
 {
-    private static boolean includeSymbols = Controllers.getPreferencesController().includeSymbols_checkbox.isSelected();
-    private static boolean extractUniqueWords = Controllers.getPreferencesController().extractUniqueWords_checkbox.isSelected();
+    private static boolean includeSpecialCharacters;
+    private static boolean extractUniqueWords;
     private static Set<String> uniqueWords;
 
-    public static String getOcrText(String imagePath) throws IOException {
+    /**
+     * Extracts the text representation in the given image, using OCR.
+     * Depending of the user's selections, certain preprocessing and filtering of the ocr result is applied first
+     * @param imagePath Path to the input image
+     * @return The extracted String text
+     */
+    @NotNull
+    public static String getOcrText(String imagePath) throws IOException, URISyntaxException
+    {
+        String selectedLanguage = Controllers.getSettingsController().ocrLanguage_combobox.getSelectionModel().getSelectedItem().toString();
+        includeSpecialCharacters = Controllers.getSettingsController().includeSpecialCharacters_checkbox.isSelected();
+        extractUniqueWords = Controllers.getSettingsController().extractUniqueWords_checkbox.isSelected();
         BytePointer outText;
         TessBaseAPI api = new TessBaseAPI();
 
-        // Setting ocr language
-        if (api.Init("src/main/resources/OCR", PreferencesController.getLanguageMap().
-                get(Controllers.getPreferencesController().ocrLanguage_combobox.getSelectionModel().getSelectedItem().toString())) != 0) {
+        // Setting OCR language
+        if (api.Init(ApplicationPaths.RESOURCES_OCR, SettingsController.getLanguageMap().get(selectedLanguage)) != 0) {
             Controllers.getLogController().logTextArea.appendText("Could not initialize tesseract - ocr!\n");
             MainController.getLogStage().show();
         }
-        if (!includeSymbols){
-            api.SetVariable("tessedit_char_whitelist", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.?! ,");
+
+        if (!includeSpecialCharacters){
+            api.SetVariable("tessedit_char_blacklist", "`,#[];()!£\"$%^&\\²³²£§¶¤°¦<>|€");
         }
 
         // Open input image with leptonica library
@@ -60,6 +74,7 @@ public class OcrProcessor
         JLanguageTool languageTool = new JLanguageTool(new BritishEnglish());
         List<RuleMatch> matches;
 
+        // Check for spelling errors and apply suggestion
         int iterations = 0;
         while (true) {
             if (++iterations > 10) break;
@@ -78,7 +93,7 @@ public class OcrProcessor
             }
         }
 
-        // Unique words
+        // Check if this word has appeared in the past
         if (extractUniqueWords){
             if (!uniqueWords.contains(ocr_text)){
                 uniqueWords.add(ocr_text);
@@ -93,8 +108,8 @@ public class OcrProcessor
         uniqueWords = new TreeSet<>();
     }
 
-    public static void setIncludeSymbols(boolean includeSymbols) {
-        OcrProcessor.includeSymbols = includeSymbols;
+    public static void setIncludeSpecialCharacters(boolean includeSpecialCharacters) {
+        OcrProcessor.includeSpecialCharacters = includeSpecialCharacters;
     }
 
     public static void setExtractUniqueWords(boolean extractUniqueWords) {

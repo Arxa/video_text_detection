@@ -8,13 +8,22 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import sun.misc.Launcher;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class Main extends Application
 {
     @Override
     public void start(Stage stage) throws Exception
     {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Views/main.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Views/main.fxml"));
         Parent root = loader.load();
         stage.setTitle("VideoText Extractor");
         stage.setScene(new Scene(root, 680, 450));

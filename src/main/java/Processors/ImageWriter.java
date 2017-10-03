@@ -1,19 +1,23 @@
 package Processors;
 
+import Entities.ApplicationPaths;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
 import org.opencv.imgcodecs.Imgcodecs;
-
 import java.io.File;
 
 /**
  * Created by arxa on 26/2/2017.
  */
 
+/**
+ * This class is used to write and export specific parts of the video processing to
+ * corresponding application directories
+ */
 public class ImageWriter
 {
     private static boolean writingEnabled = false;
-    private static final String folderPath = "src\\main\\resources\\Outputs\\";
+    private static final String folderPath = ApplicationPaths.FOLDERPATH;
     private static String uniqueFolderName;
     private static int fileCounter;
 

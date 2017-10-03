@@ -6,12 +6,12 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="254.0" prefWidth="468.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ViewControllers.PreferencesController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="254.0" prefWidth="468.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ViewControllers.SettingsController">
    <children>
       <Label layoutX="27.0" layoutY="26.0" text="OCR Language:" />
       <ComboBox fx:id="ocrLanguage_combobox" layoutX="123.0" layoutY="22.0" prefHeight="25.0" prefWidth="119.0" />
       <CheckBox fx:id="extractUniqueWords_checkbox" layoutX="27.0" layoutY="84.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" selected="true" text="Extract unique words " />
-      <CheckBox fx:id="includeSymbols_checkbox" layoutX="28.0" layoutY="133.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Include symbols " />
+      <CheckBox fx:id="includeSpecialCharacters_checkbox" layoutX="28.0" layoutY="133.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Include Special Characters" />
       <CheckBox fx:id="exportImages_checkbox" layoutX="27.0" layoutY="183.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Export images" />
       <Label fx:id="moreLanguagesLabel" layoutX="280.0" layoutY="26.0" text="More languages..." textFill="#156bc6">
          <font>

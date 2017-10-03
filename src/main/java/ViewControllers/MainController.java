@@ -1,12 +1,11 @@
 package ViewControllers;
 
+import Entities.ApplicationPaths;
 import Entities.Controllers;
 import Processors.FileProcessor;
 import Processors.ImageWriter;
 import Processors.Player;
 import Processors.VideoProcessor;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
@@ -18,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +47,7 @@ public class MainController
 
     public void initialize()
     {
+        ApplicationPaths.setApplicationPaths();
         initializeViews();
 
         videoIcon.setCursor(Cursor.HAND);
@@ -61,6 +62,7 @@ public class MainController
         });
 
         videoIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            // Kill existing thread first (if there is one)
             if (VideoProcessor.getThread() != null){
                 if (VideoProcessor.getThread().isAlive()){
                     VideoProcessor.getThread().interrupt();
@@ -72,6 +74,7 @@ public class MainController
         });
 
         extractButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            // Kill existing thread first (if there is one)
             if (VideoProcessor.getThread() != null){
                 if (VideoProcessor.getThread().isAlive()){
                     VideoProcessor.getThread().interrupt();
@@ -86,6 +89,7 @@ public class MainController
         });
 
         openVideo.setOnAction(event -> {
+            // Kill existing thread first (if there is one)
             if (VideoProcessor.getThread() != null){
                 if (VideoProcessor.getThread().isAlive()){
                     VideoProcessor.getThread().interrupt();
@@ -98,6 +102,7 @@ public class MainController
         });
 
         closeVideo.setOnAction(event -> {
+            // Kill existing thread first (if there is one)
             if (VideoProcessor.getThread() != null){
                 if (VideoProcessor.getThread().isAlive()){
                     VideoProcessor.getThread().interrupt();
@@ -122,6 +127,11 @@ public class MainController
         });
     }
 
+    /**
+     * Applies a GUI resizing animation both for expanding and collapsing the window
+     * @param desiredSize The desired width of application's stage
+     * @param maximize Flag that indicates whether to expand or collapse the stage's width
+     */
     public static void resizeStageSlowly(double desiredSize, boolean maximize){
         Controllers.getMainController().extractButton.setVisible(true);
         Timer animTimer = new Timer();
@@ -147,10 +157,13 @@ public class MainController
         },1, 5);
     }
 
+    /**
+     * Initializes FXML loaders and controllers of other Views
+     */
     public void initializeViews(){
         Parent root;
         try {
-            FXMLLoader loader = new FXMLLoader(new File("src\\main\\resources\\Views\\log.fxml").toURI().toURL());
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Views/log.fxml"));
             root = loader.load();
             Controllers.setLogController(loader);
         } catch (IOException e) {
@@ -159,23 +172,24 @@ public class MainController
         }
         logStage = new Stage();
         logStage.setTitle("Log");
-        logStage.getIcons().add(new Image(MainController.class.getResourceAsStream("../Icons/app.png")));
+        logStage.getIcons().add(new Image("file:src/main/resources/Icons/app.png"));
         logStage.setScene(new Scene(root, 300, 400));
 
         try {
-            FXMLLoader loader = new FXMLLoader(new File("src\\main\\resources\\Views\\settings.fxml").toURI().toURL());
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Views/settings.fxml"));
             root = loader.load();
-            Controllers.setPreferencesController(loader);
+            Controllers.setSettingsController(loader);
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
         settingsStage = new Stage();
         settingsStage.setTitle("Settings");
-        settingsStage.getIcons().add(new Image(MainController.class.getResourceAsStream("../Icons/app.png")));
+        settingsStage.getIcons().add(new Image("file:src/main/resources/Icons/app.png"));
         settingsStage.setScene(new Scene(root, 400, 250));
     }
 
+    @Contract(pure = true)
     public static File getCurrentVideoFile() {
         return currentVideoFile;
     }
@@ -187,11 +201,14 @@ public class MainController
         mainStage = stage1;
     }
 
+    @Contract(pure = true)
     public static Stage getMainStage() {
         return mainStage;
     }
 
+    @Contract(pure = true)
     public static Stage getLogStage() {
         return logStage;
     }
+
 }

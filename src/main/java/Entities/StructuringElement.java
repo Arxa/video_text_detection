@@ -1,9 +1,16 @@
 package Entities;
 
+import org.jetbrains.annotations.NotNull;
 import org.opencv.core.Size;
 
 public class StructuringElement {
 
+    /**
+     * Returns a kernel to be used as a structuring element for the dilation process,
+     * where its size depends on the image resolution
+     * @return The selected structuring element in the format of Size
+     */
+    @NotNull
     public static Size getStructuringElement(int imageResolution){
         if (imageResolution < 500000){
             return new Size(5.0,5.0);

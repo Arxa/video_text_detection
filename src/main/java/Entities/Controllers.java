@@ -2,9 +2,8 @@ package Entities;
 
 import ViewControllers.LogController;
 import ViewControllers.MainController;
-import ViewControllers.PreferencesController;
+import ViewControllers.SettingsController;
 import javafx.fxml.FXMLLoader;
-
 
 /**
  * @author Nikiforos Archakis
@@ -12,10 +11,13 @@ import javafx.fxml.FXMLLoader;
  *         email: nikiarch@teiser.gr
  */
 
+/**
+ * Stores access references to all the View Controllers
+ */
 public class Controllers
 {
     private static MainController mainController;
-    private static PreferencesController preferencesController;
+    private static SettingsController settingsController;
     private static LogController logController;
 
     public static void setMainController(FXMLLoader loader)
@@ -23,21 +25,20 @@ public class Controllers
         mainController = loader.getController();
     }
 
-    public static void setPreferencesController(FXMLLoader loader) {
-        preferencesController = loader.getController();
+    public static void setSettingsController(FXMLLoader loader) {
+        settingsController = loader.getController();
     }
 
     public static void setLogController(FXMLLoader loader) {
         logController = loader.getController();
     }
 
-
     public static MainController getMainController() {
         return mainController;
     }
 
-    public static PreferencesController getPreferencesController() {
-        return preferencesController;
+    public static SettingsController getSettingsController() {
+        return settingsController;
     }
 
     public static LogController getLogController() {

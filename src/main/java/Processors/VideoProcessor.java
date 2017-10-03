@@ -12,6 +12,7 @@ import org.opencv.videoio.VideoWriter;
 import org.opencv.videoio.Videoio;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ import java.util.List;
 
 public class VideoProcessor
 {
-    private static Mat sobel = new Mat();
+    private static Mat canny = new Mat();
     private static Mat input = new Mat();
     private static Mat inputPainted = new Mat();
     private static Mat src = new Mat();
@@ -87,14 +88,8 @@ public class VideoProcessor
                         Imgproc.Laplacian(src, dst, CvType.CV_16S,3,2,0);
                         ImageWriter.writeStep(dst);
 
-
-                        // Convert to a 2D Array. We need this conversion for the next step.
-                        double[][] laplaceArray = PixelProcessor.matToArray(dst);
-
-
                         // Apply the MaximumGradientDifference(MGD) operator
-                        double[][] mgdArray = PixelProcessor.find_MaximumGradientDifference(laplaceArray, dst.height(), dst.width());
-
+                        double[][] mgdArray = PixelProcessor.getMgdArray(dst);
 
                         // Convert the mgdArray back again into a Mat object
                         src = PixelProcessor.arrayToMat(mgdArray, dst.height(), dst.width(), CvType.CV_16S);
@@ -120,8 +115,8 @@ public class VideoProcessor
                         ImageWriter.writeStep(src);
 
                         // Calculate Canny Edges of original frame
-                        Imgproc.Canny(input, sobel,50, 150);
-                        ImageWriter.writeStep(sobel);
+                        Imgproc.Canny(input, canny,50, 150);
+                        ImageWriter.writeStep(canny);
 
                         /*
                         Find text blocks by finding the connected components of
@@ -130,7 +125,7 @@ public class VideoProcessor
                         List<Rect> textBlocks = MatProcessor.find_TextBlocks(src);
 
                         // Paint the filtered textBlocks from above to the original frame (i.e. input)
-                        MatProcessor.paintRectsToMat(textBlocks,inputPainted);
+                        MatProcessor.paintTextBlocks(textBlocks,inputPainted);
                         ImageWriter.writePaintedFrame(inputPainted);
                         ImageWriter.writeStep(inputPainted);
 
@@ -148,7 +143,7 @@ public class VideoProcessor
                             cap.read(input);
                             currentFrame++;
                             input.copyTo(inputPainted);
-                            MatProcessor.paintRectsToMat(textBlocks,inputPainted);
+                            MatProcessor.paintTextBlocks(textBlocks,inputPainted);
                             // These frames are not processed, however we shall write them to the video result, using the last detected text areas
                             videoWriter.write(inputPainted);
                         }
@@ -232,9 +227,8 @@ public class VideoProcessor
             ImageWriter.writeOCRImage(unsharp);
 
             Core.normalize(unsharp, src,0.0,1.0, Core.NORM_MINMAX);
-            Mat kmeans = MatProcessor.k_Means(src);
-            Mat binary = new Mat(unsharp.height(), unsharp.width(), CvType.CV_8UC1);
-            MatProcessor.paintMatToBinary(kmeans,binary);
+
+            Mat binary = MatProcessor.thresholdImageWithKmeans(src);
 
             ImageWriter.writeOCRImage(binary);
             //Imgproc.resize(binary, binary, new Size(), 4.0, 4.0, Imgproc.INTER_LINEAR);
@@ -244,7 +238,7 @@ public class VideoProcessor
             String extracted_text = "";
             try {
                 extracted_text = OcrProcessor.getOcrText(f.getPath());
-            } catch (IOException e) {
+            } catch (IOException | URISyntaxException e) {
                 Controllers.getLogController().logTextArea.appendText("ERROR: OCR Exception: " + e.getMessage());
             }
             final String ocr_result = extracted_text;
@@ -254,8 +248,8 @@ public class VideoProcessor
         }
     }
 
-    public static Mat getSobel() {
-        return sobel;
+    public static Mat getCanny() {
+        return canny;
     }
 
     public static Mat getInput() {
