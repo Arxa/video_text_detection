@@ -117,6 +117,7 @@ public class MatProcessor
      * Converts the k-means labels result into a new binary image
      * @param labels The labels result from the kmeans algorithm
      * @param image The Mat image for which we calculated the kmeans thresholding
+     * @return The binary image that has been created
      */
     public static Mat convertLabelsToBinary(Mat labels, Mat image)
     {

@@ -14,6 +14,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -160,6 +163,7 @@ public class SettingsController {
     /**
      *  Get a Key from a Map providing a Value
      */
+    @Nullable
     public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
         for (Map.Entry<T, E> entry : map.entrySet()) {
             if (Objects.equals(value, entry.getValue())) {
@@ -169,6 +173,7 @@ public class SettingsController {
         return null;
     }
 
+    @Contract(pure = true)
     public static Map<String, String> getLanguageMap() {
         return languageMap;
     }

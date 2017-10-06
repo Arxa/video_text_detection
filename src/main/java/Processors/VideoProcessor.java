@@ -5,6 +5,8 @@ import Entities.StructuringElement;
 import ViewControllers.MainController;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
@@ -40,6 +42,7 @@ public class VideoProcessor
         {
             Task<Void> task = new Task<Void>()
             {
+                @Nullable
                 @Override protected Void call() throws Exception
                 {
                     double frames = (int) cap.get(Videoio.CAP_PROP_FRAME_COUNT);
@@ -48,10 +51,15 @@ public class VideoProcessor
                     input.copyTo(inputPainted);
                     Size kernel = StructuringElement.getStructuringElement(input.height()*input.width());
                     Mat structuringElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, kernel);
-                    Controllers.getLogController().logTextArea.appendText("[Structuring Element: "+kernel.height+" x "+kernel.width+"]\n");
+                    Platform.runLater(() -> {
+                        Controllers.getLogController().logTextArea.appendText("[Structuring Element: "+kernel.height+" x "+kernel.width+"]\n");
+                    });
                     while (open1 && !thread.isInterrupted())
                     {
                         ImageWriter.writeStep(input);
+                        Platform.runLater(() -> {
+                            Controllers.getLogController().logTextArea.appendText("input\n");
+                        });
 
                         /*
                         Apply Gaussian Blurred Filter
@@ -68,10 +76,18 @@ public class VideoProcessor
                          */
                         Imgproc.GaussianBlur(input, dst, new Size(15.0,15.0),0.0,0.0);
                         ImageWriter.writeStep(dst);
+                        Platform.runLater(() -> {
+                            Controllers.getLogController().logTextArea.appendText("blur\n");
+                        });
+
 
                         // Convert to GrayScale
                         Imgproc.cvtColor(dst, src, Imgproc.COLOR_RGB2GRAY, 0);
                         ImageWriter.writeStep(src);
+                        Platform.runLater(() -> {
+                            Controllers.getLogController().logTextArea.appendText("gray\n");
+                        });
+
 
                         /*
                         Apply the Laplacian Filter
@@ -87,6 +103,10 @@ public class VideoProcessor
                          */
                         Imgproc.Laplacian(src, dst, CvType.CV_16S,3,2,0);
                         ImageWriter.writeStep(dst);
+                        Platform.runLater(() -> {
+                            Controllers.getLogController().logTextArea.appendText("laplacian\n");
+                        });
+
 
                         // Apply the MaximumGradientDifference(MGD) operator
                         double[][] mgdArray = PixelProcessor.getMgdArray(dst);
@@ -99,6 +119,10 @@ public class VideoProcessor
                         src.convertTo(src, CvType.CV_8UC1);
                         Imgproc.threshold(src, dst, 80,255,Imgproc.THRESH_BINARY);
                         ImageWriter.writeStep(dst);
+                        Platform.runLater(() -> {
+                            Controllers.getLogController().logTextArea.appendText("binary\n");
+                        });
+
 
                         /*
                         Apply the morphological operation Dilation
@@ -113,10 +137,18 @@ public class VideoProcessor
                          */
                         Imgproc.dilate(dst, src, structuringElement);
                         ImageWriter.writeStep(src);
+                        Platform.runLater(() -> {
+                            Controllers.getLogController().logTextArea.appendText("dilation\n");
+                        });
+
 
                         // Calculate Canny Edges of original frame
                         Imgproc.Canny(input, canny,50, 150);
                         ImageWriter.writeStep(canny);
+                        Platform.runLater(() -> {
+                            Controllers.getLogController().logTextArea.appendText("canny\n");
+                        });
+
 
                         /*
                         Find text blocks by finding the connected components of
@@ -128,12 +160,19 @@ public class VideoProcessor
                         MatProcessor.paintTextBlocks(textBlocks,inputPainted);
                         ImageWriter.writePaintedFrame(inputPainted);
                         ImageWriter.writeStep(inputPainted);
+                        Platform.runLater(() -> {
+                            Controllers.getLogController().logTextArea.appendText("text blocks\n");
+                        });
+
 
                         // Write painted frame to video
                         videoWriter.write(inputPainted);
 
                         // Extract Text from current frame's textblocks
                         preprocessTextBlocks(textBlocks);
+                        Platform.runLater(() -> {
+                            Controllers.getLogController().logTextArea.appendText("preprocessed\n");
+                        });
 
                         /*
                         Reading/Skipping the next 5 frames to speed up.
@@ -144,12 +183,17 @@ public class VideoProcessor
                             currentFrame++;
                             input.copyTo(inputPainted);
                             MatProcessor.paintTextBlocks(textBlocks,inputPainted);
-                            // These frames are not processed, however we shall write them to the video result, using the last detected text areas
+                            // These frames are not processed, however we shall write them to the video result,
+                            // using the last detected text areas
                             videoWriter.write(inputPainted);
                         }
                         open1 = cap.read(input);
                         currentFrame++;
                         input.copyTo(inputPainted);
+                        Platform.runLater(() -> {
+                            Controllers.getLogController().logTextArea.appendText("done\n\n");
+                        });
+
 
                         // Update progress bar
                         final int currentFrame_final = currentFrame;
@@ -209,8 +253,9 @@ public class VideoProcessor
     }
 
     /**
-     *
-     * @param textBlocks
+     *  Preprocesses the text blocks, before proceeding to OCR, in order
+     *  to achieve better extraction results
+     * @param textBlocks List of image's text blocks in Rect format
      */
     public static void preprocessTextBlocks(List<Rect> textBlocks)
     {
@@ -248,14 +293,17 @@ public class VideoProcessor
         }
     }
 
+    @Contract(pure = true)
     public static Mat getCanny() {
         return canny;
     }
 
+    @Contract(pure = true)
     public static Mat getInput() {
         return input;
     }
 
+    @Contract(pure = true)
     public static Thread getThread() {
         return thread;
     }

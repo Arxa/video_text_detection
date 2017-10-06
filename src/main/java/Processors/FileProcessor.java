@@ -3,6 +3,7 @@ package Processors;
 import Entities.ApplicationPaths;
 import Entities.Controllers;
 import ViewControllers.MainController;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
@@ -27,26 +28,25 @@ public class FileProcessor
      * and if the corresponding directories have been successfully created.
      * If no problem appears, the application window resizes slowly.
      */
-    public static void chooseVideoFile()
+    public static void validateVideoFile(File videoFile)
     {
-        File chosenFile = FileProcessor.showFileDialog();
-        if (chosenFile == null) return;
-        if (!FileProcessor.validateVideoFileName(chosenFile)){
+        if (videoFile == null) return;
+        if (!FileProcessor.validateVideoFileName(videoFile)){
             new Alert(Alert.AlertType.WARNING, "ERROR on loading file\n"+
                     "Couldn't load file specified", ButtonType.OK).showAndWait();
             return;
         }
-        if (!Player.playVideo(chosenFile)){
+        if (!Player.playVideo(videoFile)){
             new Alert(Alert.AlertType.WARNING, "ERROR on playing the video file\n"+
                     "Please choose a valid .mp4 video file", ButtonType.OK).showAndWait();
             return;
         }
-        if (!FileProcessor.createDirectories(chosenFile)){
+        if (!FileProcessor.createDirectories(videoFile)){
             new Alert(Alert.AlertType.WARNING, "ERROR on creating directories\n"+
                     "Failed to create directories", ButtonType.OK).showAndWait();
             return;
         }
-        MainController.setCurrentVideoFile(chosenFile);
+        MainController.setCurrentVideoFile(videoFile);
         MainController.resizeStageSlowly(1150, true);
     }
 
@@ -108,7 +108,7 @@ public class FileProcessor
     {
         String path = ApplicationPaths.RESOURCES_NATIVES;
         try {
-            System.load(path + "/openh264-1.6.0-win64msvc.dll");
+            System.load(path + "\\openh264-1.6.0-win64msvc.dll");
             Controllers.getLogController().logTextArea.appendText("Loaded openh254 FFMPEG library\n");
 
             String osName = System.getProperty("os.name");
@@ -116,26 +116,28 @@ public class FileProcessor
             {
                 int bit = Integer.parseInt(System.getProperty("sun.arch.data.model"));
                 if(bit == 32){
-                    System.load(path + "/opencv_java320.dll");
+                    System.load(path + "\\opencv_java320.dll");
                     Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for "+osName+" "+bit+"-bit\n");
                 }
                 else if (bit == 64){
-                    System.load(path + "/opencv_java320.dll");
+                    System.load(path + "\\opencv_java320.dll");
                     Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for "+osName+" "+bit+"-bit\n");
                 }
                 else{
-                    System.load(path + "/opencv_java320.dll");
+                    System.load(path + "\\opencv_java320.dll");
                     Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for "+osName+" "+bit+"-bit\n");
                 }
             }
             else if(osName.equals("Mac OS X")){
-                System.load(path + "/opencv_java320.dll");
+                System.load(path + "\\opencv_java320.dll");
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for "+osName+"\n");
             }
         } catch (Throwable e) {
             Controllers.getLogController().logTextArea.appendText("Failed to load opencv native library: " + e.getMessage()+"\n");
             System.out.println(e.getMessage());
             MainController.getLogStage().show();
+            new Alert(Alert.AlertType.ERROR, "Failed to locate Native files!").showAndWait();
+            Platform.exit();
         }
     }
 }

@@ -6,6 +6,7 @@ import Processors.FileProcessor;
 import Processors.ImageWriter;
 import Processors.Player;
 import Processors.VideoProcessor;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
@@ -13,12 +14,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Contract;
 
+import javax.xml.soap.Text;
 import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
@@ -49,9 +52,35 @@ public class MainController
     {
         ApplicationPaths.setApplicationPaths();
         initializeViews();
+        ApplicationPaths.checkCaller();
 
         videoIcon.setCursor(Cursor.HAND);
         extractButton.setCursor(Cursor.HAND);
+
+        // When dragging something, allow it to be copied/moved only if it's a mp4 file
+        videoPane.setOnDragOver(event -> {
+            if (event.getDragboard().getFiles().get(0).isFile()){
+                if (FilenameUtils.getExtension(event.getDragboard().getFiles().get(0).getPath()).equals("mp4")) {
+                    event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                }
+            }
+            event.consume();
+        });
+
+        // Once the drop is complete (only permitted drags with reach this point)
+        videoPane.setOnDragDropped(event -> {
+            // Kill existing thread first (if there is one)
+            if (VideoProcessor.getThread() != null){
+                if (VideoProcessor.getThread().isAlive()){
+                    VideoProcessor.getThread().interrupt();
+                }
+            }
+            textArea.clear();
+            progressIndicator.setVisible(false);
+            FileProcessor.validateVideoFile(event.getDragboard().getFiles().get(0));
+            event.setDropCompleted(true);
+            event.consume();
+        });
 
         logMenuItem.setOnAction(event -> {
             logStage.show();
@@ -70,7 +99,7 @@ public class MainController
             }
             textArea.clear();
             progressIndicator.setVisible(false);
-            FileProcessor.chooseVideoFile();
+            FileProcessor.validateVideoFile(FileProcessor.showFileDialog());
         });
 
         extractButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -98,7 +127,7 @@ public class MainController
             videoPane.getChildren().clear();
             progressIndicator.setVisible(false);
             textArea.clear();
-            FileProcessor.chooseVideoFile();
+            FileProcessor.validateVideoFile(FileProcessor.showFileDialog());
         });
 
         closeVideo.setOnAction(event -> {

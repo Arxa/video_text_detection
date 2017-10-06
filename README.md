@@ -49,7 +49,7 @@
   </li>
   
   <li>
-      <b>Other)</b>
+      <b>Other</b>
       <ul>
         <li>
             InteliJ IDEA

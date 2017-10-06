@@ -5,6 +5,6 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ViewControllers.LogController">
    <children>
-      <TextArea fx:id="logTextArea" editable="false" layoutX="-1.0" layoutY="-1.0" prefHeight="400.0" prefWidth="600.0" wrapText="true" />
+      <TextArea fx:id="logTextArea" editable="false" layoutX="-1.0" layoutY="-1.0" prefHeight="400.0" prefWidth="300.0" wrapText="true" />
    </children>
 </Pane>

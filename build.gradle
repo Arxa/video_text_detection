@@ -1,4 +1,15 @@
 buildscript {
+    dependencies {
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+buildscript {
     repositories {
         jcenter()
     }
@@ -10,17 +21,18 @@ buildscript {
 apply plugin: 'java'
 // Uncomment the following plugin to test for unused libraries
 //apply plugin: 'ca.cutterslade.analyze'
-
 apply plugin: 'idea'
 apply plugin: 'application'
+apply plugin: 'javafx-gradle-plugin'
+
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 mainClassName = "Main"
 
 repositories{
+    mavenLocal()
     mavenCentral()
-    jcenter()
 }
 
 jar {
@@ -59,8 +71,18 @@ dependencies {
     compile group: 'org.bytedeco.javacpp-presets', name: 'leptonica', version: '1.71-0.11', classifier: 'windows-x86_64'
     compile group: 'org.languagetool', name: 'language-en', version: '3.8'
     compile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.6'
 
     testCompile group: "org.loadui", name: "testFx", version: "3.1.2"
     testCompile 'org.testfx:testfx-core:4.0.1-alpha'
     testRuntime 'org.testfx:openjfx-monocle:1.8.0_20'
+}
+
+jfx {
+    mainClass = 'Main'
+    vendor = 'arxa'
+    bundler = 'windows.app'
+    bundleArguments = [
+            'runtime': 'C:\\Program Files\\Java\\jdk1.8.0_144\\jre'
+    ]
 }

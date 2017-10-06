@@ -2,3 +2,5 @@
 /out
 /.gradle
 .idea
+outputs/
+src/main/resources/Outputs/
