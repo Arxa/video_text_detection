@@ -1,6 +1,7 @@
 package Processors;
 
 import Entities.ApplicationPaths;
+import org.jetbrains.annotations.NotNull;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -17,13 +18,13 @@ import java.io.File;
 public class ImageWriter
 {
     private static boolean writingEnabled = false;
-    private static final String folderPath = ApplicationPaths.FOLDERPATH;
-    private static String uniqueFolderName;
     private static int fileCounter;
 
+    @NotNull
     public static File writeTextBlock(Mat frame)
     {
-        String filePath = folderPath + uniqueFolderName +"\\Text Blocks\\"+ fileCounter++ + ".png";
+        String filePath = ApplicationPaths.FOLDER_PATH + ApplicationPaths.FILE_SEPERATOR + ApplicationPaths.UNIQUE_FOLDER_NAME + ApplicationPaths.FILE_SEPERATOR +
+                "Text Blocks" + ApplicationPaths.FILE_SEPERATOR + fileCounter++ + ".png";
         MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
         Imgcodecs.imwrite(filePath,frame,params);
         return new File(filePath);
@@ -32,7 +33,8 @@ public class ImageWriter
     public static void writePaintedFrame(Mat frame)
     {
         if (!writingEnabled) return;
-        String filePath = folderPath + uniqueFolderName +"\\Painted Frames\\"+ fileCounter++ + ".png";
+        String filePath = ApplicationPaths.FOLDER_PATH + ApplicationPaths.FILE_SEPERATOR + ApplicationPaths.UNIQUE_FOLDER_NAME + ApplicationPaths.FILE_SEPERATOR +
+                "Painted Frames" + ApplicationPaths.FILE_SEPERATOR + fileCounter++ + ".png";
         MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
         Imgcodecs.imwrite(filePath,frame,params);
     }
@@ -40,7 +42,8 @@ public class ImageWriter
     public static void writeOCRImage(Mat frame)
     {
         if (!writingEnabled) return;
-        String filePath = folderPath + uniqueFolderName +"\\OCR Images\\"+ fileCounter++ + ".png";
+        String filePath = ApplicationPaths.FOLDER_PATH + ApplicationPaths.FILE_SEPERATOR + ApplicationPaths.UNIQUE_FOLDER_NAME + ApplicationPaths.FILE_SEPERATOR +
+                "OCR Images" + ApplicationPaths.FILE_SEPERATOR + fileCounter++ + ".png";
         MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
         Imgcodecs.imwrite(filePath,frame,params);
     }
@@ -48,26 +51,10 @@ public class ImageWriter
     public static void writeStep(Mat frame)
     {
         if (!writingEnabled) return;
-        String filePath = folderPath + uniqueFolderName +"\\Steps\\"+ fileCounter++ + ".png";
+        String filePath = ApplicationPaths.FOLDER_PATH + ApplicationPaths.FILE_SEPERATOR + ApplicationPaths.UNIQUE_FOLDER_NAME + ApplicationPaths.FILE_SEPERATOR +
+                "Steps" + ApplicationPaths.FILE_SEPERATOR + fileCounter++ + ".png";
         MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
         Imgcodecs.imwrite(filePath,frame,params);
-    }
-
-
-    public static String getUniqueFolderName() {
-        return uniqueFolderName;
-    }
-
-    public static void setUniqueFolderName(String outputCurrentPath) {
-        ImageWriter.uniqueFolderName = outputCurrentPath;
-    }
-
-    public static String getFolderPath() {
-        return folderPath;
-    }
-
-    public static String getUniquePath(){
-        return folderPath + uniqueFolderName;
     }
 
     public static void setWritingEnabled(boolean writingEnabled) {

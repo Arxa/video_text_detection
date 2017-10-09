@@ -1,5 +1,6 @@
 package Processors;
 
+import Entities.ApplicationPaths;
 import Entities.Controllers;
 import Entities.StructuringElement;
 import ViewControllers.MainController;
@@ -35,7 +36,9 @@ public class VideoProcessor
     {
         OcrProcessor.initUniqueWords();
         VideoCapture cap = new VideoCapture(videoFile.getPath());
-        VideoWriter videoWriter = new VideoWriter(ImageWriter.getUniquePath()+"\\Video\\video.mp4", VideoWriter.fourcc('H', '2','6','4'),
+        VideoWriter videoWriter = new VideoWriter(ApplicationPaths.FOLDER_PATH + ApplicationPaths.FILE_SEPERATOR +
+                ApplicationPaths.UNIQUE_FOLDER_NAME + ApplicationPaths.FILE_SEPERATOR + "Video" + ApplicationPaths.FILE_SEPERATOR +
+                "video.mp4", VideoWriter.fourcc('X', '2','6','4'),
                 cap.get(Videoio.CAP_PROP_FPS), new Size(cap.get(Videoio.CAP_PROP_FRAME_WIDTH), cap.get(Videoio.CAP_PROP_FRAME_HEIGHT)), true);
 
         if (cap.isOpened())
@@ -57,9 +60,6 @@ public class VideoProcessor
                     while (open1 && !thread.isInterrupted())
                     {
                         ImageWriter.writeStep(input);
-                        Platform.runLater(() -> {
-                            Controllers.getLogController().logTextArea.appendText("input\n");
-                        });
 
                         /*
                         Apply Gaussian Blurred Filter
@@ -76,18 +76,10 @@ public class VideoProcessor
                          */
                         Imgproc.GaussianBlur(input, dst, new Size(15.0,15.0),0.0,0.0);
                         ImageWriter.writeStep(dst);
-                        Platform.runLater(() -> {
-                            Controllers.getLogController().logTextArea.appendText("blur\n");
-                        });
-
 
                         // Convert to GrayScale
                         Imgproc.cvtColor(dst, src, Imgproc.COLOR_RGB2GRAY, 0);
                         ImageWriter.writeStep(src);
-                        Platform.runLater(() -> {
-                            Controllers.getLogController().logTextArea.appendText("gray\n");
-                        });
-
 
                         /*
                         Apply the Laplacian Filter
@@ -103,10 +95,6 @@ public class VideoProcessor
                          */
                         Imgproc.Laplacian(src, dst, CvType.CV_16S,3,2,0);
                         ImageWriter.writeStep(dst);
-                        Platform.runLater(() -> {
-                            Controllers.getLogController().logTextArea.appendText("laplacian\n");
-                        });
-
 
                         // Apply the MaximumGradientDifference(MGD) operator
                         double[][] mgdArray = PixelProcessor.getMgdArray(dst);
@@ -119,10 +107,6 @@ public class VideoProcessor
                         src.convertTo(src, CvType.CV_8UC1);
                         Imgproc.threshold(src, dst, 80,255,Imgproc.THRESH_BINARY);
                         ImageWriter.writeStep(dst);
-                        Platform.runLater(() -> {
-                            Controllers.getLogController().logTextArea.appendText("binary\n");
-                        });
-
 
                         /*
                         Apply the morphological operation Dilation
@@ -137,18 +121,10 @@ public class VideoProcessor
                          */
                         Imgproc.dilate(dst, src, structuringElement);
                         ImageWriter.writeStep(src);
-                        Platform.runLater(() -> {
-                            Controllers.getLogController().logTextArea.appendText("dilation\n");
-                        });
-
 
                         // Calculate Canny Edges of original frame
                         Imgproc.Canny(input, canny,50, 150);
                         ImageWriter.writeStep(canny);
-                        Platform.runLater(() -> {
-                            Controllers.getLogController().logTextArea.appendText("canny\n");
-                        });
-
 
                         /*
                         Find text blocks by finding the connected components of
@@ -160,19 +136,12 @@ public class VideoProcessor
                         MatProcessor.paintTextBlocks(textBlocks,inputPainted);
                         ImageWriter.writePaintedFrame(inputPainted);
                         ImageWriter.writeStep(inputPainted);
-                        Platform.runLater(() -> {
-                            Controllers.getLogController().logTextArea.appendText("text blocks\n");
-                        });
-
 
                         // Write painted frame to video
                         videoWriter.write(inputPainted);
 
                         // Extract Text from current frame's textblocks
                         preprocessTextBlocks(textBlocks);
-                        Platform.runLater(() -> {
-                            Controllers.getLogController().logTextArea.appendText("preprocessed\n");
-                        });
 
                         /*
                         Reading/Skipping the next 5 frames to speed up.
@@ -190,10 +159,6 @@ public class VideoProcessor
                         open1 = cap.read(input);
                         currentFrame++;
                         input.copyTo(inputPainted);
-                        Platform.runLater(() -> {
-                            Controllers.getLogController().logTextArea.appendText("done\n\n");
-                        });
-
 
                         // Update progress bar
                         final int currentFrame_final = currentFrame;
@@ -240,8 +205,12 @@ public class VideoProcessor
             // Catching Thread Exceptions
             task.exceptionProperty().addListener((observable, oldValue, newValue) ->  {
                 if(newValue != null) {
-                    Exception ex = (Exception) newValue;
-                    Controllers.getLogController().logTextArea.appendText("ERROR: Thread Exception: " + ex.getMessage()+"\n");
+                    try{
+                        Exception ex = (Exception) newValue;
+                        Controllers.getLogController().logTextArea.appendText("ERROR: Thread Exception: " + ex.getMessage()+"\n");
+                    } catch (ClassCastException e){
+                        Controllers.getLogController().logTextArea.appendText("Could not cast Exception in Thread\n");
+                    }
                     MainController.getLogStage().show();
                 }
             });
@@ -283,7 +252,7 @@ public class VideoProcessor
             String extracted_text = "";
             try {
                 extracted_text = OcrProcessor.getOcrText(f.getPath());
-            } catch (IOException | URISyntaxException e) {
+            } catch (Throwable e) {
                 Controllers.getLogController().logTextArea.appendText("ERROR: OCR Exception: " + e.getMessage());
             }
             final String ocr_result = extracted_text;

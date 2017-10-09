@@ -1,3 +1,4 @@
+import Entities.ApplicationPaths;
 import Entities.Controllers;
 import Processors.FileProcessor;
 import ViewControllers.MainController;
@@ -8,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.SystemUtils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -18,6 +20,11 @@ public class Main extends Application
     @Override
     public void start(Stage stage) throws Exception
     {
+        if (SystemUtils.IS_OS_WINDOWS){
+            ApplicationPaths.FILE_SEPERATOR = "\\";
+        } else if (SystemUtils.IS_OS_LINUX){
+            ApplicationPaths.FILE_SEPERATOR = "/";
+        }
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Views/main.fxml"));
         Parent root = loader.load();
         stage.setTitle("VideoText Extractor");
@@ -30,11 +37,10 @@ public class Main extends Application
         MainController.setMainStage(stage);
 
         FileProcessor.loadLibraries();
-        testOpenCV();
+        //testOpenCV();
 
         // Terminating all Threads when the application is closed. ?
         stage.setOnCloseRequest(e -> {
-            Platform.exit();
             System.exit(0);
         });
     }
@@ -49,11 +55,5 @@ public class Main extends Application
         Mat m = new Mat(5, 10, CvType.CV_8UC1, new Scalar(0));
         System.out.println("OpenCV Mat: " + m);
         Controllers.getLogController().logTextArea.appendText("OpenCV Mat: " + m + "\n");
-//        Mat mr1 = m.row(1);
-//        mr1.setTo(new Scalar(1));
-//        Mat mc5 = m.col(5);
-//        mc5.setTo(new Scalar(5));
-//        System.out.println("OpenCV Mat data:\n" + m.dump());
-//        Controllers.getLogController().logTextArea.appendText("OpenCV Mat data:\n" + m.dump());
     }
 }

@@ -76,10 +76,10 @@ public class SettingsController {
         }
 
         // Check which traineddata files exist in the tessdata directory and make that language(s) available to the OCR languages combobox.
-        Collection<File> files = FileUtils.listFiles(new File(ApplicationPaths.RESOURCES_OCR_TESSDATA), null, false);
-        for(File f : files){
-            if (languageMap.values().contains(f.getName().split("\\.")[0])){
-                ocrLanguage_combobox.getItems().add(getKeyByValue(languageMap,f.getName().split("\\.")[0]));
+        Collection files = FileUtils.listFiles(new File(ApplicationPaths.RESOURCES_OCR_TESSDATA), null, false);
+        for(Object f : files){
+            if (languageMap.values().contains(((File)f).getName().split("\\.")[0])){
+                ocrLanguage_combobox.getItems().add(getKeyByValue(languageMap,((File)f).getName().split("\\.")[0]));
             }
         }
 

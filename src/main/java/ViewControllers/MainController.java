@@ -149,7 +149,9 @@ public class MainController
         });
 
         playDetected.setOnAction(event -> {
-            File videoFile = new File(ImageWriter.getUniquePath()+"\\Video\\video.mp4");
+            File videoFile = new File(ApplicationPaths.FOLDER_PATH + ApplicationPaths.FILE_SEPERATOR +
+                    ApplicationPaths.UNIQUE_FOLDER_NAME + ApplicationPaths.FILE_SEPERATOR +"Video" +
+                    ApplicationPaths.FILE_SEPERATOR + "video.mp4");
             if (videoFile.exists()){
                 Player.playVideo(videoFile);
             }
