@@ -64,7 +64,7 @@ public class SettingsController {
             alert.showAndWait();
         });
 
-        Path lang_codes = Paths.get(ApplicationPaths.RESOURCES_OCR_LANGUAGES + "lang_codes.txt");
+        Path lang_codes = Paths.get(ApplicationPaths.RESOURCES_OCR_LANGUAGES, "lang_codes.txt");
 
         // Read each line of lang_codes file, parse it, and store the languageName - languageCode information to the map
         languageMap = new HashMap<>();

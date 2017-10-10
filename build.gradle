@@ -21,7 +21,7 @@ buildscript {
 }
 
 apply plugin: 'java'
-// Uncomment the following plugin to test for unused libraries
+// Uncomment the following plugin to test for unused libraries (gradle analyze)
 //apply plugin: 'ca.cutterslade.analyze'
 apply plugin: 'idea'
 apply plugin: 'application'
@@ -37,30 +37,30 @@ repositories{
     mavenCentral()
 }
 
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'Main',
-        )
-    }
-}
-
-task fatJar(type: Jar) {
-    manifest.from jar.manifest
-    classifier = 'all'
-    from {
-        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
-    } {
-        exclude "META-INF/*.SF"
-        exclude "META-INF/*.DSA"
-        exclude "META-INF/*.RSA"
-    }
-    with jar
-}
-
-artifacts {
-    archives fatJar
-}
+//jar {
+//    manifest {
+//        attributes(
+//                'Main-Class': 'Main',
+//        )
+//    }
+//}
+//
+//task fatJar(type: Jar) {
+//    manifest.from jar.manifest
+//    classifier = 'all'
+//    from {
+//        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+//    } {
+//        exclude "META-INF/*.SF"
+//        exclude "META-INF/*.DSA"
+//        exclude "META-INF/*.RSA"
+//    }
+//    with jar
+//}
+//
+//artifacts {
+//    archives fatJar
+//}
 
 
 ext {
@@ -82,8 +82,6 @@ ext {
     opencvBinaryClassifer = os+'-'+arch;
 
 }
-
-
 
 dependencies {
 

@@ -15,16 +15,13 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 
+import java.lang.reflect.Field;
+
 public class Main extends Application
 {
     @Override
     public void start(Stage stage) throws Exception
     {
-        if (SystemUtils.IS_OS_WINDOWS){
-            ApplicationPaths.FILE_SEPERATOR = "\\";
-        } else if (SystemUtils.IS_OS_LINUX){
-            ApplicationPaths.FILE_SEPERATOR = "/";
-        }
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Views/main.fxml"));
         Parent root = loader.load();
         stage.setTitle("VideoText Extractor");
@@ -37,9 +34,7 @@ public class Main extends Application
         MainController.setMainStage(stage);
 
         FileProcessor.loadLibraries();
-        //testOpenCV();
 
-        // Terminating all Threads when the application is closed. ?
         stage.setOnCloseRequest(e -> {
             System.exit(0);
         });
@@ -49,11 +44,5 @@ public class Main extends Application
         launch(args);
     }
 
-    private void testOpenCV() {
-        System.out.println("Welcome to OpenCV " + Core.VERSION);
-        Controllers.getLogController().logTextArea.appendText("Welcome to OpenCV " + Core.VERSION + "\n");
-        Mat m = new Mat(5, 10, CvType.CV_8UC1, new Scalar(0));
-        System.out.println("OpenCV Mat: " + m);
-        Controllers.getLogController().logTextArea.appendText("OpenCV Mat: " + m + "\n");
-    }
+
 }

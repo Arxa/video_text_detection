@@ -3,10 +3,8 @@ package ViewControllers;
 import Entities.ApplicationPaths;
 import Entities.Controllers;
 import Processors.FileProcessor;
-import Processors.ImageWriter;
 import Processors.Player;
 import Processors.VideoProcessor;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
@@ -21,9 +19,9 @@ import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Contract;
 
-import javax.xml.soap.Text;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -149,9 +147,8 @@ public class MainController
         });
 
         playDetected.setOnAction(event -> {
-            File videoFile = new File(ApplicationPaths.FOLDER_PATH + ApplicationPaths.FILE_SEPERATOR +
-                    ApplicationPaths.UNIQUE_FOLDER_NAME + ApplicationPaths.FILE_SEPERATOR +"Video" +
-                    ApplicationPaths.FILE_SEPERATOR + "video.mp4");
+            File videoFile = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
+                    "Video", "video.mp4").toFile();
             if (videoFile.exists()){
                 Player.playVideo(videoFile);
             }

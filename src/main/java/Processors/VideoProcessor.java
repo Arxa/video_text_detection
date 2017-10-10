@@ -14,8 +14,7 @@ import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.VideoWriter;
 import org.opencv.videoio.Videoio;
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -36,9 +35,9 @@ public class VideoProcessor
     {
         OcrProcessor.initUniqueWords();
         VideoCapture cap = new VideoCapture(videoFile.getPath());
-        VideoWriter videoWriter = new VideoWriter(ApplicationPaths.FOLDER_PATH + ApplicationPaths.FILE_SEPERATOR +
-                ApplicationPaths.UNIQUE_FOLDER_NAME + ApplicationPaths.FILE_SEPERATOR + "Video" + ApplicationPaths.FILE_SEPERATOR +
-                "video.mp4", VideoWriter.fourcc('X', '2','6','4'),
+        VideoWriter videoWriter = new VideoWriter(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,
+                ApplicationPaths.UNIQUE_FOLDER_NAME, "Video", "video.mp4").toAbsolutePath().toString(),
+                VideoWriter.fourcc('X', '2','6','4'),
                 cap.get(Videoio.CAP_PROP_FPS), new Size(cap.get(Videoio.CAP_PROP_FRAME_WIDTH), cap.get(Videoio.CAP_PROP_FRAME_HEIGHT)), true);
 
         if (cap.isOpened())

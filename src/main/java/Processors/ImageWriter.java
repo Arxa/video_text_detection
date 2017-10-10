@@ -6,6 +6,8 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
 import org.opencv.imgcodecs.Imgcodecs;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Created by arxa on 26/2/2017.
@@ -23,8 +25,8 @@ public class ImageWriter
     @NotNull
     public static File writeTextBlock(Mat frame)
     {
-        String filePath = ApplicationPaths.FOLDER_PATH + ApplicationPaths.FILE_SEPERATOR + ApplicationPaths.UNIQUE_FOLDER_NAME + ApplicationPaths.FILE_SEPERATOR +
-                "Text Blocks" + ApplicationPaths.FILE_SEPERATOR + fileCounter++ + ".png";
+        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
+                "Text Blocks", fileCounter++ + ".png").toAbsolutePath().toString();
         MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
         Imgcodecs.imwrite(filePath,frame,params);
         return new File(filePath);
@@ -33,8 +35,8 @@ public class ImageWriter
     public static void writePaintedFrame(Mat frame)
     {
         if (!writingEnabled) return;
-        String filePath = ApplicationPaths.FOLDER_PATH + ApplicationPaths.FILE_SEPERATOR + ApplicationPaths.UNIQUE_FOLDER_NAME + ApplicationPaths.FILE_SEPERATOR +
-                "Painted Frames" + ApplicationPaths.FILE_SEPERATOR + fileCounter++ + ".png";
+        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
+                "Painted Frames", fileCounter++ + ".png").toAbsolutePath().toString();
         MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
         Imgcodecs.imwrite(filePath,frame,params);
     }
@@ -42,8 +44,8 @@ public class ImageWriter
     public static void writeOCRImage(Mat frame)
     {
         if (!writingEnabled) return;
-        String filePath = ApplicationPaths.FOLDER_PATH + ApplicationPaths.FILE_SEPERATOR + ApplicationPaths.UNIQUE_FOLDER_NAME + ApplicationPaths.FILE_SEPERATOR +
-                "OCR Images" + ApplicationPaths.FILE_SEPERATOR + fileCounter++ + ".png";
+        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
+                "OCR Images", fileCounter++ + ".png").toAbsolutePath().toString();
         MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
         Imgcodecs.imwrite(filePath,frame,params);
     }
@@ -51,8 +53,8 @@ public class ImageWriter
     public static void writeStep(Mat frame)
     {
         if (!writingEnabled) return;
-        String filePath = ApplicationPaths.FOLDER_PATH + ApplicationPaths.FILE_SEPERATOR + ApplicationPaths.UNIQUE_FOLDER_NAME + ApplicationPaths.FILE_SEPERATOR +
-                "Steps" + ApplicationPaths.FILE_SEPERATOR + fileCounter++ + ".png";
+        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
+                "Steps", fileCounter++ + ".png").toAbsolutePath().toString();
         MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
         Imgcodecs.imwrite(filePath,frame,params);
     }
