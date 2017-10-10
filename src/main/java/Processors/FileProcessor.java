@@ -67,9 +67,9 @@ public class FileProcessor
             // Generating unique name of current video file operation
             ApplicationPaths.UNIQUE_FOLDER_NAME = chosenFile.getName().replace(".mp4","")+" "+
                     new Date().toString().replace(":","-");
-            // Creating paths for application outputs
+            // Creating directories for application outputs
             Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "Text Blocks"));
-            Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,"Painted Frames"));
+            Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "Painted Frames"));
             Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "Steps"));
             Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME,"Video"));
             Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "OCR Images"));
@@ -102,8 +102,7 @@ public class FileProcessor
     /**
      * Loads Native Libraries for the detected OS
      */
-    //TODO load natives cross platform
-    public static void loadLibraries() throws IOException, URISyntaxException
+    public static void loadLibraries()
     {
         setLibraryPath();
         try {
@@ -166,8 +165,8 @@ public class FileProcessor
             fieldSysPath.setAccessible(true);
             fieldSysPath.set(null, null);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
+            new Alert(Alert.AlertType.ERROR, "Failed to set JavaLibraryPath!").showAndWait();
+            Platform.exit();
         }
     }
 }

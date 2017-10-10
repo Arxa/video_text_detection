@@ -6,17 +6,12 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
 import org.opencv.imgcodecs.Imgcodecs;
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
  * Created by arxa on 26/2/2017.
  */
 
-/**
- * This class is used to write and export specific parts of the video processing to
- * corresponding application directories
- */
 public class ImageWriter
 {
     private static boolean writingEnabled = false;

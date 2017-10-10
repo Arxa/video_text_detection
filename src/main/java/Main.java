@@ -1,4 +1,3 @@
-import Entities.ApplicationPaths;
 import Entities.Controllers;
 import Processors.FileProcessor;
 import ViewControllers.MainController;
@@ -9,13 +8,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.SystemUtils;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
-
-import java.lang.reflect.Field;
 
 public class Main extends Application
 {
@@ -43,6 +35,5 @@ public class Main extends Application
     public static void main(String[] args) {
         launch(args);
     }
-
 
 }

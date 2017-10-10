@@ -151,13 +151,13 @@ public class SettingsController {
             ImageWriter.setWritingEnabled(exportImages_checkbox.isSelected());
         });
 
-        includeSpecialCharacters_checkbox.selectedProperty().addListener(event -> {
-            OcrProcessor.setIncludeSpecialCharacters(includeSpecialCharacters_checkbox.isSelected());
-        });
-
-        extractUniqueWords_checkbox.selectedProperty().addListener(event -> {
-            OcrProcessor.setExtractUniqueWords(extractUniqueWords_checkbox.isSelected());
-        });
+//        includeSpecialCharacters_checkbox.selectedProperty().addListener(event -> {
+//            OcrProcessor.setIncludeSpecialCharacters(includeSpecialCharacters_checkbox.isSelected());
+//        });
+//
+//        extractUniqueWords_checkbox.selectedProperty().addListener(event -> {
+//            OcrProcessor.setExtractUniqueWords(extractUniqueWords_checkbox.isSelected());
+//        });
     }
 
     /**

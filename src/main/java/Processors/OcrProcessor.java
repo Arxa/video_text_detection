@@ -2,18 +2,19 @@ package Processors;
 
 import Entities.ApplicationPaths;
 import Entities.Controllers;
-import ViewControllers.MainController;
 import ViewControllers.SettingsController;
-import org.bytedeco.javacpp.BytePointer;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import org.bytedeco.javacpp.tesseract;
 import org.jetbrains.annotations.NotNull;
 import org.languagetool.JLanguageTool;
 import org.languagetool.language.BritishEnglish;
 import org.languagetool.rules.RuleMatch;
+
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.*;
-import static org.bytedeco.javacpp.lept.*;
-import static org.bytedeco.javacpp.tesseract.TessBaseAPI;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by arxa on 27/4/2017.
@@ -21,98 +22,54 @@ import static org.bytedeco.javacpp.tesseract.TessBaseAPI;
 
 public class OcrProcessor
 {
-    private static boolean includeSpecialCharacters;
-    private static boolean extractUniqueWords;
-    private static Set<String> uniqueWords;
+    private static JLanguageTool languageTool = new JLanguageTool(new BritishEnglish());
+    private static Pattern pattern = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
 
-    /**
-     * Extracts the text representation in the given image, using OCR.
-     * Depending of the user's selections, certain preprocessing and filtering of the ocr result is applied first
-     * @param imagePath Path to the input image
-     * @return The extracted String text
-     */
+    public static void initializeOcr(tesseract.TessBaseAPI ocrApi){
+        if (ocrApi.Init(ApplicationPaths.RESOURCES_OCR, SettingsController.getLanguageMap().
+                get(Controllers.getSettingsController().ocrLanguage_combobox.getSelectionModel().getSelectedItem().toString())) != 0) {
+            new Alert(Alert.AlertType.ERROR, "Failed to set OCR language!").showAndWait();
+            Platform.exit();
+        }
+//        if (!Controllers.getSettingsController().includeSpecialCharacters_checkbox.isSelected()){
+//            ocrApi.SetVariable("tessedit_char_blacklist", "`,#[];()!£\"$%^&\\²³²£§¶¤°¦<>|€");
+//        }
+        VideoProcessor.setExtractUniqueWords(Controllers.getSettingsController().extractUniqueWords_checkbox.isSelected());
+    }
+
     @NotNull
-    public static String getOcrText(String imagePath) throws IOException, URISyntaxException
-    {
-        String selectedLanguage = Controllers.getSettingsController().ocrLanguage_combobox.getSelectionModel().getSelectedItem().toString();
-        includeSpecialCharacters = Controllers.getSettingsController().includeSpecialCharacters_checkbox.isSelected();
-        extractUniqueWords = Controllers.getSettingsController().extractUniqueWords_checkbox.isSelected();
-        BytePointer outText;
-        TessBaseAPI api = new TessBaseAPI();
-
-        // Setting OCR language
-        if (api.Init(ApplicationPaths.RESOURCES_OCR, SettingsController.getLanguageMap().get(selectedLanguage)) != 0) {
-            Controllers.getLogController().logTextArea.appendText("Could not initialize tesseract - ocr!\n");
-            MainController.getLogStage().show();
+    public static String removeSpecialCharacters(String ocrText){
+        StringBuffer buffer = new StringBuffer(ocrText);
+        Matcher matcher = pattern.matcher(buffer);
+        while (matcher.find()){
+            try {
+                buffer.replace(matcher.start(), matcher.end(),"");
+            } catch (StringIndexOutOfBoundsException ignored) {}
+            matcher = pattern.matcher(buffer);
         }
+        return buffer.toString();
+    }
 
-        if (!includeSpecialCharacters){
-            api.SetVariable("tessedit_char_blacklist", "`,#[];()!£\"$%^&\\²³²£§¶¤°¦<>|€");
-        }
-
-        // Open input image with leptonica library
-        PIX image = pixRead(imagePath);
-        api.SetImage(image);
-
-        // Get OcrProcessor result
-        outText = api.GetUTF8Text();
-        if (outText == null) {
-            Controllers.getLogController().logTextArea.appendText("OcrProcessor Text is NULL - Continuing forward\n");
-            MainController.getLogStage().show();
-            api.End();
-            pixDestroy(image);
-            return "";
-        }
-        String ocr_text = outText.getString().trim();
-
-        // Destroy used object and release memory
-        api.End();
-        outText.deallocate();
-        pixDestroy(image);
-
-        StringBuffer buffer = new StringBuffer(ocr_text);
-        JLanguageTool languageTool = new JLanguageTool(new BritishEnglish());
+    @NotNull
+    public static String checkForSpelling(String ocrText) {
         List<RuleMatch> matches;
-
-        // Check for spelling errors and apply suggestion
+        StringBuffer buffer = new StringBuffer(ocrText);
         int iterations = 0;
         while (true) {
-            if (++iterations > 10) break;
-            matches = languageTool.check(buffer.toString());
+            if (++iterations > 3) return buffer.toString();
+            try { matches = languageTool.check(buffer.toString()); }
+            catch (IOException e) { return ocrText; }
             if (!matches.isEmpty()){
                 if (!matches.get(0).getSuggestedReplacements().isEmpty()){
                     try {
-                        buffer.replace(matches.get(0).getFromPos(),matches.get(0).getToPos(),matches.get(0).getSuggestedReplacements().get(0));
+                        buffer.replace(matches.get(0).getFromPos(), matches.get(0).getToPos(), matches.get(0).getSuggestedReplacements().get(0));
                     } catch (StringIndexOutOfBoundsException ignored) {}
                 } else {
-                    buffer.replace(matches.get(0).getFromPos(),matches.get(0).getToPos(),"");
+                    return " ";
                 }
             } else {
-                ocr_text = buffer.toString();
-                break;
+                return buffer.toString();
             }
         }
-
-        // Check if this word has appeared in the past
-        if (extractUniqueWords){
-            if (!uniqueWords.contains(ocr_text)){
-                uniqueWords.add(ocr_text);
-                return ocr_text + " ";
-            }
-            return "";
-        }
-        return ocr_text + " ";
-    }
-
-    public static void initUniqueWords(){
-        uniqueWords = new TreeSet<>();
-    }
-
-    public static void setIncludeSpecialCharacters(boolean includeSpecialCharacters) {
-        OcrProcessor.includeSpecialCharacters = includeSpecialCharacters;
-    }
-
-    public static void setExtractUniqueWords(boolean extractUniqueWords) {
-        OcrProcessor.extractUniqueWords = extractUniqueWords;
     }
 }

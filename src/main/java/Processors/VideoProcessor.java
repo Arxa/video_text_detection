@@ -6,6 +6,9 @@ import Entities.StructuringElement;
 import ViewControllers.MainController;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.lept;
+import org.bytedeco.javacpp.tesseract;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.opencv.core.*;
@@ -15,7 +18,9 @@ import org.opencv.videoio.VideoWriter;
 import org.opencv.videoio.Videoio;
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import static org.bytedeco.javacpp.lept.pixRead;
 
 /**
  * Created by arxa on 16/11/2016.
@@ -30,10 +35,11 @@ public class VideoProcessor
     private static Mat dst = new Mat();
     private static Mat unsharp = new Mat();
     private static Thread thread;
+    private static boolean extractUniqueWords;
+    private static List<String> uniqueWords;
 
     public static void processVideoFile(File videoFile)
     {
-        OcrProcessor.initUniqueWords();
         VideoCapture cap = new VideoCapture(videoFile.getPath());
         VideoWriter videoWriter = new VideoWriter(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,
                 ApplicationPaths.UNIQUE_FOLDER_NAME, "Video", "video.mp4").toAbsolutePath().toString(),
@@ -47,6 +53,12 @@ public class VideoProcessor
                 @Nullable
                 @Override protected Void call() throws Exception
                 {
+                    // OCR Initialization
+                    uniqueWords = new ArrayList<>();
+                    BytePointer ocrOutput = new BytePointer();
+                    tesseract.TessBaseAPI ocrApi = new tesseract.TessBaseAPI();
+                    OcrProcessor.initializeOcr(ocrApi);
+
                     double frames = (int) cap.get(Videoio.CAP_PROP_FRAME_COUNT);
                     boolean open1 = cap.read(input);
                     int currentFrame = 1;
@@ -59,7 +71,6 @@ public class VideoProcessor
                     while (open1 && !thread.isInterrupted())
                     {
                         ImageWriter.writeStep(input);
-
                         /*
                         Apply Gaussian Blurred Filter
                         GaussianBlur Parameters:
@@ -140,7 +151,7 @@ public class VideoProcessor
                         videoWriter.write(inputPainted);
 
                         // Extract Text from current frame's textblocks
-                        preprocessTextBlocks(textBlocks);
+                        preprocessTextBlocks(textBlocks, ocrApi, ocrOutput);
 
                         /*
                         Reading/Skipping the next 5 frames to speed up.
@@ -171,6 +182,9 @@ public class VideoProcessor
                 @Override protected void succeeded() {
                     cap.release();
                     videoWriter.release();
+//                    ocrApi.End();
+//                    ocrOutput.deallocate();
+                    //pixDestroy(image);
                     // TODO do smth about the following copied code?
                     Controllers.getLogController().logTextArea.appendText("Operation completed!\n");
                     Controllers.getMainController().progressIndicator.setVisible(false);
@@ -181,6 +195,8 @@ public class VideoProcessor
                 }
                 @Override protected void cancelled() {
                     videoWriter.release();
+//                    ocrApi.End();
+//                    ocrOutput.deallocate();
                     Controllers.getLogController().logTextArea.appendText("ERROR: Thread Cancelled!\n");
                     MainController.getLogStage().show();
                     Controllers.getMainController().progressIndicator.setVisible(false);
@@ -191,6 +207,8 @@ public class VideoProcessor
                 }
                 @Override protected void failed() {
                     videoWriter.release();
+//                    ocrApi.End();
+//                    ocrOutput.deallocate();
                     Controllers.getLogController().logTextArea.appendText("ERROR: Thread Failed!\n");
                     MainController.getLogStage().show();
                     Controllers.getMainController().progressIndicator.setVisible(false);
@@ -200,7 +218,6 @@ public class VideoProcessor
                     super.failed();
                 }
             };
-
             // Catching Thread Exceptions
             task.exceptionProperty().addListener((observable, oldValue, newValue) ->  {
                 if(newValue != null) {
@@ -213,7 +230,6 @@ public class VideoProcessor
                     MainController.getLogStage().show();
                 }
             });
-
             thread = new Thread(task);
             thread.setDaemon(false);
             thread.start();
@@ -225,7 +241,7 @@ public class VideoProcessor
      *  to achieve better extraction results
      * @param textBlocks List of image's text blocks in Rect format
      */
-    public static void preprocessTextBlocks(List<Rect> textBlocks)
+    public static void preprocessTextBlocks(List<Rect> textBlocks, tesseract.TessBaseAPI api, BytePointer ocrOutput)
     {
         for (Mat m : MatProcessor.getTextBlocksAsMat(textBlocks))
         {
@@ -244,20 +260,38 @@ public class VideoProcessor
             Mat binary = MatProcessor.thresholdImageWithKmeans(src);
 
             ImageWriter.writeOCRImage(binary);
+
             //Imgproc.resize(binary, binary, new Size(), 4.0, 4.0, Imgproc.INTER_LINEAR);
 
-            // Extract Text
-            File f = ImageWriter.writeTextBlock(binary);
-            String extracted_text = "";
-            try {
-                extracted_text = OcrProcessor.getOcrText(f.getPath());
-            } catch (Throwable e) {
-                Controllers.getLogController().logTextArea.appendText("ERROR: OCR Exception: " + e.getMessage());
+            File imgFile = ImageWriter.writeTextBlock(binary);
+
+            lept.PIX image = pixRead(imgFile.getAbsolutePath());
+            api.SetImage(image);
+            ocrOutput = api.GetUTF8Text();
+            if (ocrOutput == null) {
+                Controllers.getLogController().logTextArea.appendText("OcrProcessor Text is NULL - Continuing forward\n");
+                MainController.getLogStage().show();
+                return;
             }
-            final String ocr_result = extracted_text;
-            Platform.runLater(() -> {
-                Controllers.getMainController().textArea.appendText(ocr_result);
-            });
+
+            String[] words = ocrOutput.getString().trim().split(" ");
+            for (String word : words){
+                String cleaned = OcrProcessor.removeSpecialCharacters(word);
+                String spelled = OcrProcessor.checkForSpelling(cleaned);
+                if (extractUniqueWords) {
+                    if (uniqueWords.contains(spelled)){
+                        continue;
+                    }
+                    uniqueWords.add(spelled);
+                    Platform.runLater(() -> {
+                        Controllers.getMainController().textArea.appendText(spelled + " ");
+                    });
+                    continue;
+                }
+                Platform.runLater(() -> {
+                    Controllers.getMainController().textArea.appendText(spelled + " ");
+                });
+            }
         }
     }
 
@@ -274,5 +308,9 @@ public class VideoProcessor
     @Contract(pure = true)
     public static Thread getThread() {
         return thread;
+    }
+
+    public static void setExtractUniqueWords(boolean extractUniqueWords) {
+        VideoProcessor.extractUniqueWords = extractUniqueWords;
     }
 }
