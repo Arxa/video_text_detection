@@ -5,10 +5,13 @@ import Entities.Caller;
 import Entities.Controllers;
 import ViewControllers.MainController;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.Contract;
 import org.opencv.core.Core;
@@ -27,6 +30,7 @@ import java.util.Date;
 
 public class FileProcessor
 {
+    public static Node node;
     /**
      * Allows the user to choose a file through a file dialog
      * and then validates if the File is valid, if it's playable
@@ -35,24 +39,31 @@ public class FileProcessor
      */
     public static void validateVideoFile(File videoFile)
     {
-        if (videoFile == null) return;
+        Alert alert;
         if (!FileProcessor.validateVideoFileName(videoFile)){
-            new Alert(Alert.AlertType.WARNING, "ERROR on loading file\n"+
-                    "Couldn't load file specified", ButtonType.OK).showAndWait();
+            alert = new Alert(Alert.AlertType.WARNING, "ERROR on loading file\n"+
+                    "Couldn't load file specified", ButtonType.OK);
+            alert.showAndWait();
             return;
         }
         if (!Player.playVideo(videoFile)){
-            new Alert(Alert.AlertType.WARNING, "ERROR on playing the video file\n"+
-                    "Please choose a valid .mp4 video file", ButtonType.OK).showAndWait();
+            alert = new Alert(Alert.AlertType.WARNING, "ERROR on playing the video file",ButtonType.OK);
+            alert.showAndWait();
             return;
         }
         if (!FileProcessor.createDirectories(videoFile)){
-            new Alert(Alert.AlertType.WARNING, "ERROR on creating directories\n"+
-                    "Failed to create directories", ButtonType.OK).showAndWait();
+            alert = new Alert(Alert.AlertType.WARNING, "ERROR on creating directories\n"+
+                    "Failed to create directories", ButtonType.OK);
+            alert.showAndWait();
             return;
         }
-        MainController.setCurrentVideoFile(videoFile);
         MainController.resizeStageSlowly(1150, true);
+        MainController.setCurrentVideoFile(videoFile);
+        Controllers.getMainController().progressIndicator.setVisible(false);
+        Controllers.getMainController().progressBar.setVisible(false);
+        Controllers.getMainController().extractButton.setVisible(true);
+        Controllers.getMainController().textArea.setVisible(true);
+        Controllers.getMainController().textArea.clear();
     }
 
     /**
@@ -82,7 +93,8 @@ public class FileProcessor
 
     @Contract("null -> false")
     public static boolean validateVideoFileName(File filename) {
-        return filename != null && filename.exists();
+        return filename != null && filename.exists() && filename.canRead()
+                && FilenameUtils.getExtension(filename.getPath()).equalsIgnoreCase("mp4");
     }
 
     /**
@@ -116,6 +128,8 @@ public class FileProcessor
                     Controllers.getLogController().logTextArea.appendText("Loaded OpenH264 for Windows 32 bit\n");
                 }
                 else if (bit == 64){
+                    System.loadLibrary("opencv_ffmpeg320_64");
+                    Controllers.getLogController().logTextArea.appendText("Loaded FFMPEG for Windows 64 bit\n");
                     System.loadLibrary("opencv_320_64");
                     Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for Windows 64 bit\n");
                     System.loadLibrary("openh264-1.6.0-win64msvc");

@@ -12,6 +12,7 @@ public class ApplicationPaths
 {
     public static Caller CALLER;
     public static String USER_DIR;
+    public static String TEST_RESOURCES;
     public static String RESOURCES_NATIVES;
     public static String RESOURCES_OCR;
     public static String RESOURCES_OCR_TESSDATA;
@@ -32,6 +33,7 @@ public class ApplicationPaths
             CALLER = Caller.IDE;
             try {
                 USER_DIR = Paths.get(new File(".").getCanonicalPath(),"src","main","resources").toFile().getPath();
+                TEST_RESOURCES = Paths.get(new File(".").getCanonicalPath(),"src","test","resources").toFile().getPath();
             } catch (IOException e) {
                 System.out.println("Couldn't create IDE directories");
                 Platform.exit();

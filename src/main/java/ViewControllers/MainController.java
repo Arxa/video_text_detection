@@ -53,13 +53,14 @@ public class MainController
         initializeViews();
         ApplicationPaths.checkCaller();
 
+        textArea.setVisible(false); // TestFx will fail otherwise for some reason
         videoIcon.setCursor(Cursor.HAND);
         extractButton.setCursor(Cursor.HAND);
 
         // When dragging something, allow it to be copied/moved only if it's a mp4 file
         videoPane.setOnDragOver(event -> {
             if (event.getDragboard().getFiles().get(0).isFile()){
-                if (FilenameUtils.getExtension(event.getDragboard().getFiles().get(0).getPath()).equals("mp4")) {
+                if (FilenameUtils.getExtension(event.getDragboard().getFiles().get(0).getPath()).equalsIgnoreCase("mp4")){
                     event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                 }
             }
@@ -74,8 +75,6 @@ public class MainController
                     VideoProcessor.getThread().interrupt();
                 }
             }
-            textArea.clear();
-            progressIndicator.setVisible(false);
             FileProcessor.validateVideoFile(event.getDragboard().getFiles().get(0));
             event.setDropCompleted(true);
             event.consume();
@@ -96,8 +95,6 @@ public class MainController
                     VideoProcessor.getThread().interrupt();
                 }
             }
-            textArea.clear();
-            progressIndicator.setVisible(false);
             FileProcessor.validateVideoFile(FileProcessor.showFileDialog());
         });
 
@@ -139,8 +136,12 @@ public class MainController
             videoPane.getChildren().clear();
             videoPane.getChildren().add(videoIcon);
             videoIcon.setVisible(true);
-            resizeStageSlowly(680, false);
             textArea.clear();
+            textArea.setVisible(false);
+            progressIndicator.setVisible(false);
+            progressIndicator.setVisible(false);
+            extractButton.setVisible(false);
+            resizeStageSlowly(680, false);
         });
 
         playOriginal.setOnAction(event -> {
@@ -162,7 +163,6 @@ public class MainController
      * @param maximize Flag that indicates whether to expand or collapse the stage's width
      */
     public static void resizeStageSlowly(double desiredSize, boolean maximize){
-        Controllers.getMainController().extractButton.setVisible(true);
         Timer animTimer = new Timer();
         animTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -216,11 +216,6 @@ public class MainController
         settingsStage.setTitle("Settings");
         settingsStage.getIcons().add(new Image("file:src/main/resources/Icons/app.png"));
         settingsStage.setScene(new Scene(root, 400, 250));
-    }
-
-    @Contract(pure = true)
-    public static File getCurrentVideoFile() {
-        return currentVideoFile;
     }
 
     public static void setCurrentVideoFile(File currentVideoFile) {

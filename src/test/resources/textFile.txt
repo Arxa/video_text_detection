@@ -1,0 +1,1 @@
+This is a text file and not a video one. Tha application is supposed to react properly.

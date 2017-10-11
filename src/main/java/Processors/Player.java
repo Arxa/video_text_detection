@@ -26,7 +26,7 @@ public class Player {
             mediaView.fitWidthProperty().bind(Controllers.getMainController().videoPane.widthProperty());
             mediaPlayer.play();
             return true;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return false;
         }
     }

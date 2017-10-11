@@ -6,6 +6,8 @@ import Entities.StructuringElement;
 import ViewControllers.MainController;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.lept;
 import org.bytedeco.javacpp.tesseract;
@@ -37,17 +39,22 @@ public class VideoProcessor
     private static Thread thread;
     private static boolean extractUniqueWords;
     private static List<String> uniqueWords;
+    private static boolean frameIsOpened;
 
     public static void processVideoFile(File videoFile)
     {
-        VideoCapture cap = new VideoCapture(videoFile.getPath());
+        VideoCapture cap = new VideoCapture(videoFile.getAbsolutePath());
+        frameIsOpened = cap.read(input);
+
         VideoWriter videoWriter = new VideoWriter(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,
                 ApplicationPaths.UNIQUE_FOLDER_NAME, "Video", "video.mp4").toAbsolutePath().toString(),
                 VideoWriter.fourcc('X', '2','6','4'),
                 cap.get(Videoio.CAP_PROP_FPS), new Size(cap.get(Videoio.CAP_PROP_FRAME_WIDTH), cap.get(Videoio.CAP_PROP_FRAME_HEIGHT)), true);
 
-        if (cap.isOpened())
-        {
+        if (!frameIsOpened){
+            new Alert(Alert.AlertType.ERROR, "ERROR: Failed to read video frames\nTry another video file. If the error persists, contact the developer",
+                    ButtonType.OK).showAndWait();
+        } else {
             Task<Void> task = new Task<Void>()
             {
                 @Nullable
@@ -60,7 +67,6 @@ public class VideoProcessor
                     OcrProcessor.initializeOcr(ocrApi);
 
                     double frames = (int) cap.get(Videoio.CAP_PROP_FRAME_COUNT);
-                    boolean open1 = cap.read(input);
                     int currentFrame = 1;
                     input.copyTo(inputPainted);
                     Size kernel = StructuringElement.getStructuringElement(input.height()*input.width());
@@ -68,7 +74,7 @@ public class VideoProcessor
                     Platform.runLater(() -> {
                         Controllers.getLogController().logTextArea.appendText("[Structuring Element: "+kernel.height+" x "+kernel.width+"]\n");
                     });
-                    while (open1 && !thread.isInterrupted())
+                    while (frameIsOpened && !thread.isInterrupted())
                     {
                         ImageWriter.writeStep(input);
                         /*
@@ -166,7 +172,7 @@ public class VideoProcessor
                             // using the last detected text areas
                             videoWriter.write(inputPainted);
                         }
-                        open1 = cap.read(input);
+                        frameIsOpened = cap.read(input);
                         currentFrame++;
                         input.copyTo(inputPainted);
 

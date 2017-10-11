@@ -18,6 +18,7 @@ public class Main extends Application
         Parent root = loader.load();
         stage.setTitle("VideoText Extractor");
         stage.setScene(new Scene(root, 680, 450));
+        stage.setResizable(false);
         stage.show();
         stage.setOnCloseRequest(e -> Platform.exit());
 
