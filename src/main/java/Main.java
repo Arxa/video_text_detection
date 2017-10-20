@@ -17,7 +17,7 @@ public class Main extends Application
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Views/main.fxml"));
         Parent root = loader.load();
         stage.setTitle("VideoText Extractor");
-        stage.setScene(new Scene(root, 680, 450));
+        stage.setScene(new Scene(root, 680, 390));
         stage.setResizable(false);
         stage.show();
         stage.setOnCloseRequest(e -> Platform.exit());

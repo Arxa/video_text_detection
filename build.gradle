@@ -97,13 +97,8 @@ dependencies {
     compile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.6'
 
-//    testCompile group: "org.loadui", name: "testFx", version: "3.1.2"
-//    testCompile 'org.testfx:testfx-core:4.0.1-alpha'
-//    testRuntime 'org.testfx:openjfx-monocle:1.8.0_20'
     testCompile group: 'org.loadui', name: 'testFx', version: '3.1.2'
-
     testCompile group: 'org.testfx', name: 'testfx-core', version: '4.0.8-alpha'
-
 }
 test {
     testLogging.showStandardStreams = true

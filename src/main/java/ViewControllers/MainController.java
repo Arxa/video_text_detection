@@ -16,12 +16,15 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -41,6 +44,8 @@ public class MainController
     public MenuItem settingsMenuItem;
     public ProgressBar progressBar;
     public MenuItem logMenuItem;
+    public Button increaseFont_button;
+    public Button decreaseFont_button;
 
     private static File currentVideoFile;
     private static Stage mainStage;
@@ -56,6 +61,14 @@ public class MainController
         textArea.setVisible(false); // TestFx will fail otherwise for some reason
         videoIcon.setCursor(Cursor.HAND);
         extractButton.setCursor(Cursor.HAND);
+
+        increaseFont_button.setOnMouseClicked(event -> {
+            textArea.setFont(Font.font("Verdana", FontWeight.NORMAL, textArea.getFont().getSize()+2));
+        });
+
+        decreaseFont_button.setOnMouseClicked(event -> {
+            textArea.setFont(Font.font("Verdana", FontWeight.NORMAL, textArea.getFont().getSize()-2));
+        });
 
         // When dragging something, allow it to be copied/moved only if it's a mp4 file
         videoPane.setOnDragOver(event -> {
@@ -149,12 +162,19 @@ public class MainController
         });
 
         playDetected.setOnAction(event -> {
-            File videoFile = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
-                    "Video", "video.mp4").toFile();
-            if (videoFile.exists()){
+            String videoFilePath = null;
+            try {
+                videoFilePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
+                        "Video", "video.mp4").toAbsolutePath().toString();
+            } catch (Exception e) {
+                return;
+            }
+            File videoFile = new File(videoFilePath);
+            if (videoFile.exists() && videoFile.isFile()){
                 Player.playVideo(videoFile);
             }
         });
+
     }
 
     /**

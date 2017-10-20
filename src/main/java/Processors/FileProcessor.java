@@ -8,6 +8,8 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
@@ -39,6 +41,7 @@ public class FileProcessor
      */
     public static void validateVideoFile(File videoFile)
     {
+        if (videoFile == null) return;
         Alert alert;
         if (!FileProcessor.validateVideoFileName(videoFile)){
             alert = new Alert(Alert.AlertType.WARNING, "ERROR on loading file\n"+

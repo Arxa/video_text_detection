@@ -50,8 +50,6 @@ public class MainTest extends GuiTest
     @BeforeClass
     public static void beforeTests() {
 
-
-
     }
 
     @AfterClass
