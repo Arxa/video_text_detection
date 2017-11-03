@@ -54,12 +54,7 @@ public class FileProcessor
             alert.showAndWait();
             return;
         }
-        if (!FileProcessor.createDirectories(videoFile)){
-            alert = new Alert(Alert.AlertType.WARNING, "ERROR on creating directories\n"+
-                    "Failed to create directories", ButtonType.OK);
-            alert.showAndWait();
-            return;
-        }
+
         MainController.resizeStageSlowly(1150, true);
         MainController.setCurrentVideoFile(videoFile);
         Controllers.getMainController().progressIndicator.setVisible(false);
@@ -87,6 +82,7 @@ public class FileProcessor
             Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "Steps"));
             Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME,"Video"));
             Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "OCR Images"));
+            Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "Temp"));
             return true;
         }
         catch (RuntimeException | IOException ex) {

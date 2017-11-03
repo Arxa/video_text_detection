@@ -8,8 +8,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.lept;
 import org.bytedeco.javacpp.tesseract;
@@ -34,7 +32,7 @@ public class VideoProcessor
 {
     private static Mat canny = new Mat();
     private static Mat input = new Mat();
-    private static Mat inputPainted = new Mat();
+    private static Mat inputWithTextBlocks = new Mat();
     private static Mat src = new Mat();
     private static Mat dst = new Mat();
     private static Mat unsharp = new Mat();
@@ -70,7 +68,7 @@ public class VideoProcessor
 
                     double frames = (int) cap.get(Videoio.CAP_PROP_FRAME_COUNT);
                     int currentFrame = 1;
-                    input.copyTo(inputPainted);
+                    input.copyTo(inputWithTextBlocks);
                     Size kernel = StructuringElement.getStructuringElement(input.height()*input.width());
                     Mat structuringElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, kernel);
                     Platform.runLater(() -> {
@@ -124,6 +122,7 @@ public class VideoProcessor
                         // Convert to Binary
                         src.convertTo(src, CvType.CV_8UC1);
                         Imgproc.threshold(src, dst, 80,255,Imgproc.THRESH_BINARY);
+//                        dst = ImageProcessor.thresholdImageWithKmeans(src);
                         ImageWriter.writeStep(dst);
 
                         /*
@@ -144,19 +143,14 @@ public class VideoProcessor
                         Imgproc.Canny(input, canny,50, 150);
                         ImageWriter.writeStep(canny);
 
-                        /*
-                        Find text blocks by finding the connected components of
-                        dilated image and filtering them based on their Sobel edges density.
-                         */
-                        List<Rect> textBlocks = MatProcessor.find_TextBlocks(src);
-
-                        // Paint the filtered textBlocks from above to the original frame (i.e. input)
-                        MatProcessor.paintTextBlocks(textBlocks,inputPainted);
-                        ImageWriter.writePaintedFrame(inputPainted);
-                        ImageWriter.writeStep(inputPainted);
+                        // Find the candidate text blocks by finding the connected components of dilated image
+                        List<Rect> textBlocks = ImageProcessor.findTextBlocks(src);
+                        ImageProcessor.paintTextBlocks(textBlocks, inputWithTextBlocks);
+                        ImageWriter.writeStep(inputWithTextBlocks);
+                        ImageWriter.writePaintedFrame(inputWithTextBlocks);
 
                         // Write painted frame to video
-                        videoWriter.write(inputPainted);
+                        videoWriter.write(inputWithTextBlocks);
 
                         // Extract Text from current frame's textblocks
                         preprocessTextBlocks(textBlocks, ocrApi, ocrOutput);
@@ -168,15 +162,15 @@ public class VideoProcessor
                         for (int i=0; i < 5; i++) {
                             cap.read(input);
                             currentFrame++;
-                            input.copyTo(inputPainted);
-                            MatProcessor.paintTextBlocks(textBlocks,inputPainted);
+                            input.copyTo(inputWithTextBlocks);
+                            ImageProcessor.paintTextBlocks(textBlocks, inputWithTextBlocks);
                             // These frames are not processed, however we shall write them to the video result,
                             // using the last detected text areas
-                            videoWriter.write(inputPainted);
+                            videoWriter.write(inputWithTextBlocks);
                         }
                         frameIsOpened = cap.read(input);
                         currentFrame++;
-                        input.copyTo(inputPainted);
+                        input.copyTo(inputWithTextBlocks);
 
                         // Update progress bar
                         final int currentFrame_final = currentFrame;
@@ -251,7 +245,7 @@ public class VideoProcessor
      */
     public static void preprocessTextBlocks(List<Rect> textBlocks, tesseract.TessBaseAPI api, BytePointer ocrOutput)
     {
-        for (Mat m : MatProcessor.getTextBlocksAsMat(textBlocks))
+        for (Mat m : ImageProcessor.getCroppedTextBlocks(textBlocks))
         {
             ImageWriter.writeOCRImage(m);
             Imgproc.cvtColor(m, src, Imgproc.COLOR_RGB2GRAY, 0);
@@ -265,7 +259,7 @@ public class VideoProcessor
 
             Core.normalize(unsharp, src,0.0,1.0, Core.NORM_MINMAX);
 
-            Mat binary = MatProcessor.thresholdImageWithKmeans(src);
+            Mat binary = ImageProcessor.thresholdImageWithKmeans(src);
 
             ImageWriter.writeOCRImage(binary);
 

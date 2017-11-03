@@ -112,6 +112,11 @@ public class MainController
         });
 
         extractButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if (!FileProcessor.createDirectories(currentVideoFile)){
+                new Alert(Alert.AlertType.WARNING, "ERROR on creating directories\n"+
+                        "Failed to create directories", ButtonType.OK).showAndWait();
+                return;
+            }
             // Kill existing thread first (if there is one)
             if (VideoProcessor.getThread() != null){
                 if (VideoProcessor.getThread().isAlive()){
@@ -189,14 +194,14 @@ public class MainController
             public void run() {
                 if (maximize){
                     if ((int)MainController.getMainStage().getWidth() < (int)desiredSize) {
-                        MainController.getMainStage().setWidth(MainController.getMainStage().getWidth() + 5.0);
+                        MainController.getMainStage().setWidth(MainController.getMainStage().getWidth() + 1.0);
                     }else {
                         MainController.getMainStage().setWidth(desiredSize);
                         this.cancel();
                     }
                 } else {
                     if ((int)MainController.getMainStage().getWidth() > (int)desiredSize) {
-                        MainController.getMainStage().setWidth(MainController.getMainStage().getWidth() - 5.0);
+                        MainController.getMainStage().setWidth(MainController.getMainStage().getWidth() - 1.0);
                     } else {
                         MainController.getMainStage().setWidth(desiredSize);
                         this.cancel();

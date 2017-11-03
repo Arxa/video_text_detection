@@ -48,8 +48,8 @@
       <TextArea fx:id="textArea" editable="false" layoutX="696.0" layoutY="151.0" opacity="0.39" prefHeight="247.0" prefWidth="388.0" visible="false" wrapText="true" />
       <ProgressIndicator fx:id="progressIndicator" layoutX="838.0" layoutY="25.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="75.0" prefWidth="136.0" progress="0.0" visible="false" />
       <Button fx:id="extractButton" layoutX="829.0" layoutY="52.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="168.0" text="Extract Text" visible="false" />
-      <ProgressBar fx:id="progressBar" layoutX="696.0" layoutY="126.0" prefHeight="8.0" prefWidth="369.0" progress="0.0" visible="false" />
-       <Button fx:id="increaseFont_button" layoutX="1095.0" layoutY="151.0" mnemonicParsing="false" prefWidth="25.0" text="+" />
-      <Button fx:id="decreaseFont_button" layoutX="1095.0" layoutY="190.0" mnemonicParsing="false" prefWidth="25.0" text="-" />
+      <ProgressBar fx:id="progressBar" layoutX="696.0" layoutY="126.0" prefHeight="8.0" prefWidth="388.0" progress="0.0" visible="false" />
+       <Button fx:id="increaseFont_button" layoutX="1100.0" layoutY="155.0" mnemonicParsing="false" prefWidth="25.0" text="+" />
+      <Button fx:id="decreaseFont_button" layoutX="1100.0" layoutY="190.0" mnemonicParsing="false" prefWidth="25.0" text="-" />
    </children>
 </AnchorPane>

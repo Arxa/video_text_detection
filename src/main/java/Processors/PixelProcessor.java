@@ -17,23 +17,27 @@ public class PixelProcessor
      * @param top connected component's top coordinate
      * @param width connected component's width
      * @param height connected component's height
-     * @param area connected component's area
      * @return True if the connected component is accepted. False otherwise.
      */
-    public static boolean areaIsSobelDense(double left, double top, double width, double height, double area)
+    public static boolean textBlockHasEnoughSobelEdges(double left, double top, double width, double height,
+                                                       double connectedComponentArea, Mat dilated)
     {
         int cannyPixels = 0;
         for (int i=(int)top; i<(int)top+(int)height; i++)
         {
             for (int j=(int)left; j<(int)left+(int)width; j++)
             {
-                // Canny pixels have 255 color number
-                if (Double.compare(VideoProcessor.getCanny().get(i,j)[0],255.0) == 0){
-                    cannyPixels++;
+                // Considering only the connected component's pixels - and not the bounding box's pixels
+                if (Double.compare(dilated.get(i,j)[0],255.0) == 0) {
+                    // Do we have an edge pixel in the corresponding Canny image? (Canny edge pixels have 255 color value)
+                    if (Double.compare(VideoProcessor.getCanny().get(i,j)[0],255.0) == 0){
+                        cannyPixels++;
+                    }
                 }
             }
         }
-        return Double.compare(cannyPixels / area, 0.05) > 0;
+        // Are there enough canny edge pixels corresponding in the connected components area?
+        return Double.compare(cannyPixels / connectedComponentArea, 0.05) > 0;
     }
 
 

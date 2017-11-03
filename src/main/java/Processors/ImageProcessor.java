@@ -3,20 +3,21 @@ package Processors;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by arxa on 2/4/2017.
  */
 
-public class MatProcessor
+public class ImageProcessor
 {
     /**
      * Crops areas from the original image which correspond to the given Rect blocks
      * @param textBlocks The Rect text blocks list
      * @return A list of Mat crops
      */
-    public static List<Mat> getTextBlocksAsMat(List<Rect> textBlocks)
+    public static List<Mat> getCroppedTextBlocks(List<Rect> textBlocks)
     {
         List<Mat> textRegions = new ArrayList<>();
         for (Rect r : textBlocks) {
@@ -28,40 +29,33 @@ public class MatProcessor
 
     /**
      * Finds the text block areas by filtering the connected components of the dilated Mat image.
+     * First, finds the candidate text blocks and then filters them.
      * @param dilated The dilated Mat image
      * @return A List of Rect representing the finalist text block areas
      */
-    public static List<Rect> find_TextBlocks(Mat dilated)
+    public static List<Rect> findTextBlocks(Mat dilated)
     {
-        List<Rect> textBlocks = new ArrayList<>();
         Mat labels = new Mat();
         Mat stats = new Mat();
         Mat centroids = new Mat();
         int numberOfLabels = Imgproc.connectedComponentsWithStats(dilated,labels,stats,centroids,8, CvType.CV_32S);
 
+        List<Rect> textBlocks = new ArrayList<>();
+
         // Label 0 is considered to be the background label, so we skip it
-        for (int i=1; i<numberOfLabels; i++)
+        for (int i = 1; i < numberOfLabels; i++)
         {
-            /*
-             * stats columns; [0-4] : [left top width height area}
-             * Applying the first filters; a connected component is only accepted if;
-             * its width is more than twice as big than its height AND
-             * its area is greater than the product of its height, width and 0.004
-             */
-            if ( Double.compare(stats.get(i,2)[0]/stats.get(i,3)[0],2.0) > 0 &&
-                    Double.compare(stats.get(i,4)[0],(dilated.height()*dilated.width())*0.004 ) > 0)
+            // stats columns; [0-4] : [left top width height area}
+            Rect textBlock = new Rect(new Point(stats.get(i,0)[0],stats.get(i,1)[0]),new Size(stats.get(i,2)[0],
+                    stats.get(i,3)[0]));
+            if ( Double.compare(textBlock.width / textBlock.height, 1.0) >= 0)
             {
-                /*
-                 * Applying the second filters; a connected component is accepted only if;
-                 * its area corresponds to enough Canny edges (see method's description)
-                 */
-                if (PixelProcessor.areaIsSobelDense(stats.get(i,0)[0],stats.get(i,1)[0],
-                        stats.get(i,2)[0],stats.get(i,3)[0],stats.get(i,4)[0]))
-                {
-                    textBlocks.add(new Rect(new Point(stats.get(i,0)[0],stats.get(i,1)[0]),new Size(stats.get(i,2)[0],
-                            stats.get(i,3)[0])));
-                }
-            }
+                if (Double.compare(stats.get(i,4)[0],(dilated.height()*dilated.width()) * 0.002 ) > 0){
+                    if (/*SWT.containsText(new Mat(VideoProcessor.getInput(),textBlock))*/true){
+                        textBlocks.add(textBlock);
+                    }
+                } else System.out.println("very small");
+            } else System.out.println("high > width");
         }
         return textBlocks;
     }
@@ -110,7 +104,7 @@ public class MatProcessor
         int flag = Core.KMEANS_PP_CENTERS;
         Mat centers = new Mat();
         Core.kmeans(data, clusters, labels, criteria, attempts, flag, centers);
-        return MatProcessor.convertLabelsToBinary(labels, image);
+        return ImageProcessor.convertLabelsToBinary(labels, image);
     }
 
     /**

@@ -45,6 +45,14 @@ public class ImageWriter
         Imgcodecs.imwrite(filePath,frame,params);
     }
 
+    public static void writeTemp(Mat frame)
+    {
+        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
+                "Temp", fileCounter++ + ".png").toAbsolutePath().toString();
+        MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
+        Imgcodecs.imwrite(filePath,frame,params);
+    }
+
     public static void writeStep(Mat frame)
     {
         if (!writingEnabled) return;
