@@ -1,10 +1,10 @@
 package MainTests;
 
-import Entities.ApplicationPaths;
-import Entities.Controllers;
-import Processors.FileProcessor;
-import ViewControllers.LogController;
-import ViewControllers.MainController;
+import entities.ApplicationPaths;
+import entities.Controllers;
+import processors.FileProcessor;
+import controllers.LogController;
+import controllers.MainController;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -58,8 +58,7 @@ public class MainTest extends GuiTest
     }
 
     @Before
-    public void beforeTest()
-    {
+    public void beforeTest() throws Exception {
         FileProcessor.loadLibraries();
         mainController = Controllers.getMainController();
         logController = Controllers.getLogController();
@@ -76,7 +75,7 @@ public class MainTest extends GuiTest
         verifyThat(mainController.progressIndicator, (Node b) -> !b.isVisible());
         verifyThat(mainController.progressBar, (Node b) -> !b.isVisible());
         verifyThat(mainController.videoPane, (Node b) -> ((Pane)b).getChildren().size() == 1);
-        verifyThat(mainController.extractButton, (Node b) -> !b.isVisible());
+        verifyThat(mainController.processButton, (Node b) -> !b.isVisible());
         verifyThat(mainController.textArea, (Node b) -> !b.isVisible());
         verifyThat(mainController.videoIcon, (Node b) -> b.isVisible());
     }
@@ -86,43 +85,55 @@ public class MainTest extends GuiTest
     public void b_testKorea()
     {
         Platform.runLater(()->{
-            FileProcessor.validateVideoFile(Paths.get(ApplicationPaths.TEST_RESOURCES,"korea.mp4").toFile());
+            try {
+                FileProcessor.validateVideoFile(Paths.get(ApplicationPaths.TEST_RESOURCES,"korea.mp4").toFile());
+            } catch (Exception e) {
+                Assert.assertFalse(e.getMessage(),false);
+            }
         });
         sleep(500);
         //WaitForAsyncUtils.waitForFxEvents();
-        verifyThat(mainController.extractButton, (Node s) -> s.isVisible());
+        verifyThat(mainController.processButton, (Node s) -> s.isVisible());
         System.out.println(logController.logTextArea.getText());
-        click(mainController.extractButton);
+        click(mainController.processButton);
         //WaitForAsyncUtils.waitForFxEvents();
-        verifyThat(mainController.extractButton, (Node s) -> !s.isVisible());
-        waitUntil(mainController.extractButton, (Node s) -> s.isVisible(),100);
+        verifyThat(mainController.processButton, (Node s) -> !s.isVisible());
+        waitUntil(mainController.processButton, (Node s) -> s.isVisible(),100);
     }
 
     @Test
     public void c_testMegaman()
     {
         Platform.runLater(()->{
-            FileProcessor.validateVideoFile(Paths.get(ApplicationPaths.TEST_RESOURCES,"megaman.mp4").toFile());
+            try {
+                FileProcessor.validateVideoFile(Paths.get(ApplicationPaths.TEST_RESOURCES,"megaman.mp4").toFile());
+            } catch (Exception e) {
+                Assert.assertFalse(e.getMessage(),false);
+            }
         });
         sleep(500);
         //WaitForAsyncUtils.waitForFxEvents();
-        verifyThat(mainController.extractButton, (Node s) -> s.isVisible());
+        verifyThat(mainController.processButton, (Node s) -> s.isVisible());
         System.out.println(logController.logTextArea.getText());
-        click(mainController.extractButton);
+        click(mainController.processButton);
         //WaitForAsyncUtils.waitForFxEvents();
-        verifyThat(mainController.extractButton, (Node s) -> !s.isVisible());
-        waitUntil(mainController.extractButton, (Node s) -> s.isVisible(),100);
+        //verifyThat(mainController.processButton, (Node s) -> !s.isVisible());
+        waitUntil(mainController.processButton, (Node s) -> s.isVisible(),100);
     }
 
     @Test
     public void d_testTextFile()
     {
         Platform.runLater(()->{
-            FileProcessor.validateVideoFile(Paths.get(ApplicationPaths.TEST_RESOURCES,"textFile.txt").toFile());
+            try {
+                FileProcessor.validateVideoFile(Paths.get(ApplicationPaths.TEST_RESOURCES,"textFile.txt").toFile());
+            } catch (Exception e) {
+                Assert.assertFalse(e.getMessage(),false);
+            }
         });
 
         sleep(500);
-        verifyThat(mainController.extractButton, (Node s) -> !s.isVisible());
+        verifyThat(mainController.processButton, (Node s) -> !s.isVisible());
         verifyThat(mainController.textArea, (Node s) -> !s.isVisible());
     }
 }
