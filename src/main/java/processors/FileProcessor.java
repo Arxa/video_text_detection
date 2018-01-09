@@ -106,20 +106,22 @@ public class FileProcessor
             if(bit == 32){
                 System.loadLibrary("opencv_320_32");
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for Windows 32 bit\n");
+                System.loadLibrary("opencv_ffmpeg320");
+                Controllers.getLogController().logTextArea.appendText("Loaded FFMPEG for Windows 32 bit\n");
                 System.loadLibrary("openh264-1.6.0-win32msvc");
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenH264 for Windows 32 bit\n");
             }
             else if (bit == 64){
                 System.loadLibrary("opencv_ffmpeg320_64");
                 Controllers.getLogController().logTextArea.appendText("Loaded FFMPEG for Windows 64 bit\n");
-                System.loadLibrary("opencv_320_64");
+                System.loadLibrary("opencv_java320_64");
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for Windows 64 bit\n");
                 System.loadLibrary("openh264-1.6.0-win64msvc");
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenH264 for Windows 64 bit\n");
             }
             else{
                 Controllers.getLogController().logTextArea.appendText("Unknown Windows bit - trying with 32");
-                System.loadLibrary("opencv_320_32");
+                System.loadLibrary("opencv_java320_32");
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for Windows 32 bit\n");
                 System.loadLibrary("openh264-1.6.0-win32msvc");
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenH264 for Windows 32 bit\n");

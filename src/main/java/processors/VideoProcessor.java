@@ -243,6 +243,7 @@ public class VideoProcessor
 
         ImageWriter.writeOCRImage(binary);
         //Imgproc.resize(binary, binary, new Size(), 4.0, 4.0, Imgproc.INTER_LINEAR);
+
         return ImageWriter.writeTextBlock(binary).getAbsolutePath();
     }
 

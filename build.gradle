@@ -37,13 +37,13 @@ apply plugin: 'application'
 apply plugin: 'javafx-gradle-plugin'
 apply plugin: 'war' // for build excludes
 
-sourceSets {
-    main {
-        resources {
-            exclude 'Outputs/**'
-        }
-    }
-}
+//sourceSets {
+//    main {
+//        resources {
+//            exclude 'Outputs/**'
+//        }
+//    }
+//}
 
 jar.enabled = false
 //sourceCompatibility =
