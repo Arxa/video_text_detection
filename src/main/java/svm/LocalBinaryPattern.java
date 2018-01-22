@@ -29,7 +29,7 @@ public class LocalBinaryPattern {
             for (int y=1; y < image.cols() - 1; y++)
             {
                 double[] diffs = new double[8];
-
+                // TODO try with >= !!!!!!!
                 // Find the differences between the current center pixel and its neighbours
                 double center = image.get(x,y)[0]; // Starting from the same row, right column pixel, clockwise
                 diffs[0] = (Double.compare(image.get(x,y+1)[0], center) > 0) ? image.get(x,y+1)[0] - center : 0.0;

@@ -35,6 +35,11 @@ public class ImageProcessor
      */
     public static List<Rect> findTextBlocks(Mat dilated)
     {
+        List<Rect> allRects = new ArrayList<>();
+        List<Rect> no_high = new ArrayList<>();
+        List<Rect> no_high_small = new ArrayList<>();
+        List<Rect> no_high_small_text = new ArrayList<>();
+
         Mat labels = new Mat();
         Mat stats = new Mat();
         Mat centroids = new Mat();
@@ -48,18 +53,45 @@ public class ImageProcessor
             // stats columns; [0-4] : [left top width height area}
             Rect textBlock = new Rect(new Point(stats.get(i,0)[0],stats.get(i,1)[0]),new Size(stats.get(i,2)[0],
                     stats.get(i,3)[0]));
+            allRects.add(textBlock);
             Mat crop = new Mat(VideoProcessor.getInput(),textBlock);
-            if ( Double.compare(textBlock.width / textBlock.height, 1.0) >= 0) {
-                if (Double.compare(stats.get(i,4)[0],(dilated.height()*dilated.width()) * 0.002 ) > 0){
+            if ( Double.compare(textBlock.width / textBlock.height, 1.0) >= 0) { // FILTER 1
+                no_high.add(textBlock);
+                if (Double.compare(stats.get(i,4)[0],dilated.height() * dilated.width() * 0.002 ) > 0){ // FILTER 2
+                    no_high_small.add(textBlock);
                     Imgproc.cvtColor(crop, crop, Imgproc.COLOR_RGB2GRAY, 0);
                     Imgproc.resize(crop, crop, new Size(100,50), 4.0, 4.0, Imgproc.INTER_LINEAR);
-                    if (SVM.blockContainsText(crop)){
+                    if (SVM.blockContainsText(crop)){ // FILTER 3
+                        no_high_small_text.add(textBlock);
                         ImageWriter.writePassed(crop);
                         textBlocks.add(textBlock);
                     } else ImageWriter.writeNoText(crop);
                 } else ImageWriter.writeSmall(crop);
             } else ImageWriter.writeHigh(crop);
         }
+        Mat allRectsMat = new Mat();
+        Mat no_highMat = new Mat();
+        Mat no_high_smallMat = new Mat();
+        Mat no_high_small_textMat = new Mat();
+
+        Mat original = VideoProcessor.getInput();
+        original.copyTo(allRectsMat);
+        original.copyTo(no_highMat);
+        original.copyTo(no_high_smallMat);
+        original.copyTo(no_high_small_textMat);
+
+        ImageProcessor.paintTextBlocks(allRects, allRectsMat);
+        ImageWriter.writeStep(allRectsMat);
+
+        ImageProcessor.paintTextBlocks(no_high, no_highMat);
+        ImageWriter.writeStep(no_highMat);
+
+        ImageProcessor.paintTextBlocks(no_high_small, no_high_smallMat);
+        ImageWriter.writeStep(no_high_smallMat);
+
+        ImageProcessor.paintTextBlocks(no_high_small_text, no_high_small_textMat);
+        ImageWriter.writeStep(no_high_small_textMat);
+
         return textBlocks;
     }
 

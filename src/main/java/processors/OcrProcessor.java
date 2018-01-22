@@ -6,7 +6,6 @@ import controllers.SettingsController;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import org.bytedeco.javacpp.tesseract;
-import org.jetbrains.annotations.NotNull;
 import org.languagetool.JLanguageTool;
 import org.languagetool.language.BritishEnglish;
 import org.languagetool.rules.RuleMatch;
@@ -38,7 +37,6 @@ public class OcrProcessor
         VideoProcessor.setExtractUniqueWords(Controllers.getSettingsController().extractUniqueWords_checkbox.isSelected());
     }
 
-    @NotNull
     public static String removeSpecialCharacters(String ocrText){
         StringBuffer buffer = new StringBuffer(ocrText);
         Matcher matcher = pattern.matcher(buffer);
@@ -51,7 +49,6 @@ public class OcrProcessor
         return buffer.toString();
     }
 
-    @NotNull
     public static String checkForSpelling(String ocrText) {
         List<RuleMatch> matches;
         StringBuffer buffer = new StringBuffer(ocrText);

@@ -10,7 +10,6 @@ public class StructuringElement {
      * where its size depends on the image resolution
      * @return The selected structuring element in the format of Size
      */
-    @NotNull
     // TODO consider larger kernels
     public static Size getStructuringElement(int imageResolution){
         if (imageResolution < 500000){

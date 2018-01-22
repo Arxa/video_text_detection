@@ -2,6 +2,8 @@ package controllers;
 
 import entities.ApplicationPaths;
 import entities.Controllers;
+import javafx.application.Platform;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import processors.FileProcessor;
 import processors.Player;
 import processors.VideoProcessor;
@@ -20,8 +22,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
-import org.jetbrains.annotations.Contract;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
@@ -79,13 +79,7 @@ public class MainController
 
         // Once the drop is complete (only permitted drags with reach this point)
         videoPane.setOnDragDropped(event -> {
-            VideoProcessor.checkThreadStatus();
-            try {
-                FileProcessor.validateVideoFile(event.getDragboard().getFiles().get(0));
-            } catch (Exception e) {
-                new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
-                return;
-            }
+            openVideoFile();
             event.setDropCompleted(true);
             event.consume();
         });
@@ -99,39 +93,28 @@ public class MainController
         });
 
         videoIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            VideoProcessor.checkThreadStatus();
-            try {
-                FileProcessor.validateVideoFile(FileProcessor.showFileDialog());
-            } catch (Exception e) {
-                new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
-            }
+            openVideoFile();
         });
 
         processButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             try {
                 FileProcessor.createDirectories(currentVideoFile);
             } catch (IOException e) {
-                new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+                showException(e);
                 return;
             }
             processButton.setVisible(false);
             progressIndicator.setVisible(true);
             progressIndicator.setProgress(-1.0);
             progressBar.setVisible(true);
+            textArea.setVisible(true);
             textArea.clear();
             VideoProcessor.checkThreadStatus();
             VideoProcessor.processVideoFile(currentVideoFile);
         });
 
         openVideo.setOnAction(event -> {
-            videoPane.getChildren().clear();
-            progressIndicator.setVisible(false);
-            textArea.clear();
-            try {
-                FileProcessor.validateVideoFile(FileProcessor.showFileDialog());
-            } catch (Exception e) {
-                new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
-            }
+            openVideoFile();
         });
 
         closeVideo.setOnAction(event -> {
@@ -148,11 +131,19 @@ public class MainController
         });
 
         playOriginal.setOnAction(event -> {
-            Player.playVideo(currentVideoFile);
+            try {
+                Player.playVideo(currentVideoFile);
+            } catch (Exception e) {
+                showException(e);
+            }
         });
 
         playProcessed.setOnAction(event -> {
-            Player.playProcessedVideo();
+            try {
+                Player.playProcessedVideo();
+            } catch (Exception e) {
+                showException(e);
+            }
         });
     }
 
@@ -217,6 +208,43 @@ public class MainController
         settingsStage.setScene(new Scene(root, 400, 300));
     }
 
+    public static void showException(Exception e){
+        Platform.runLater(()->{
+            Controllers.getLogController().logTextArea.appendText("Exception caught: " + e+"\n");
+            MainController.getLogStage().show();
+        });
+    }
+
+    public static void showInfo(String message){
+        Platform.runLater(()->{
+            Controllers.getLogController().logTextArea.appendText(message);
+        });
+    }
+
+    public static void showError(String message){
+        Platform.runLater(()->{
+            Controllers.getLogController().logTextArea.appendText("ERROR: " + message);
+            MainController.getLogStage().show();
+        });
+    }
+
+    private void openVideoFile(){
+        File videoFile = FileProcessor.showFileDialog();
+        try {
+            if (FileProcessor.validateVideoFile(videoFile)){
+                VideoProcessor.checkThreadStatus();
+                textArea.clear();
+                videoPane.getChildren();
+                progressIndicator.setVisible(false);
+                progressBar.setVisible(false);
+                Player.playVideo(videoFile);
+                processButton.setVisible(true);
+            }
+        } catch (Exception e) {
+            showException(e);
+        }
+    }
+
     public static void setCurrentVideoFile(File currentVideoFile) {
         MainController.currentVideoFile = currentVideoFile;
     }
@@ -224,12 +252,10 @@ public class MainController
         mainStage = stage1;
     }
 
-    @Contract(pure = true)
     public static Stage getMainStage() {
         return mainStage;
     }
 
-    @Contract(pure = true)
     public static Stage getLogStage() {
         return logStage;
     }

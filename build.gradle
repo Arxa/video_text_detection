@@ -37,15 +37,15 @@ apply plugin: 'application'
 apply plugin: 'javafx-gradle-plugin'
 apply plugin: 'war' // for build excludes
 
-//sourceSets {
-//    main {
-//        resources {
-//            exclude 'Outputs/**'
-//        }
-//    }
-//}
+sourceSets {
+    main {
+        resources {
+            exclude 'Outputs/**'
+        }
+    }
+}
 
-jar.enabled = false
+//jar.enabled = false
 //sourceCompatibility =
 //targetCompatibility = 1.8
 mainClassName = "Main"
@@ -55,9 +55,9 @@ repositories{
     mavenCentral()
 }
 
-//jar {
-//    zip64 = true
-//}
+jar {
+    zip64 = true
+}
 
 ext {
 

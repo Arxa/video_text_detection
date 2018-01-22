@@ -1,19 +1,12 @@
 package processors;
 
+import controllers.MainController;
 import entities.ApplicationPaths;
 import entities.Controllers;
-import controllers.MainController;
-import javafx.application.Platform;
-import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jetbrains.annotations.Contract;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -33,23 +26,15 @@ public class FileProcessor
      * and if the corresponding directories have been successfully created.
      * If no problem appears, the application window resizes slowly.
      */
-    public static void validateVideoFile(File videoFile) throws Exception
+    public static boolean validateVideoFile(File videoFile) throws Exception
     {
-        if (videoFile == null) return;
+        if (videoFile == null) return false;
         if (!FileProcessor.validateVideoFileName(videoFile)){
             throw new Exception("Cannot load the specified file");
         }
-        if (!Player.playVideo(videoFile)){
-            throw new Exception("Cannot play video file");
-        }
-
         MainController.setCurrentVideoFile(videoFile);
-        Controllers.getMainController().progressIndicator.setVisible(false);
-        Controllers.getMainController().progressBar.setVisible(false);
-        Controllers.getMainController().processButton.setVisible(true);
-        Controllers.getMainController().textArea.setVisible(true);
-        Controllers.getMainController().textArea.clear();
         MainController.resizeStageSlowly(1150, true);
+        return true;
     }
 
     /**
@@ -74,7 +59,6 @@ public class FileProcessor
         Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "Passed"));
     }
 
-    @Contract("null -> false")
     public static boolean validateVideoFileName(File filename) {
         return filename != null && filename.exists() && filename.canRead()
                 && FilenameUtils.getExtension(filename.getPath()).equalsIgnoreCase("mp4");

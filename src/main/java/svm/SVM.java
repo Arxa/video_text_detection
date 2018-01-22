@@ -15,10 +15,11 @@ public class SVM {
     private static svm_problem prob = new svm_problem();
     private static svm_parameter param = new svm_parameter();
     private static svm_model model;
+    private static final int PREDICTION_THRESHOLD = 5;
 
     static {
         try {
-            model = svm.svm_load_model("C:\\Users\\310297685\\IdeaProjects\\Thesis\\VideoText_Extractor\\src\\main\\resources\\models\\svm2000.model");
+            model = svm.svm_load_model("C:\\Users\\310297685\\IdeaProjects\\Thesis\\VideoText_Extractor\\src\\main\\resources\\models\\10000.model");
         } catch (IOException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to read SVM model!", ButtonType.OK).showAndWait();
         }
@@ -88,6 +89,6 @@ public class SVM {
             double score = SVM.evaluate(doubleData,model);
             if (Double.compare(score,-1.0) == 0) negativeRegions++;
         }
-        return negativeRegions < 5;
+        return negativeRegions <= PREDICTION_THRESHOLD;
     }
 }

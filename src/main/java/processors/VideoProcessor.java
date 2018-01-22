@@ -6,14 +6,10 @@ import entities.StructuringElement;
 import controllers.MainController;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.lept;
 import org.bytedeco.javacpp.tesseract;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
@@ -23,6 +19,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.bytedeco.javacpp.lept.pixRead;
 
 /**
@@ -41,6 +38,7 @@ public class VideoProcessor
     private static boolean extractUniqueWords;
     private static List<String> uniqueWords;
     private static boolean frameIsOpened;
+    private static boolean threadIsInterrupted;
 
     public static void processVideoFile(File videoFile)
     {
@@ -53,14 +51,12 @@ public class VideoProcessor
                 cap.get(Videoio.CAP_PROP_FPS), new Size(cap.get(Videoio.CAP_PROP_FRAME_WIDTH), cap.get(Videoio.CAP_PROP_FRAME_HEIGHT)), true);
 
         if (!frameIsOpened){
-            new Alert(Alert.AlertType.ERROR, "ERROR: Failed to read video frames\nTry another video file. If the error persists, contact the developer",
-                    ButtonType.OK).showAndWait();
+            MainController.showError("Failed to read video frames. Try another video file. If the error persists, contact the developer");
             return;
         }
-        checkThreadStatus();
+
         Task<Void> task = new Task<Void>()
         {
-            @Nullable
             @Override protected Void call() throws Exception
             {
                 // OCR Initialization
@@ -74,11 +70,14 @@ public class VideoProcessor
                 input.copyTo(inputWithTextBlocks);
                 Size kernel = StructuringElement.getStructuringElement(input.height()*input.width());
                 Mat structuringElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, kernel);
-                Platform.runLater(() -> {
-                    Controllers.getLogController().logTextArea.appendText("[Structuring Element: "+kernel.height+" x "+kernel.width+"]\n");
-                });
-                while (frameIsOpened && !thread.isInterrupted())
+                MainController.showInfo("[Structuring Element: "+kernel.height+" x "+kernel.width+"]\n");
+
+                while (frameIsOpened)
                 {
+                    if (thread.isInterrupted()){
+                        threadIsInterrupted = true;
+                        break;
+                    }
                     ImageWriter.writeStep(input);
                         /*
                         Apply Gaussian Blurred Filter
@@ -163,10 +162,10 @@ public class VideoProcessor
                         }
                     }
 
-                        /*
-                        Reading/Skipping the next 5 frames to speed up.
-                        Human readable text should last more than 5 frame at least.
-                         */
+                   /*
+                      Reading/Skipping the next 5 frames to speed up.
+                      Human readable text should last more than 5 frame at least.
+                    */
                     for (int i=0; i < 5; i++) {
                         cap.read(input);
                         currentFrame++;
@@ -192,14 +191,23 @@ public class VideoProcessor
                 return null;
             }
             @Override protected void succeeded() {
+                if (threadIsInterrupted){
+                    Controllers.getMainController().textArea.setText("");
+                    super.succeeded();
+                    return;
+                }
                 cap.release();
                 videoWriter.release();
-                Controllers.getLogController().logTextArea.appendText("Operation completed!\n");
+                MainController.showInfo("Operation completed!\n");
                 Controllers.getMainController().progressIndicator.setVisible(false);
                 Controllers.getMainController().processButton.setVisible(true);
                 Controllers.getMainController().progressBar.setProgress(0.0);
                 Controllers.getMainController().progressBar.setVisible(false);
-                Player.playProcessedVideo();
+                try {
+                    Player.playProcessedVideo();
+                } catch (Exception e) {
+                    MainController.showException(e);
+                }
                 super.succeeded();
             }
         };
@@ -207,15 +215,16 @@ public class VideoProcessor
         task.exceptionProperty().addListener((observable, oldValue, newValue) ->  {
             if(newValue != null) {
                 try{
-                    Controllers.getLogController().logTextArea.appendText("ERROR: Thread Exception: " + ExceptionUtils.getStackTrace(newValue)+"\n");
+                    MainController.showError(ExceptionUtils.getStackTrace(newValue));
                 } catch (ClassCastException e){
-                    Controllers.getLogController().logTextArea.appendText("Could not cast Exception in Thread\n");
+                    MainController.showError("Could not cast Exception in Thread\n");
                 }
-                MainController.getLogStage().show();
             }
         });
+        checkThreadStatus();
         thread = new Thread(task);
         thread.setDaemon(false);
+        threadIsInterrupted = false;
         thread.start();
     }
 
@@ -233,7 +242,7 @@ public class VideoProcessor
         ImageWriter.writeOCRImage(src);
 
         Imgproc.GaussianBlur(src, dst, new Size(0, 0), 3);
-        ImageWriter.writeOCRImage(dst);
+        //ImageWriter.writeOCRImage(dst);
 
         Core.addWeighted(src, 1.5, dst, -0.5, 0, unsharp);
         ImageWriter.writeOCRImage(unsharp);
@@ -252,10 +261,7 @@ public class VideoProcessor
         api.SetImage(image);
         ocrOutput = api.GetUTF8Text();
         if (ocrOutput == null) {
-            Platform.runLater(() -> {
-                Controllers.getLogController().logTextArea.appendText("OcrProcessor Text is NULL - Continuing forward\n");
-            });
-            MainController.getLogStage().show();
+            MainController.showInfo("OcrProcessor Text is NULL - Continuing forward\n");
             return;
         }
         String[] words = ocrOutput.getString().trim().split(" ");
@@ -267,23 +273,19 @@ public class VideoProcessor
                     continue;
                 }
                 uniqueWords.add(spelled);
-                Platform.runLater(() -> {
-                    Controllers.getMainController().textArea.appendText(spelled + " ");
-                });
+                appendToTextArea(spelled + " ");
                 continue;
             }
             Platform.runLater(() -> {
-                Controllers.getMainController().textArea.appendText(spelled + " ");
+                appendToTextArea(spelled + " ");
             });
         }
     }
 
-    @Contract(pure = true)
     public static Mat getCanny() {
         return canny;
     }
 
-    @Contract(pure = true)
     public static Mat getInput() {
         return input;
     }
@@ -296,5 +298,11 @@ public class VideoProcessor
         if (thread != null && thread.isAlive()){
             thread.interrupt();
         }
+    }
+
+    private static void appendToTextArea(String text){
+        Platform.runLater(() -> {
+            Controllers.getMainController().textArea.appendText(text);
+        });
     }
 }

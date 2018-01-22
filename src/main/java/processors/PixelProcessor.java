@@ -1,6 +1,5 @@
 package processors;
 
-import org.jetbrains.annotations.Contract;
 import org.opencv.core.Mat;
 
 /**
@@ -66,7 +65,6 @@ public class PixelProcessor
      * @param matArray The entire respective image stored in a 2D array
      * @return The MGD number for the pixel that was given
      */
-    @Contract(pure = true)
     public static double getMgdNumber(int I, int J, double[][] matArray)
     {
         double min = matArray[I][J-10];
