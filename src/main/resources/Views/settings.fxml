@@ -11,13 +11,13 @@
       <Label layoutX="27.0" layoutY="26.0" text="OCR Language:" />
       <ComboBox fx:id="ocrLanguage_combobox" layoutX="123.0" layoutY="22.0" prefHeight="25.0" prefWidth="119.0" />
       <CheckBox fx:id="extractUniqueWords_checkbox" layoutX="28.0" layoutY="135.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" selected="true" text="Extract unique words " />
-      <CheckBox fx:id="includeSpecialCharacters_checkbox" layoutX="29.0" layoutY="175.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Include Special Characters" />
-      <CheckBox fx:id="exportImages_checkbox" layoutX="27.0" layoutY="216.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Export images" />
+      <CheckBox fx:id="includeSpecialCharacters_checkbox" layoutX="28.0" layoutY="175.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Include Special Characters" />
+      <CheckBox fx:id="exportImages_checkbox" layoutX="28.0" layoutY="216.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Export images" />
       <Label fx:id="moreLanguagesLabel" layoutX="280.0" layoutY="26.0" text="More languages..." textFill="#156bc6">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>
       </Label>
-      <CheckBox fx:id="extractTextCheckBox" layoutX="31.0" layoutY="97.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" selected="true" text="Extract Text" />
+      <CheckBox fx:id="extractTextCheckBox" layoutX="28.0" layoutY="96.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" selected="true" text="Extract Text" />
    </children>
 </Pane>

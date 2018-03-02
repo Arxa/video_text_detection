@@ -3,7 +3,6 @@ package entities;
 import controllers.LogController;
 import controllers.MainController;
 import controllers.SettingsController;
-import javafx.fxml.FXMLLoader;
 
 /**
  * @author Nikiforos Archakis
@@ -20,17 +19,17 @@ public class Controllers
     private static SettingsController settingsController;
     private static LogController logController;
 
-    public static void setMainController(FXMLLoader loader)
+    public static void setMainController(MainController mainController)
     {
-        mainController = loader.getController();
+        Controllers.mainController = mainController;
     }
 
-    public static void setSettingsController(FXMLLoader loader) {
-        settingsController = loader.getController();
+    public static void setSettingsController(SettingsController settingsController) {
+        Controllers.settingsController = settingsController;
     }
 
-    public static void setLogController(FXMLLoader loader) {
-        logController = loader.getController();
+    public static void setLogController(LogController logController) {
+        Controllers.logController = logController;
     }
 
     public static MainController getMainController() {

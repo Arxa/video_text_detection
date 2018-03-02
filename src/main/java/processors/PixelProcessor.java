@@ -9,38 +9,6 @@ import org.opencv.core.Mat;
 public class PixelProcessor
 {
     /**
-     * Filters a given connected component by checking if its area corresponds to a satisfactory Canny edges threshold,
-     * where threshold; the number of Canny Edge Pixels corresponding to the connected component's area divided to
-     * the total pixels area, should be greater than 0.05
-     * @param left connected component's left coordinate
-     * @param top connected component's top coordinate
-     * @param width connected component's width
-     * @param height connected component's height
-     * @return True if the connected component is accepted. False otherwise.
-     */
-    public static boolean textBlockHasEnoughSobelEdges(double left, double top, double width, double height,
-                                                       double connectedComponentArea, Mat dilated)
-    {
-        int cannyPixels = 0;
-        for (int i=(int)top; i<(int)top+(int)height; i++)
-        {
-            for (int j=(int)left; j<(int)left+(int)width; j++)
-            {
-                // Considering only the connected component's pixels - and not the bounding box's pixels
-                if (Double.compare(dilated.get(i,j)[0],255.0) == 0) {
-                    // Do we have an edge pixel in the corresponding Canny image? (Canny edge pixels have 255 color value)
-                    if (Double.compare(VideoProcessor.getCanny().get(i,j)[0],255.0) == 0){
-                        cannyPixels++;
-                    }
-                }
-            }
-        }
-        // Are there enough canny edge pixels corresponding in the connected components area?
-        return Double.compare(cannyPixels / connectedComponentArea, 0.05) > 0;
-    }
-
-
-    /**
      * Returns the MaximumGradientDifference operation of the input image
      * by calculating the MGD number of every pixel
      * @param laplaceImage The target Mat image

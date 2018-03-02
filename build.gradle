@@ -6,7 +6,6 @@ buildscript {
         classpath "com.gradle:build-scan-plugin:1.11"
     }
     repositories {
-        //mavenLocal()
         mavenCentral()
         maven {
             url "https://plugins.gradle.org/m2/"
@@ -15,22 +14,7 @@ buildscript {
 }
 
 
-//buildscript {
-//    ext {
-//        dl4j_version = "0.9.1"
-//        kotlin_version = "1.1.4-3"
-//    }
-//    repositories {
-//        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-//        mavenCentral()
-//    }
-//    dependencies {
-//        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin_version}"
-//    }
-//}
-
 apply plugin: "com.gradle.build-scan"
-//apply plugin: "kotlin"
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'application'
@@ -46,8 +30,8 @@ sourceSets {
 }
 
 //jar.enabled = false
-//sourceCompatibility =
-//targetCompatibility = 1.8
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 mainClassName = "Main"
 
 repositories{
@@ -94,11 +78,6 @@ dependencies {
     compile group: 'org.bytedeco.javacpp-presets', name: 'tesseract', version: '3.04.01-1.3', classifier: opencvBinaryClassifer
     compile group: 'org.bytedeco.javacpp-presets', name: 'leptonica', version: '1.73-1.3', classifier: opencvBinaryClassifer
     compile group: 'org.languagetool', name: 'language-en', version: '3.8'
-
-    // DeepLearning4J
-//    compile "org.deeplearning4j:deeplearning4j-core:${dl4j_version}"
-//    compile group: 'org.deeplearning4j', name: 'deeplearning4j-ui_2.10', version: '0.9.1'
-//    compile "org.nd4j:nd4j-native-platform:${dl4j_version}"
 
     // Testing
     testCompile group: 'org.loadui', name: 'testFx', version: '3.1.2'

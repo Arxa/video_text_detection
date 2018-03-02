@@ -1,11 +1,15 @@
 package svm;
 
+import entities.ApplicationPaths;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import org.opencv.core.Mat;
 import libsvm.*;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Support Vector Machine LIBSVM
@@ -19,9 +23,12 @@ public class SVM {
 
     static {
         try {
-            model = svm.svm_load_model("C:\\Users\\310297685\\IdeaProjects\\Thesis\\VideoText_Extractor\\src\\main\\resources\\models\\10000.model");
+            model = svm.svm_load_model(Paths.get(ApplicationPaths.RESOURCES_MODELS,"10000.model").toFile().getAbsolutePath());
         } catch (IOException e) {
-            new Alert(Alert.AlertType.ERROR, "Failed to read SVM model!", ButtonType.OK).showAndWait();
+            Platform.runLater(()->{
+                new Alert(Alert.AlertType.ERROR, "Failed to load SVM model!", ButtonType.OK).showAndWait();
+                Platform.exit();
+            });
         }
     }
 

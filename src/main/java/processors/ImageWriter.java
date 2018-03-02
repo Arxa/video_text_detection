@@ -1,6 +1,7 @@
 package processors;
 
 import entities.ApplicationPaths;
+import entities.OutputFolderNames;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
@@ -20,70 +21,19 @@ public class ImageWriter
     @NotNull
     public static File writeTextBlock(Mat frame)
     {
-        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
-                "Text Blocks", fileCounter++ + ".png").toAbsolutePath().toString();
+        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME,
+                OutputFolderNames.ocr_images.name(), fileCounter++ + ".png").toAbsolutePath().toString();
         MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
         Imgcodecs.imwrite(filePath,frame,params);
         return new File(filePath);
     }
 
-    public static void writePaintedFrame(Mat frame)
-    {
+    public static void writeOutputImage(Mat image,OutputFolderNames outputFolderName){
         if (!writingEnabled) return;
-        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
-                "Painted Frames", fileCounter++ + ".png").toAbsolutePath().toString();
+        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME,
+                outputFolderName.name(), fileCounter++ + ".png").toAbsolutePath().toString();
         MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
-        Imgcodecs.imwrite(filePath,frame,params);
-    }
-
-    public static void writeOCRImage(Mat frame)
-    {
-        if (!writingEnabled) return;
-        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
-                "OCR Images", fileCounter++ + ".png").toAbsolutePath().toString();
-        MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
-        Imgcodecs.imwrite(filePath,frame,params);
-    }
-
-    public static void writeSmall(Mat frame)
-    {
-        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
-                "Small", fileCounter++ + ".png").toAbsolutePath().toString();
-        MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
-        Imgcodecs.imwrite(filePath,frame,params);
-    }
-
-    public static void writeHigh(Mat frame)
-    {
-        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
-                "High", fileCounter++ + ".png").toAbsolutePath().toString();
-        MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
-        Imgcodecs.imwrite(filePath,frame,params);
-    }
-
-    public static void writePassed(Mat frame)
-    {
-        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
-                "Passed", fileCounter++ + ".png").toAbsolutePath().toString();
-        MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
-        Imgcodecs.imwrite(filePath,frame,params);
-    }
-
-    public static void writeNoText(Mat frame)
-    {
-        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
-                "NoText", fileCounter++ + ".png").toAbsolutePath().toString();
-        MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
-        Imgcodecs.imwrite(filePath,frame,params);
-    }
-
-    public static void writeStep(Mat frame)
-    {
-        if (!writingEnabled) return;
-        String filePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
-                "Steps", fileCounter++ + ".png").toAbsolutePath().toString();
-        MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_PNG_COMPRESSION);
-        Imgcodecs.imwrite(filePath,frame,params);
+        Imgcodecs.imwrite(filePath,image,params);
     }
 
     public static void setWritingEnabled(boolean writingEnabled) {

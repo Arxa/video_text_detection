@@ -3,3 +3,4 @@
 /.gradle
 .idea/
 reports/
+/src/main/resources/outputs

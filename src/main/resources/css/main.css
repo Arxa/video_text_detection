@@ -1,0 +1,22 @@
+#logArea
+{
+    -fx-text-fill: crimson;
+    -fx-background-color: slategrey;
+    -fx-fill: slategrey;
+}
+
+#processButton {
+    -fx-background-color: cornflowerblue;
+    -fx-moz-border-radius:3px;
+    -fx-webkit-border-radius:3px;
+    -fx-border-radius:3px;
+    -fx-display:inline-block;
+    -fx-cursor:pointer;
+    -fx-color:#ffffff;
+    -fx-font-family:Arial;
+    -fx-font-size:15px;
+    -fx-padding:9px 23px;
+    -fx-text-decoration:none;
+}
+
+

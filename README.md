@@ -64,7 +64,7 @@
             Git
         </li>
         <li>
-            CSS
+            css
         </li>
       </ul>    
   </li>

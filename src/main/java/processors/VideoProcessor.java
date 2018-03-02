@@ -2,6 +2,7 @@ package processors;
 
 import entities.ApplicationPaths;
 import entities.Controllers;
+import entities.OutputFolderNames;
 import entities.StructuringElement;
 import controllers.MainController;
 import javafx.application.Platform;
@@ -35,7 +36,6 @@ public class VideoProcessor
     private static Mat dst = new Mat();
     private static Mat unsharp = new Mat();
     private static Thread thread;
-    private static boolean extractUniqueWords;
     private static List<String> uniqueWords;
     private static boolean frameIsOpened;
     private static boolean threadIsInterrupted;
@@ -46,7 +46,7 @@ public class VideoProcessor
         frameIsOpened = cap.read(input);
 
         VideoWriter videoWriter = new VideoWriter(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,
-                ApplicationPaths.UNIQUE_FOLDER_NAME, "Video", "video.mp4").toAbsolutePath().toString(),
+                ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME, OutputFolderNames.video.name(), "video.mp4").toAbsolutePath().toString(),
                 VideoWriter.fourcc('X', '2','6','4'),
                 cap.get(Videoio.CAP_PROP_FPS), new Size(cap.get(Videoio.CAP_PROP_FRAME_WIDTH), cap.get(Videoio.CAP_PROP_FRAME_HEIGHT)), true);
 
@@ -57,13 +57,17 @@ public class VideoProcessor
 
         Task<Void> task = new Task<Void>()
         {
-            @Override protected Void call() throws Exception
+            @Override protected Void call()
             {
                 // OCR Initialization
                 uniqueWords = new ArrayList<>();
-                BytePointer ocrOutput = new BytePointer();
                 tesseract.TessBaseAPI ocrApi = new tesseract.TessBaseAPI();
-                OcrProcessor.initializeOcr(ocrApi);
+                try {
+                    OcrProcessor.initializeOcr(ocrApi);
+                } catch (Exception e) {
+                    MainController.showError(e.getMessage());
+                    return null;
+                }
 
                 double frames = (int) cap.get(Videoio.CAP_PROP_FRAME_COUNT);
                 int currentFrame = 1;
@@ -78,7 +82,7 @@ public class VideoProcessor
                         threadIsInterrupted = true;
                         break;
                     }
-                    ImageWriter.writeStep(input);
+                    ImageWriter.writeOutputImage(input,OutputFolderNames.detection_steps);
                         /*
                         Apply Gaussian Blurred Filter
                         GaussianBlur Parameters:
@@ -93,11 +97,11 @@ public class VideoProcessor
                                 if both sigmas are zeros, they are computed from ksize.width and ksize.height
                          */
                     Imgproc.GaussianBlur(input, dst, new Size(15.0,15.0),0.0,0.0);
-                    ImageWriter.writeStep(dst);
+                    ImageWriter.writeOutputImage(dst,OutputFolderNames.detection_steps);
 
                     // Convert to GrayScale
                     Imgproc.cvtColor(dst, src, Imgproc.COLOR_RGB2GRAY, 0);
-                    ImageWriter.writeStep(src);
+                    ImageWriter.writeOutputImage(src,OutputFolderNames.detection_steps);
 
                         /*
                         Apply the Laplacian Filter
@@ -112,22 +116,21 @@ public class VideoProcessor
                         delta – Optional delta value that is added to the results prior to storing them in dst.
                          */
                     Imgproc.Laplacian(src, dst, CvType.CV_16S,3,2,0);
-                    ImageWriter.writeStep(dst);
+                    ImageWriter.writeOutputImage(dst,OutputFolderNames.detection_steps);
 
                     // Apply the MaximumGradientDifference(MGD) operator
                     double[][] mgdArray = PixelProcessor.getMgdArray(dst);
 
                     // Convert the mgdArray back again into a Mat object
                     src = PixelProcessor.arrayToMat(mgdArray, dst.height(), dst.width(), CvType.CV_16S);
-                    ImageWriter.writeStep(src);
+                    ImageWriter.writeOutputImage(src,OutputFolderNames.detection_steps);
 
                     // Convert to Binary
                     src.convertTo(src, CvType.CV_8UC1);
                     Imgproc.threshold(src, dst, 80,255,Imgproc.THRESH_BINARY);
-//                        dst = ImageProcessor.thresholdImageWithKmeans(src);
-                    ImageWriter.writeStep(dst);
+                    ImageWriter.writeOutputImage(dst,OutputFolderNames.detection_steps);
 
-                        /*
+                    /*
                         Apply the morphological operation Dilation
                         ImgProc.dilate Parameters:
                         src – input image; the number of channels can be arbitrary,
@@ -137,19 +140,16 @@ public class VideoProcessor
                               if element=Mat() , a 3 x 3 rectangular structuring element is used.
                         anchor – position of the anchor within the element;
                               default value (-1, -1) means that the anchor is at the element center.
-                         */
+                    */
                     Imgproc.dilate(dst, src, structuringElement);
-                    ImageWriter.writeStep(src);
+                    ImageWriter.writeOutputImage(src,OutputFolderNames.detection_steps);
 
-                    // Calculate Canny Edges of original frame
-                    Imgproc.Canny(input, canny,50, 150);
-                    ImageWriter.writeStep(canny);
 
                     // Find the candidate text blocks by finding the connected components of dilated image
                     List<Rect> textBlocks = ImageProcessor.findTextBlocks(src);
                     ImageProcessor.paintTextBlocks(textBlocks, inputWithTextBlocks);
-                    ImageWriter.writeStep(inputWithTextBlocks);
-                    ImageWriter.writePaintedFrame(inputWithTextBlocks);
+                    ImageWriter.writeOutputImage(inputWithTextBlocks,OutputFolderNames.detection_steps);
+                    ImageWriter.writeOutputImage(inputWithTextBlocks,OutputFolderNames.detected_areas);
 
                     // Write painted frame to video
                     videoWriter.write(inputWithTextBlocks);
@@ -157,8 +157,8 @@ public class VideoProcessor
                     // Preprocess textblocks and extract text with OCR
                     if (Controllers.getSettingsController().extractTextCheckBox.isSelected()){
                         for (Mat textBlock : ImageProcessor.getCroppedTextBlocks(textBlocks)){
-                            String imagePath = preprocessTextBlock(textBlock,ocrApi,ocrOutput);
-                            applyOCR(ocrApi,ocrOutput,imagePath);
+                            File ocrImageFile = preprocessTextBlock(textBlock);
+                            applyOCR(ocrApi,ocrImageFile);
                         }
                     }
 
@@ -186,8 +186,6 @@ public class VideoProcessor
                         Controllers.getMainController().progressBar.setProgress(currentFrame_final/frames_final);
                     });
                 }
-                ocrApi.End();
-                ocrOutput.deallocate();
                 return null;
             }
             @Override protected void succeeded() {
@@ -203,6 +201,8 @@ public class VideoProcessor
                 Controllers.getMainController().processButton.setVisible(true);
                 Controllers.getMainController().progressBar.setProgress(0.0);
                 Controllers.getMainController().progressBar.setVisible(false);
+                Controllers.getMainController().increaseFont_button.setVisible(true);
+                Controllers.getMainController().decreaseFont_button.setVisible(true);
                 try {
                     Player.playProcessedVideo();
                 } catch (Exception e) {
@@ -214,11 +214,7 @@ public class VideoProcessor
         // Catching Thread Exceptions
         task.exceptionProperty().addListener((observable, oldValue, newValue) ->  {
             if(newValue != null) {
-                try{
-                    MainController.showError(ExceptionUtils.getStackTrace(newValue));
-                } catch (ClassCastException e){
-                    MainController.showError("Could not cast Exception in Thread\n");
-                }
+                MainController.showError(ExceptionUtils.getStackTrace(newValue));
             }
         });
         checkThreadStatus();
@@ -229,37 +225,33 @@ public class VideoProcessor
     }
 
 
-
     /**
      *  Preprocesses the text blocks, before proceeding to OCR, in order
      *  to achieve better extraction results
      * @param textBlock List of image's text blocks in Rect format
      */
-    private static String preprocessTextBlock(Mat textBlock, tesseract.TessBaseAPI api, BytePointer ocrOutput)
+    private static File preprocessTextBlock(Mat textBlock)
     {
-        ImageWriter.writeOCRImage(textBlock);
+        ImageWriter.writeOutputImage(textBlock,OutputFolderNames.ocr_preprocessing);
+
         Imgproc.cvtColor(textBlock, src, Imgproc.COLOR_RGB2GRAY, 0);
-        ImageWriter.writeOCRImage(src);
+        ImageWriter.writeOutputImage(src,OutputFolderNames.ocr_preprocessing);
 
         Imgproc.GaussianBlur(src, dst, new Size(0, 0), 3);
-        //ImageWriter.writeOCRImage(dst);
-
         Core.addWeighted(src, 1.5, dst, -0.5, 0, unsharp);
-        ImageWriter.writeOCRImage(unsharp);
+        ImageWriter.writeOutputImage(unsharp,OutputFolderNames.ocr_preprocessing);
 
         Core.normalize(unsharp, src,0.0,1.0, Core.NORM_MINMAX);
         Mat binary = ImageProcessor.thresholdImageWithKmeans(src);
+        ImageWriter.writeOutputImage(binary,OutputFolderNames.ocr_preprocessing);
 
-        ImageWriter.writeOCRImage(binary);
-        //Imgproc.resize(binary, binary, new Size(), 4.0, 4.0, Imgproc.INTER_LINEAR);
-
-        return ImageWriter.writeTextBlock(binary).getAbsolutePath();
+        return ImageWriter.writeTextBlock(binary);
     }
 
-    private static void applyOCR(tesseract.TessBaseAPI api, BytePointer ocrOutput, String filePath){
-        lept.PIX image = pixRead(filePath);
+    private static void applyOCR(tesseract.TessBaseAPI api, File ocrImageFile){
+        lept.PIX image = pixRead(ocrImageFile.getAbsolutePath());
         api.SetImage(image);
-        ocrOutput = api.GetUTF8Text();
+        BytePointer ocrOutput = api.GetUTF8Text();
         if (ocrOutput == null) {
             MainController.showInfo("OcrProcessor Text is NULL - Continuing forward\n");
             return;
@@ -268,7 +260,7 @@ public class VideoProcessor
         for (String word : words){
             String cleaned = OcrProcessor.removeSpecialCharacters(word);
             String spelled = OcrProcessor.checkForSpelling(cleaned);
-            if (extractUniqueWords) {
+            if (Controllers.getSettingsController().extractUniqueWords_checkbox.isSelected()) {
                 if (uniqueWords.contains(spelled)){
                     continue;
                 }
@@ -290,9 +282,6 @@ public class VideoProcessor
         return input;
     }
 
-    public static void setExtractUniqueWords(boolean extractUniqueWords) {
-        VideoProcessor.extractUniqueWords = extractUniqueWords;
-    }
 
     public static void checkThreadStatus(){
         if (thread != null && thread.isAlive()){

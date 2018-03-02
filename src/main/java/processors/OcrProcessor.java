@@ -1,5 +1,6 @@
 package processors;
 
+import controllers.MainController;
 import entities.ApplicationPaths;
 import entities.Controllers;
 import controllers.SettingsController;
@@ -24,17 +25,14 @@ public class OcrProcessor
     private static JLanguageTool languageTool = new JLanguageTool(new BritishEnglish());
     private static Pattern pattern = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
 
-    public static void initializeOcr(tesseract.TessBaseAPI ocrApi){
+    public static void initializeOcr(tesseract.TessBaseAPI ocrApi) throws Exception {
         if (ocrApi.Init(ApplicationPaths.RESOURCES_OCR, SettingsController.getLanguageMap().
                 get(Controllers.getSettingsController().ocrLanguage_combobox.getSelectionModel().getSelectedItem().toString())) != 0) {
-            Platform.runLater(()->{
-                new Alert(Alert.AlertType.ERROR, "Failed to set OCR language!").showAndWait();
-            });
+            throw new Exception("Failed to set OCR language!");
         }
-//        if (!Controllers.getSettingsController().includeSpecialCharacters_checkbox.isSelected()){
-//            ocrApi.SetVariable("tessedit_char_blacklist", "`,#[];()!£\"$%^&\\²³²£§¶¤°¦<>|€");
-//        }
-        VideoProcessor.setExtractUniqueWords(Controllers.getSettingsController().extractUniqueWords_checkbox.isSelected());
+        /*if (!Controllers.getSettingsController().includeSpecialCharacters_checkbox.isSelected()){
+            ocrApi.SetVariable("tessedit_char_blacklist", "`,#[];()!£\"$%^&\\²³²£§¶¤°¦<>|€");
+        }*/
     }
 
     public static String removeSpecialCharacters(String ocrText){

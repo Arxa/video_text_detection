@@ -3,6 +3,7 @@ package processors;
 import controllers.MainController;
 import entities.ApplicationPaths;
 import entities.Controllers;
+import entities.OutputFolderNames;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
@@ -33,7 +34,7 @@ public class FileProcessor
             throw new Exception("Cannot load the specified file");
         }
         MainController.setCurrentVideoFile(videoFile);
-        MainController.resizeStageSlowly(1150, true);
+        MainController.resizeStageSlowly(1200, true);
         return true;
     }
 
@@ -45,18 +46,18 @@ public class FileProcessor
      */
     public static void createDirectories(File chosenFile) throws IOException {
         // Generating unique name of current video file operation
-        ApplicationPaths.UNIQUE_FOLDER_NAME = chosenFile.getName().replace(".mp4","")+" "+
+        ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME = chosenFile.getName().replace(".mp4","")+" "+
                 new Date().toString().replace(":","-");
         // Creating directories for application outputs
-        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "Text Blocks"));
-        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "Painted Frames"));
-        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "Steps"));
-        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME,"Video"));
-        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "OCR Images"));
-        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "Small"));
-        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "High"));
-        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "NoText"));
-        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_FOLDER_NAME, "Passed"));
+        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME, OutputFolderNames.ocr_images.name()));
+        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME, OutputFolderNames.detected_areas.name()));
+        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME, OutputFolderNames.detection_steps.name()));
+        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME, OutputFolderNames.video.name()));
+        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME, OutputFolderNames.ocr_preprocessing.name()));
+        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME, OutputFolderNames.filter2_too_small.name()));
+        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME, OutputFolderNames.filter1_too_high.name()));
+        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME, OutputFolderNames.filter3_svm_no_text.name()));
+        Files.createDirectories(Paths.get(ApplicationPaths.RESOURCES_OUTPUTS,ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME, OutputFolderNames.svm_has_text.name()));
     }
 
     public static boolean validateVideoFileName(File filename) {
@@ -83,31 +84,34 @@ public class FileProcessor
      */
     public static void loadLibraries() throws Exception
     {
-        setLibraryPath();
         if(SystemUtils.IS_OS_WINDOWS)
         {
             int bit = Integer.parseInt(System.getProperty("sun.arch.data.model"));
             if(bit == 32){
-                System.loadLibrary("opencv_320_32");
+                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"opencv_320_32.dll").toString());
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for Windows 32 bit\n");
-                System.loadLibrary("opencv_ffmpeg320");
+
+                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"opencv_ffmpeg320_32.dll").toString());
                 Controllers.getLogController().logTextArea.appendText("Loaded FFMPEG for Windows 32 bit\n");
-                System.loadLibrary("openh264-1.6.0-win32msvc");
+
+                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"openh264-1.6.0-win32msvc.dll").toString());
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenH264 for Windows 32 bit\n");
             }
             else if (bit == 64){
-                System.loadLibrary("opencv_ffmpeg320_64");
-                Controllers.getLogController().logTextArea.appendText("Loaded FFMPEG for Windows 64 bit\n");
-                System.loadLibrary("opencv_java320_64");
+                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"opencv_java320_64.dll").toString());
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for Windows 64 bit\n");
-                System.loadLibrary("openh264-1.6.0-win64msvc");
+
+                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"opencv_ffmpeg320_64.dll").toString());
+                Controllers.getLogController().logTextArea.appendText("Loaded FFMPEG for Windows 64 bit\n");
+
+                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"openh264-1.6.0-win64msvc.dll").toString());
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenH264 for Windows 64 bit\n");
             }
             else{
                 Controllers.getLogController().logTextArea.appendText("Unknown Windows bit - trying with 32");
-                System.loadLibrary("opencv_java320_32");
+                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"opencv_java320_32.dll").toString());
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for Windows 32 bit\n");
-                System.loadLibrary("openh264-1.6.0-win32msvc");
+                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"openh264-1.6.0-win32msvc.dll").toString());
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenH264 for Windows 32 bit\n");
             }
         }
@@ -117,12 +121,14 @@ public class FileProcessor
         else if(SystemUtils.IS_OS_LINUX){
             int bit = Integer.parseInt(System.getProperty("sun.arch.data.model"));
             if (bit == 32){
-                Controllers.getLogController().logTextArea.appendText("OS not supported yet\n");
+                //todo add support
+                Controllers.getLogController().logTextArea.appendText("32-bit Linux not supported yet\n");
             }
             else if (bit == 64){
-                System.loadLibrary("opencv_320_64");
+                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"opencv_320_64.so").toString());
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for Linux 64 bit\n");
-                System.loadLibrary("openh264-1.6.0-linux64.3");
+
+                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"openh264-1.6.0-linux64.3.so").toString());
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenH264 for Linux 64 bit\n");
             }
             else {
@@ -132,11 +138,4 @@ public class FileProcessor
         }
     }
 
-    private static void setLibraryPath() throws IllegalAccessException, NoSuchFieldException {
-        System.setProperty("java.library.path", ApplicationPaths.RESOURCES_NATIVES);
-        Controllers.getLogController().logTextArea.appendText("JavaLibraryPath= " + ApplicationPaths.RESOURCES_NATIVES+"\n");
-        Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
-        fieldSysPath.setAccessible(true);
-        fieldSysPath.set(null, null);
-    }
 }

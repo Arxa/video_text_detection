@@ -2,6 +2,7 @@ package controllers;
 
 import entities.ApplicationPaths;
 import entities.Controllers;
+import javafx.stage.Stage;
 import processors.ImageWriter;
 import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.collections.ObservableList;
@@ -35,9 +36,12 @@ public class SettingsController {
 
     // Stores language names along with their 3-character ISO 639-2 language codes
     private static Map<String,String> languageMap;
+    private static Stage settingsStage;
 
     public void initialize() throws IOException
     {
+        Controllers.setSettingsController(this);
+
         moreLanguagesLabel.setCursor(Cursor.HAND);
 
         moreLanguagesLabel.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -171,5 +175,14 @@ public class SettingsController {
 
     public static Map<String, String> getLanguageMap() {
         return languageMap;
+    }
+
+
+    public static void setSettingsStage(Stage settingsStage) {
+        SettingsController.settingsStage = settingsStage;
+    }
+
+    public static void showSettingsStage(){
+        settingsStage.show();
     }
 }

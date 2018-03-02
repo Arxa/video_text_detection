@@ -1,44 +1,45 @@
-import entities.Controllers;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import processors.FileProcessor;
 import controllers.MainController;
+import entities.ApplicationPaths;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-
+import processors.FileProcessor;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class Main extends Application
 {
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Views/main.fxml"));
-        Parent root;
         try {
-            root = loader.load();
-        } catch (Exception e) {
-            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+            ApplicationPaths.setApplicationPaths();
+        } catch (IOException e) {
+            new Alert(Alert.AlertType.ERROR,"Failed to set Application Paths").showAndWait();
             return;
         }
+
+        FXMLLoader loader = new FXMLLoader(Paths.get(ApplicationPaths.RESOURCES_VIEWS,"main.fxml").toFile().toURI().toURL());
+        Parent root = loader.load();
         stage.setTitle("VideoText Extractor");
-        stage.setScene(new Scene(root, 680, 390));
+        Scene scene = new Scene(root, 680, 390);
+        scene.getStylesheets().add(Paths.get(ApplicationPaths.RESOURCES_CSS,"main.css").toFile().toURI().toURL().toExternalForm());
+        stage.setScene(scene);
+        stage.getIcons().add(new Image(Paths.get(ApplicationPaths.RESOURCES_ICONS,"app.png").toFile().toURI().toURL().toString()));
         stage.setResizable(false);
         stage.show();
-        stage.setOnCloseRequest(e -> Platform.exit());
+        stage.setOnCloseRequest(e -> System.exit(0));
 
-        stage.getIcons().add(new Image(Main.class.getResourceAsStream("Icons/app.png")));
-        Controllers.setMainController(loader);
         MainController.setMainStage(stage);
 
         try {
             FileProcessor.loadLibraries();
         } catch (Throwable e) {
-            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+            new Alert(Alert.AlertType.ERROR, "Failed to load libraries!"+e.getMessage(), ButtonType.OK).showAndWait();
             return;
         }
 
@@ -47,7 +48,8 @@ public class Main extends Application
         });
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
+
         launch(args);
     }
 }

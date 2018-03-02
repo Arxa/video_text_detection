@@ -2,8 +2,8 @@ package controllers;
 
 import entities.ApplicationPaths;
 import entities.Controllers;
+import entities.OutputFolderNames;
 import javafx.application.Platform;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import processors.FileProcessor;
 import processors.Player;
 import processors.VideoProcessor;
@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,20 +45,27 @@ public class MainController
     public MenuItem logMenuItem;
     public Button increaseFont_button;
     public Button decreaseFont_button;
+    public MenuItem outputImagesMenuItem;
 
     private static File currentVideoFile;
     private static Stage mainStage;
-    private static Stage settingsStage;
-    private static Stage logStage;
 
     public void initialize()
     {
-        ApplicationPaths.setApplicationPaths();
+        Controllers.setMainController(this);
         initializeViews();
 
         textArea.setVisible(false); // TestFx will fail otherwise for some reason
         videoIcon.setCursor(Cursor.HAND);
         processButton.setCursor(Cursor.HAND);
+
+        outputImagesMenuItem.setOnAction(event -> {
+            try {
+                Runtime.getRuntime().exec("explorer.exe " + ApplicationPaths.RESOURCES_OUTPUTS);
+            } catch (IOException e) {
+                MainController.showError("Failed to open file explorer; "+e.getMessage());
+            }
+        });
 
         increaseFont_button.setOnMouseClicked(event -> {
             textArea.setFont(Font.font("Verdana", FontWeight.NORMAL, textArea.getFont().getSize()+2));
@@ -79,17 +87,31 @@ public class MainController
 
         // Once the drop is complete (only permitted drags with reach this point)
         videoPane.setOnDragDropped(event -> {
-            openVideoFile();
+            File dragFile = event.getDragboard().getFiles().get(0);
+            try {
+                if (FileProcessor.validateVideoFile(dragFile)){
+                    VideoProcessor.checkThreadStatus();
+                    textArea.clear();
+                    progressIndicator.setVisible(false);
+                    increaseFont_button.setVisible(false);
+                    decreaseFont_button.setVisible(false);
+                    progressBar.setVisible(false);
+                    Player.playVideo(dragFile);
+                    processButton.setVisible(true);
+                }
+            } catch (Exception e) {
+                showException(e);
+            }
             event.setDropCompleted(true);
             event.consume();
         });
 
         logMenuItem.setOnAction(event -> {
-            logStage.show();
+            LogController.showLogStage();
         });
 
         settingsMenuItem.setOnAction(event -> {
-            settingsStage.show();
+            SettingsController.showSettingsStage();
         });
 
         videoIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -105,9 +127,10 @@ public class MainController
             }
             processButton.setVisible(false);
             progressIndicator.setVisible(true);
-            progressIndicator.setProgress(-1.0);
             progressBar.setVisible(true);
             textArea.setVisible(true);
+            increaseFont_button.setVisible(true);
+            decreaseFont_button.setVisible(true);
             textArea.clear();
             VideoProcessor.checkThreadStatus();
             VideoProcessor.processVideoFile(currentVideoFile);
@@ -119,13 +142,16 @@ public class MainController
 
         closeVideo.setOnAction(event -> {
             VideoProcessor.checkThreadStatus();
+            Player.stopMediaPlayer();
             videoPane.getChildren().clear();
             videoPane.getChildren().add(videoIcon);
             videoIcon.setVisible(true);
+            increaseFont_button.setVisible(false);
+            decreaseFont_button.setVisible(false);
             textArea.clear();
             textArea.setVisible(false);
             progressIndicator.setVisible(false);
-            progressIndicator.setVisible(false);
+            progressBar.setVisible(false);
             processButton.setVisible(false);
             resizeStageSlowly(680, false);
         });
@@ -158,17 +184,17 @@ public class MainController
             @Override
             public void run() {
                 if (maximize){
-                    if ((int)MainController.getMainStage().getWidth() < (int)desiredSize) {
-                        MainController.getMainStage().setWidth(MainController.getMainStage().getWidth() + 5.0);
+                    if ((int)mainStage.getWidth() < (int)desiredSize) {
+                        mainStage.setWidth(mainStage.getWidth() + 5.0);
                     }else {
-                        MainController.getMainStage().setWidth(desiredSize);
+                        mainStage.setWidth(desiredSize);
                         this.cancel();
                     }
                 } else {
-                    if ((int)MainController.getMainStage().getWidth() > (int)desiredSize) {
-                        MainController.getMainStage().setWidth(MainController.getMainStage().getWidth() - 5.0);
+                    if ((int)mainStage.getWidth() > (int)desiredSize) {
+                        mainStage.setWidth(mainStage.getWidth() - 5.0);
                     } else {
-                        MainController.getMainStage().setWidth(desiredSize);
+                        mainStage.setWidth(desiredSize);
                         this.cancel();
                     }
                 }
@@ -180,38 +206,39 @@ public class MainController
      * Initializes FXML loaders and controllers of other Views
      */
     public void initializeViews(){
-        Parent root;
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Views/log.fxml"));
-            root = loader.load();
-            Controllers.setLogController(loader);
+            FXMLLoader logLoader = new FXMLLoader(Paths.get(ApplicationPaths.RESOURCES_VIEWS,"log.fxml").toFile().toURI().toURL());
+            Parent logRoot = logLoader.load();
+            Stage logStage = new Stage();
+            logStage.setTitle("Log");
+            logStage.getIcons().add(new Image(Paths.get(ApplicationPaths.RESOURCES_ICONS,"app.png").toFile().toURI().toURL().toString()));
+            logStage.setScene(new Scene(logRoot, 300, 400));
+            logStage.setMinWidth(300);
+            logStage.setMinHeight(200);
+            LogController.setLogStage(logStage);
         } catch (IOException e) {
-            e.printStackTrace();
+            showError("Failed to initialize Log view; "+e.getMessage());
             return;
         }
-        logStage = new Stage();
-        logStage.setTitle("Log");
-        logStage.getIcons().add(new Image("file:src/main/resources/Icons/app.png"));
-        logStage.setScene(new Scene(root, 300, 400));
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Views/settings.fxml"));
-            root = loader.load();
-            Controllers.setSettingsController(loader);
+            FXMLLoader settingsLoader = new FXMLLoader(Paths.get(ApplicationPaths.RESOURCES_VIEWS,"settings.fxml").toFile().toURI().toURL());
+            Parent settingsRoot = settingsLoader.load();
+            Stage settingsStage = new Stage();
+            settingsStage.setTitle("Settings");
+            settingsStage.getIcons().add(new Image(Paths.get(ApplicationPaths.RESOURCES_ICONS,"app.png").toFile().toURI().toURL().toString()));
+            settingsStage.setScene(new Scene(settingsRoot, 400, 300));
+            settingsStage.setResizable(false);
+            SettingsController.setSettingsStage(settingsStage);
         } catch (IOException e) {
-            e.printStackTrace();
-            return;
+            showError("Failed to initialize Settings view; "+e.getMessage());
         }
-        settingsStage = new Stage();
-        settingsStage.setTitle("Settings");
-        settingsStage.getIcons().add(new Image("file:src/main/resources/Icons/app.png"));
-        settingsStage.setScene(new Scene(root, 400, 300));
     }
 
     public static void showException(Exception e){
         Platform.runLater(()->{
             Controllers.getLogController().logTextArea.appendText("Exception caught: " + e+"\n");
-            MainController.getLogStage().show();
+            LogController.showLogStage();
         });
     }
 
@@ -224,7 +251,7 @@ public class MainController
     public static void showError(String message){
         Platform.runLater(()->{
             Controllers.getLogController().logTextArea.appendText("ERROR: " + message);
-            MainController.getLogStage().show();
+            LogController.showLogStage();
         });
     }
 
@@ -234,9 +261,10 @@ public class MainController
             if (FileProcessor.validateVideoFile(videoFile)){
                 VideoProcessor.checkThreadStatus();
                 textArea.clear();
-                videoPane.getChildren();
                 progressIndicator.setVisible(false);
                 progressBar.setVisible(false);
+                increaseFont_button.setVisible(false);
+                decreaseFont_button.setVisible(false);
                 Player.playVideo(videoFile);
                 processButton.setVisible(true);
             }
@@ -254,10 +282,6 @@ public class MainController
 
     public static Stage getMainStage() {
         return mainStage;
-    }
-
-    public static Stage getLogStage() {
-        return logStage;
     }
 
 }

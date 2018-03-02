@@ -12,13 +12,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="415.0" prefWidth="1200.0" stylesheets="/CSS/RootLayout.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="415.0" prefWidth="1200.0" stylesheets="/css/main.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
    <children>
       <Pane fx:id="videoPane" layoutX="-4.0" layoutY="25.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="379.0" prefWidth="667.0" AnchorPane.leftAnchor="-4.0">
          <children>
             <ImageView fx:id="videoIcon" fitHeight="97.0" fitWidth="113.0" layoutX="283.0" layoutY="129.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../Icons/video.png" />
+                  <Image url="@../icons/video.png" />
                </image>
             </ImageView>
          </children>
@@ -33,23 +33,24 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Play">
             <items>
-              <MenuItem fx:id="playOriginal" mnemonicParsing="false" text="Original" />
-                  <MenuItem fx:id="playProcessed" mnemonicParsing="false" text="Detected Text" />
+              <MenuItem fx:id="playOriginal" mnemonicParsing="false" text="Original Video" />
+                  <MenuItem fx:id="playProcessed" mnemonicParsing="false" text="Video with detected textblocks" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Tools">
             <items>
               <MenuItem fx:id="settingsMenuItem" mnemonicParsing="false" text="Settings" />
                 <MenuItem fx:id="logMenuItem" mnemonicParsing="false" text="Log" />
+                  <MenuItem fx:id="outputImagesMenuItem" mnemonicParsing="false" text="Output Images" />
             </items>
           </Menu>
         </menus>
       </MenuBar>
       <TextArea fx:id="textArea" editable="false" layoutX="696.0" layoutY="151.0" opacity="0.39" prefHeight="247.0" prefWidth="388.0" visible="false" wrapText="true" />
-      <ProgressIndicator fx:id="progressIndicator" layoutX="838.0" layoutY="25.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="75.0" prefWidth="136.0" progress="0.0" visible="false" />
+      <ProgressIndicator fx:id="progressIndicator" layoutX="838.0" layoutY="25.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="75.0" prefWidth="136.0" visible="false" />
       <Button fx:id="processButton" layoutX="829.0" layoutY="52.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="168.0" text="Process Video" visible="false" />
       <ProgressBar fx:id="progressBar" layoutX="696.0" layoutY="126.0" prefHeight="8.0" prefWidth="388.0" progress="0.0" visible="false" />
-       <Button fx:id="increaseFont_button" layoutX="1100.0" layoutY="155.0" mnemonicParsing="false" prefWidth="25.0" text="+" />
-      <Button fx:id="decreaseFont_button" layoutX="1100.0" layoutY="190.0" mnemonicParsing="false" prefWidth="25.0" text="-" />
+       <Button fx:id="increaseFont_button" layoutX="1100.0" layoutY="155.0" mnemonicParsing="false" prefWidth="25.0" text="+" visible="false" AnchorPane.rightAnchor="10.0" />
+      <Button fx:id="decreaseFont_button" layoutX="1100.0" layoutY="190.0" mnemonicParsing="false" prefWidth="25.0" text="-" visible="false" AnchorPane.rightAnchor="10.0" />
    </children>
 </AnchorPane>

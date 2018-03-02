@@ -2,6 +2,7 @@ package processors;
 
 import entities.ApplicationPaths;
 import entities.Controllers;
+import entities.OutputFolderNames;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -11,6 +12,8 @@ import java.nio.file.Paths;
 
 public class Player {
 
+    private static MediaPlayer mediaPlayer;
+
     /**
      * Plays the video file in the GUI pane
      * @param videoFile The file to be played
@@ -18,9 +21,11 @@ public class Player {
      */
     public static void playVideo(File videoFile) throws Exception
     {
+        stopMediaPlayer();
+        if (!videoFile.exists()) return;
         String uri = videoFile.toURI().toString();
         Media media = new Media(uri);
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer = new MediaPlayer(media);
         MediaView mediaView = new MediaView(mediaPlayer);
         Controllers.getMainController().videoPane.getChildren().add(mediaView);
         mediaView.fitHeightProperty().bind(Controllers.getMainController().videoPane.heightProperty());
@@ -29,11 +34,16 @@ public class Player {
     }
 
     public static void playProcessedVideo() throws Exception {
-        String videoFilePath = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_FOLDER_NAME,
-                    "Video", "video.mp4").toAbsolutePath().toString();
-        File videoFile = new File(videoFilePath);
+        File videoFile = Paths.get(ApplicationPaths.RESOURCES_OUTPUTS, ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME,
+                OutputFolderNames.video.name(), "video.mp4").toFile();
         if (videoFile.exists() && videoFile.isFile()){
             Player.playVideo(videoFile);
+        }
+    }
+
+    public static void stopMediaPlayer(){
+        if (mediaPlayer != null && mediaPlayer.getMedia() != null){
+            mediaPlayer.stop();
         }
     }
 }
