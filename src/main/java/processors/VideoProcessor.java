@@ -59,7 +59,7 @@ public class VideoProcessor
         {
             @Override protected Void call()
             {
-                // OCR Initialization
+                // ocr Initialization
                 uniqueWords = new ArrayList<>();
                 tesseract.TessBaseAPI ocrApi = new tesseract.TessBaseAPI();
                 try {
@@ -154,7 +154,7 @@ public class VideoProcessor
                     // Write painted frame to video
                     videoWriter.write(inputWithTextBlocks);
 
-                    // Preprocess textblocks and extract text with OCR
+                    // Preprocess textblocks and extract text with ocr
                     if (Controllers.getSettingsController().extractTextCheckBox.isSelected()){
                         for (Mat textBlock : ImageProcessor.getCroppedTextBlocks(textBlocks)){
                             File ocrImageFile = preprocessTextBlock(textBlock);
@@ -226,7 +226,7 @@ public class VideoProcessor
 
 
     /**
-     *  Preprocesses the text blocks, before proceeding to OCR, in order
+     *  Preprocesses the text blocks, before proceeding to ocr, in order
      *  to achieve better extraction results
      * @param textBlock List of image's text blocks in Rect format
      */

@@ -28,7 +28,7 @@ public class OcrProcessor
     public static void initializeOcr(tesseract.TessBaseAPI ocrApi) throws Exception {
         if (ocrApi.Init(ApplicationPaths.RESOURCES_OCR, SettingsController.getLanguageMap().
                 get(Controllers.getSettingsController().ocrLanguage_combobox.getSelectionModel().getSelectedItem().toString())) != 0) {
-            throw new Exception("Failed to set OCR language!");
+            throw new Exception("Failed to set ocr language!");
         }
         /*if (!Controllers.getSettingsController().includeSpecialCharacters_checkbox.isSelected()){
             ocrApi.SetVariable("tessedit_char_blacklist", "`,#[];()!£\"$%^&\\²³²£§¶¤°¦<>|€");

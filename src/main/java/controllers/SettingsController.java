@@ -46,11 +46,11 @@ public class SettingsController {
 
         moreLanguagesLabel.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             // Showing an alert with a clickable hyperlink inside
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Download the .traineddata language files(s) you wish to add from the following link and place the file(s) project's directory: src\\main\\resources\\OCR\\tessdata");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Download the .traineddata language files(s) you wish to add from the following link and place the file(s) project's directory: src\\main\\resources\\ocr\\tessdata");
             alert.setTitle("How to add more languages");
             FlowPane fp = new FlowPane();
             Label lbl = new Label("Download the .traineddata language files(s) you wish to add from the following link \n" +
-                    "and place the file(s) in the project's directory: OCR\\tessdata \n" +
+                    "and place the file(s) in the project's directory: ocr\\tessdata \n" +
                     "Restart the application and you should see the new language options in Tools->Settings");
             Hyperlink link = new Hyperlink("https://github.com/tesseract-ocr/tessdata/tree/3.04.00");
             link.addEventHandler(MouseEvent.MOUSE_CLICKED, event1 -> {
@@ -76,7 +76,7 @@ public class SettingsController {
             languageMap.put(tokens[1],tokens[0]);
         }
 
-        // Check which traineddata files exist in the tessdata directory and make that language(s) available to the OCR languages combobox.
+        // Check which traineddata files exist in the tessdata directory and make that language(s) available to the ocr languages combobox.
         Collection files = FileUtils.listFiles(new File(ApplicationPaths.RESOURCES_OCR_TESSDATA), null, false);
         for(Object f : files){
             if (languageMap.values().contains(((File)f).getName().split("\\.")[0])){
@@ -84,7 +84,7 @@ public class SettingsController {
             }
         }
 
-        // Set default OCR language selection to English
+        // Set default ocr language selection to English
         ocrLanguage_combobox.getSelectionModel().select("English");
 
         // Saves the characters that are being typed in the checkbox's list and jumps you to the matching language

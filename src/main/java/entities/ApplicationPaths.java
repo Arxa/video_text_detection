@@ -17,7 +17,7 @@ public class ApplicationPaths
     public static String RESOURCES_MODELS;
     public static String RESOURCES_ICONS;
     public static String RESOURCES_CSS;
-    public static String UNIQUE_OUTPUT_FOLDER_NAME = "invalid-for-now";
+    public static String UNIQUE_OUTPUT_FOLDER_NAME = "";
 
     /***
      * Sets the application's directory paths differently whether it is a JAR file calling or an IDE

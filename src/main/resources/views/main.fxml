@@ -50,7 +50,7 @@
       <ProgressIndicator fx:id="progressIndicator" layoutX="838.0" layoutY="25.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="75.0" prefWidth="136.0" visible="false" />
       <Button fx:id="processButton" layoutX="829.0" layoutY="52.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="168.0" text="Process Video" visible="false" />
       <ProgressBar fx:id="progressBar" layoutX="696.0" layoutY="126.0" prefHeight="8.0" prefWidth="388.0" progress="0.0" visible="false" />
-       <Button fx:id="increaseFont_button" layoutX="1100.0" layoutY="155.0" mnemonicParsing="false" prefWidth="25.0" text="+" visible="false" AnchorPane.rightAnchor="10.0" />
-      <Button fx:id="decreaseFont_button" layoutX="1100.0" layoutY="190.0" mnemonicParsing="false" prefWidth="25.0" text="-" visible="false" AnchorPane.rightAnchor="10.0" />
+       <Button fx:id="increaseFont_button" layoutX="1100.0" layoutY="155.0" mnemonicParsing="false" minWidth="30.0" maxWidth="30.0" minHeight="30.0" maxHeight="30.0" text="+" visible="false" AnchorPane.rightAnchor="10.0" />
+      <Button fx:id="decreaseFont_button" layoutX="1100.0" layoutY="190.0" mnemonicParsing="false" minWidth="30.0" maxWidth="30.0" minHeight="30.0" maxHeight="30.0" text="-" visible="false" AnchorPane.rightAnchor="10.0" />
    </children>
 </AnchorPane>

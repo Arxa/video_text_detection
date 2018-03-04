@@ -125,10 +125,10 @@ public class FileProcessor
                 Controllers.getLogController().logTextArea.appendText("32-bit Linux not supported yet\n");
             }
             else if (bit == 64){
-                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"opencv_320_64.so").toString());
+                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"libopencv_320_64.so").toString());
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenCV for Linux 64 bit\n");
 
-                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"openh264-1.6.0-linux64.3.so").toString());
+                System.load(Paths.get(ApplicationPaths.RESOURCES_NATIVES,"libopenh264-1.6.0-linux64.3.so").toString());
                 Controllers.getLogController().logTextArea.appendText("Loaded OpenH264 for Linux 64 bit\n");
             }
             else {

@@ -2,8 +2,10 @@ package controllers;
 
 import entities.ApplicationPaths;
 import entities.Controllers;
-import entities.OutputFolderNames;
 import javafx.application.Platform;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import processors.FileProcessor;
 import processors.Player;
 import processors.VideoProcessor;
@@ -22,11 +24,15 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
+
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static java.awt.Desktop.getDesktop;
 
 public class MainController
 {
@@ -47,7 +53,7 @@ public class MainController
     public Button decreaseFont_button;
     public MenuItem outputImagesMenuItem;
 
-    private static File currentVideoFile;
+    private static File currentVideoFile = new File("nofile");
     private static Stage mainStage;
 
     public void initialize()
@@ -60,10 +66,15 @@ public class MainController
         processButton.setCursor(Cursor.HAND);
 
         outputImagesMenuItem.setOnAction(event -> {
-            try {
-                Runtime.getRuntime().exec("explorer.exe " + ApplicationPaths.RESOURCES_OUTPUTS);
-            } catch (IOException e) {
-                MainController.showError("Failed to open file explorer; "+e.getMessage());
+            if( Desktop.isDesktopSupported() )
+            {
+                new Thread(() -> {
+                    try {
+                        Desktop.getDesktop().open(new File(ApplicationPaths.RESOURCES_OUTPUTS));
+                    } catch (IOException e) {
+                        showException(e);
+                    }
+                }).start();
             }
         });
 
@@ -143,6 +154,8 @@ public class MainController
         closeVideo.setOnAction(event -> {
             VideoProcessor.checkThreadStatus();
             Player.stopMediaPlayer();
+            ApplicationPaths.UNIQUE_OUTPUT_FOLDER_NAME = "";
+            setCurrentVideoFile(new File("nofile"));
             videoPane.getChildren().clear();
             videoPane.getChildren().add(videoIcon);
             videoIcon.setVisible(true);
@@ -203,7 +216,7 @@ public class MainController
     }
 
     /**
-     * Initializes FXML loaders and controllers of other Views
+     * Initializes FXML loaders and controllers of other views
      */
     public void initializeViews(){
         try {
