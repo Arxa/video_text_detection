@@ -99,20 +99,7 @@ public class MainController
         // Once the drop is complete (only permitted drags with reach this point)
         videoPane.setOnDragDropped(event -> {
             File dragFile = event.getDragboard().getFiles().get(0);
-            try {
-                if (FileProcessor.validateVideoFile(dragFile)){
-                    VideoProcessor.checkThreadStatus();
-                    textArea.clear();
-                    progressIndicator.setVisible(false);
-                    increaseFont_button.setVisible(false);
-                    decreaseFont_button.setVisible(false);
-                    progressBar.setVisible(false);
-                    Player.playVideo(dragFile);
-                    processButton.setVisible(true);
-                }
-            } catch (Exception e) {
-                showException(e);
-            }
+            loadThisFile(dragFile);
             event.setDropCompleted(true);
             event.consume();
         });
@@ -268,17 +255,21 @@ public class MainController
         });
     }
 
-    private void openVideoFile(){
+    public void openVideoFile(){
         File videoFile = FileProcessor.showFileDialog();
+        loadThisFile(videoFile);
+    }
+
+    public void loadThisFile(File file){
         try {
-            if (FileProcessor.validateVideoFile(videoFile)){
+            if (FileProcessor.validateVideoFile(file)){
                 VideoProcessor.checkThreadStatus();
                 textArea.clear();
                 progressIndicator.setVisible(false);
                 progressBar.setVisible(false);
                 increaseFont_button.setVisible(false);
                 decreaseFont_button.setVisible(false);
-                Player.playVideo(videoFile);
+                Player.playVideo(file);
                 processButton.setVisible(true);
             }
         } catch (Exception e) {

@@ -1,7 +1,7 @@
-package MainTests;
 
 import entities.ApplicationPaths;
 import entities.Controllers;
+import org.testfx.util.WaitForAsyncUtils;
 import processors.FileProcessor;
 import controllers.LogController;
 import controllers.MainController;
@@ -13,6 +13,7 @@ import javafx.scene.layout.Pane;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 import org.loadui.testfx.GuiTest;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
@@ -34,12 +35,15 @@ public class MainTest extends GuiTest
     protected Parent getRootNode() {
         Parent parent = null;
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Views/main.fxml"));
+            ApplicationPaths.setApplicationPaths();
+            FXMLLoader loader = new FXMLLoader(Paths.get
+                    (ApplicationPaths.RESOURCES_VIEWS,"main.fxml")
+                    .toFile().toURI().toURL());
             MainController.setMainStage(stage);
             MainController.getMainStage().setWidth(680);
             MainController.getMainStage().setHeight(450);
             parent = loader.load();
-            Controllers.setMainController(loader);
+            Controllers.setMainController(loader.getController());
             return parent;
         } catch (IOException ex) {
             System.out.println("Failed to Initialize TestFX");
@@ -49,12 +53,10 @@ public class MainTest extends GuiTest
 
     @BeforeClass
     public static void beforeTests() {
-
     }
 
     @AfterClass
     public static void afterTests() {
-
     }
 
     @Before
@@ -66,12 +68,10 @@ public class MainTest extends GuiTest
 
     @After
     public void afterTest() {
-
     }
 
     @Test
-    public void a_testInitialState() throws InterruptedException
-    {
+    public void a_testInitialState() {
         verifyThat(mainController.progressIndicator, (Node b) -> !b.isVisible());
         verifyThat(mainController.progressBar, (Node b) -> !b.isVisible());
         verifyThat(mainController.videoPane, (Node b) -> ((Pane)b).getChildren().size() == 1);
@@ -85,18 +85,15 @@ public class MainTest extends GuiTest
     public void b_testKorea()
     {
         Platform.runLater(()->{
-            try {
-                FileProcessor.validateVideoFile(Paths.get(ApplicationPaths.TEST_RESOURCES,"korea.mp4").toFile());
-            } catch (Exception e) {
-                Assert.assertFalse(e.getMessage(),false);
-            }
+            File videoFile = Paths.get(ApplicationPaths.TEST_RESOURCES,"korea.mp4").toFile();
+            Controllers.getMainController().loadThisFile(videoFile);
         });
         sleep(500);
-        //WaitForAsyncUtils.waitForFxEvents();
+        WaitForAsyncUtils.waitForFxEvents();
         verifyThat(mainController.processButton, (Node s) -> s.isVisible());
         System.out.println(logController.logTextArea.getText());
         click(mainController.processButton);
-        //WaitForAsyncUtils.waitForFxEvents();
+        WaitForAsyncUtils.waitForFxEvents();
         verifyThat(mainController.processButton, (Node s) -> !s.isVisible());
         waitUntil(mainController.processButton, (Node s) -> s.isVisible(),100);
     }
@@ -105,35 +102,18 @@ public class MainTest extends GuiTest
     public void c_testMegaman()
     {
         Platform.runLater(()->{
-            try {
-                FileProcessor.validateVideoFile(Paths.get(ApplicationPaths.TEST_RESOURCES,"megaman.mp4").toFile());
-            } catch (Exception e) {
-                Assert.assertFalse(e.getMessage(),false);
-            }
+            File videoFile = Paths.get(ApplicationPaths.TEST_RESOURCES,"stable_and_moving.mp4").toFile();
+            Controllers.getMainController().loadThisFile(videoFile);
         });
         sleep(500);
-        //WaitForAsyncUtils.waitForFxEvents();
+        WaitForAsyncUtils.waitForFxEvents();
         verifyThat(mainController.processButton, (Node s) -> s.isVisible());
         System.out.println(logController.logTextArea.getText());
         click(mainController.processButton);
-        //WaitForAsyncUtils.waitForFxEvents();
-        //verifyThat(mainController.processButton, (Node s) -> !s.isVisible());
-        waitUntil(mainController.processButton, (Node s) -> s.isVisible(),100);
-    }
-
-    @Test
-    public void d_testTextFile()
-    {
-        Platform.runLater(()->{
-            try {
-                FileProcessor.validateVideoFile(Paths.get(ApplicationPaths.TEST_RESOURCES,"textFile.txt").toFile());
-            } catch (Exception e) {
-                Assert.assertFalse(e.getMessage(),false);
-            }
-        });
-
-        sleep(500);
+        WaitForAsyncUtils.waitForFxEvents();
         verifyThat(mainController.processButton, (Node s) -> !s.isVisible());
-        verifyThat(mainController.textArea, (Node s) -> !s.isVisible());
+        waitUntil(mainController.processButton, (Node s) -> s.isVisible(),100);
+
     }
+
 }
