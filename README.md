@@ -16,6 +16,7 @@ The objective of my Thesis was the development of a high quality Image Processin
 JavaFX, OpenCV, LIBSVM, Gradle, JUnit, TestFX
 
 <br>
+<br>
 
 <h2>Text Detection</h2>
 
@@ -52,22 +53,25 @@ JavaFX, OpenCV, LIBSVM, Gradle, JUnit, TestFX
 <h3>3rd Filter - Classifying text areas using Support Vector Machines</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40585719-18c05c1e-61c0-11e8-8385-f303e6285396.png" align="middle">
 
+<br>
+<br>
 <h2>Text Extraction</h2>
 
 <h3>Cropped Text Area</h3>
-<img src="https://user-images.githubusercontent.com/15330998/40586418-72d08eea-61ca-11e8-8113-30238f87e83b.png" align="middle">
+<img src="https://user-images.githubusercontent.com/15330998/40586485-3ea83c5c-61cb-11e8-8323-f5684860aa54.png" align="middle">
 
 <h3>Grayscale</h3>
-<img src="https://user-images.githubusercontent.com/15330998/40586420-72f9a776-61ca-11e8-9c7e-ea54e6773c99.png" align="middle">
+<img src="https://user-images.githubusercontent.com/15330998/40586486-3ed1c14e-61cb-11e8-8de4-14fc50d5bc6e.png" align="middle">
 
 <h3>Unsharp Masking</h3>
-<img src="https://user-images.githubusercontent.com/15330998/40586422-7353006e-61ca-11e8-9d18-5bb46f89b503.png" align="middle">
+<img src="https://user-images.githubusercontent.com/15330998/40586487-3efa94ca-61cb-11e8-9113-e31b5d59685b.png" align="middle">
 
 <h3>Otsu Binarization</h3>
-<img src="https://user-images.githubusercontent.com/15330998/40586421-73298c20-61ca-11e8-9476-5ac165bb411f.png" align="middle">
+<img src="https://user-images.githubusercontent.com/15330998/40586488-3f272c06-61cb-11e8-86e3-7cd524d20d35.png" align="middle">
 
 <h3>Apply OCR</h3>
 
+<br>
 <br>
 
 <h2>JavaFX Application</h2>
