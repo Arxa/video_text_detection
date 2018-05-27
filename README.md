@@ -61,10 +61,10 @@ JavaFX, OpenCV, LIBSVM, Gradle, JUnit, TestFX
 <h3>Connected Components</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40585724-19963280-61c0-11e8-98cd-565fc8e06bcb.png" align="middle">
 
-<h3>1st Filter - Remove components with big height</h3>
+<h3>1st Filter - Removing components with bigger height than width</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40585715-181690da-61c0-11e8-98ec-c3e945de5532.png" align="middle">
 
-<h3>2nd Filter - Remove components with small area</h3>
+<h3>2nd Filter - Removing components with small area</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40585717-186b2d8e-61c0-11e8-8e52-20e2f7695802.png" align="middle">
 
 <h3>3rd Filter - Classifying text areas using Support Vector Machines</h3>
