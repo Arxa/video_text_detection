@@ -17,7 +17,7 @@ JavaFX, OpenCV, LIBSVM, Gradle, JUnit, TestFX
 
 <br>
 
-<h2>Methodology</h2>
+<h2>Text Detection</h2>
 
 <h3>Original Frame</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40585714-17ed8f5a-61c0-11e8-9fb5-d7cc232c8d34.png" align="middle">
@@ -43,14 +43,30 @@ JavaFX, OpenCV, LIBSVM, Gradle, JUnit, TestFX
 <h3>Connected Components</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40585724-19963280-61c0-11e8-98cd-565fc8e06bcb.png" align="middle">
 
-<h3>Remove components with high height</h3>
+<h3>1st Filter - Remove components with big height</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40585715-181690da-61c0-11e8-98ec-c3e945de5532.png" align="middle">
 
-<h3>Remove components with small area</h3>
+<h3>2nd Filter - Remove components with small area</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40585717-186b2d8e-61c0-11e8-8e52-20e2f7695802.png" align="middle">
 
-<h3>Remove components according to SVM's prediction</h3>
+<h3>3rd Filter - Classifying text areas using Support Vector Machines</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40585719-18c05c1e-61c0-11e8-8385-f303e6285396.png" align="middle">
+
+<h2>Text Extraction</h2>
+
+<h3>Cropped Text Area</h3>
+<img src="https://user-images.githubusercontent.com/15330998/40586418-72d08eea-61ca-11e8-8113-30238f87e83b.png" align="middle">
+
+<h3>Grayscale</h3>
+<img src="https://user-images.githubusercontent.com/15330998/40586420-72f9a776-61ca-11e8-9c7e-ea54e6773c99.png" align="middle">
+
+<h3>Unsharp Masking</h3>
+<img src="https://user-images.githubusercontent.com/15330998/40586422-7353006e-61ca-11e8-9d18-5bb46f89b503.png" align="middle">
+
+<h3>Otsu Binarization</h3>
+<img src="https://user-images.githubusercontent.com/15330998/40586421-73298c20-61ca-11e8-9476-5ac165bb411f.png" align="middle">
+
+<h3>Apply OCR</h3>
 
 <br>
 
@@ -65,10 +81,12 @@ JavaFX, OpenCV, LIBSVM, Gradle, JUnit, TestFX
 <h3>Choosing video file</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40586008-de7a2cb6-61c3-11e8-9f1f-a383e145b35a.png" align="middle">
 
-<h3>Extracting Text</h3>
+<h3>Text Extraction</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40586014-df7cd5c8-61c3-11e8-8541-87d9089f2850.png" align="middle">
 
-<h3>Detected Text</h3>
+<h3>Text Detection</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40586175-df2d8790-61c6-11e8-88ab-64aa15b85e81.gif" align="middle">
 <img src="https://user-images.githubusercontent.com/15330998/40586140-0e7be89e-61c6-11e8-90d8-378f90b72546.gif" align="middle">
+<img src="https://user-images.githubusercontent.com/15330998/40586325-5d39deac-61c9-11e8-863e-1a4f31255fbc.gif" align="middle">
+
 
