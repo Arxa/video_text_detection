@@ -68,4 +68,7 @@ JavaFX, OpenCV, LIBSVM, Gradle, JUnit, TestFX
 <h3>Extracting Text</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40586014-df7cd5c8-61c3-11e8-8541-87d9089f2850.png" align="middle">
 
+<h3>Detected Text</h3>
+<img src="https://user-images.githubusercontent.com/15330998/40586175-df2d8790-61c6-11e8-88ab-64aa15b85e81.gif" align="middle">
+<img src="https://user-images.githubusercontent.com/15330998/40586140-0e7be89e-61c6-11e8-90d8-378f90b72546.gif" align="middle">
 
