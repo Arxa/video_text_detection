@@ -2,7 +2,6 @@
 <br>
 
 <h2>Department of Engineering Informatics</h2>
-<br>
 
 <h3>Thesis Title</h3>
 Text extraction from complex video scenes
@@ -15,6 +14,8 @@ The objective of my Thesis was the development of a high quality Image Processin
 
 <h3>Technologies</h3>
 JavaFX, OpenCV, LIBSVM, Gradle, JUnit, TestFX
+
+<br>
 
 <h2>Methodology</h2>
 
@@ -50,4 +51,21 @@ JavaFX, OpenCV, LIBSVM, Gradle, JUnit, TestFX
 
 <h3>Remove components according to SVM's prediction</h3>
 <img src="https://user-images.githubusercontent.com/15330998/40585719-18c05c1e-61c0-11e8-8385-f303e6285396.png" align="middle">
+
+<br>
+
+<h2>JavaFX Application</h2>
+
+<h3>Main View</h3>
+<img src="https://user-images.githubusercontent.com/15330998/40586011-def767bc-61c3-11e8-8cc6-7606b73cc849.png" align="middle">
+
+<h3>Settings</h3>
+<img src="https://user-images.githubusercontent.com/15330998/40586013-df4ffcb0-61c3-11e8-87f0-bbece05c7f51.png" align="middle">
+
+<h3>Choosing video file</h3>
+<img src="https://user-images.githubusercontent.com/15330998/40586008-de7a2cb6-61c3-11e8-9f1f-a383e145b35a.png" align="middle">
+
+<h3>Extracting Text</h3>
+<img src="https://user-images.githubusercontent.com/15330998/40586014-df7cd5c8-61c3-11e8-8541-87d9089f2850.png" align="middle">
+
 
