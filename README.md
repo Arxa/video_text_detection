@@ -2,7 +2,7 @@
 <br>
 
 <h2>Department of Engineering Informatics</h2>
-
+<br>
 <h3>Thesis Title</h3>
 Text extraction from complex video scenes
 
