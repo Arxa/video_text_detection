@@ -12,8 +12,25 @@ Dr. Athanasios Nikolaidis, nikolaid@teiser.gr
 <h3>Objective</h3>
 The objective of my Thesis was the development of a high quality Image Processing software for the detection and extraction of text displays, in video scenes with complex backgrounds. Our approach combines methodologies and techniques presented in popular scientific papers while it also implements custom algorithms and ideas in a highly advanced software development environment.
 
+
 <h3>Technologies</h3>
 JavaFX, OpenCV, LIBSVM, Gradle, JUnit, TestFX
+
+<h3>References</h3>
+
+[13]	Palaiahnakote Shivakumara, Trung Quy Phan and Chew Lim Tan, Senior Member, IEEE “A   Laplacian Approach to Multi-Oriented Text Detection in Video”, IEEE
+
+[14]	Trung Quy Phan, Palaiahnakote Shivakumara and Chew Lim Tan “A Laplacian Method for Video Text Detection”, School of Computing, National University of Singapore, 2009
+
+[15]	Rakesh Mehta, Karen Egiazarian, “Rotated Local Binary Pattern (RLBP) Rotation invariant texture descriptor”, 2nd International Conference on Pattern Recognition Applications and Methods, ICPRAM 2013, Barcelona, Spain, 2013
+
+[16]	Cong Yao, “MSRA Text Detection 500 Database (MSRA-TD500)”, Huazhong University of Science and Technology, 2012
+
+[17]	Visual Geometry Group, “Synthetic Word Dataset ”, Department of Engineering Science, University of Oxford
+
+
+<a href="https://github.com/Arxa/VideoText_Extractor/files/2042676/Thesis_Nikiforos_Archakis_10.pdf"> <h3>Download my Thesis [PDF-Greek]</h3>
+ </a>
 
 <br>
 <br>
