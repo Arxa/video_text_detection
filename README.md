@@ -18,15 +18,15 @@ JavaFX, OpenCV, LIBSVM, Gradle, JUnit, TestFX
 
 <h3>References</h3>
 
-Palaiahnakote Shivakumara, Trung Quy Phan and Chew Lim Tan, Senior Member, IEEE “A   Laplacian Approach to Multi-Oriented Text Detection in Video”, IEEE
+[1] Palaiahnakote Shivakumara, Trung Quy Phan and Chew Lim Tan, Senior Member, IEEE “A   Laplacian Approach to Multi-Oriented Text Detection in Video”, IEEE
 
-[1]	Trung Quy Phan, Palaiahnakote Shivakumara and Chew Lim Tan “A Laplacian Method for Video Text Detection”, School of Computing, National University of Singapore, 2009
+[2]	Trung Quy Phan, Palaiahnakote Shivakumara and Chew Lim Tan “A Laplacian Method for Video Text Detection”, School of Computing, National University of Singapore, 2009
 
-[2]	Rakesh Mehta, Karen Egiazarian, “Rotated Local Binary Pattern (RLBP) Rotation invariant texture descriptor”, 2nd International Conference on Pattern Recognition Applications and Methods, ICPRAM 2013, Barcelona, Spain, 2013
+[3]	Rakesh Mehta, Karen Egiazarian, “Rotated Local Binary Pattern (RLBP) Rotation invariant texture descriptor”, 2nd International Conference on Pattern Recognition Applications and Methods, ICPRAM 2013, Barcelona, Spain, 2013
 
-[3]	Cong Yao, “MSRA Text Detection 500 Database (MSRA-TD500)”, Huazhong University of Science and Technology, 2012
+[4]	Cong Yao, “MSRA Text Detection 500 Database (MSRA-TD500)”, Huazhong University of Science and Technology, 2012
 
-[4]	Visual Geometry Group, “Synthetic Word Dataset ”, Department of Engineering Science, University of Oxford
+[5]	Visual Geometry Group, “Synthetic Word Dataset ”, Department of Engineering Science, University of Oxford
 
 
 <a href="https://github.com/Arxa/VideoText_Extractor/files/2042676/Thesis_Nikiforos_Archakis_10.pdf"> <h3>Download my Thesis [PDF-Greek]</h3>
