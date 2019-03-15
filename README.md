@@ -10,8 +10,7 @@ Text extraction from complex video scenes
 Dr. Athanasios Nikolaidis, nikolaid@teiser.gr
 
 <h3>Objective</h3>
-The objective of my Thesis was the development of a high quality Image Processing software for the detection and extraction of text displays, in video scenes with complex backgrounds. Our approach combines methodologies and techniques presented in popular scientific papers while it also implements custom algorithms and ideas in a highly advanced software development environment.
-
+The objective of my Thesis was the development of an Image Processing desktop application, capable of detecting and extracting text displays from videos with complex backgrounds. My approach implements Machine Learning and Image Analysis methodologies from various popular scientific papers. 
 
 <h3>Technologies</h3>
 JavaFX, OpenCV, LIBSVM, Gradle, JUnit, TestFX
